@@ -53,6 +53,7 @@ public class FileConstants {
 	public static File getDataDirectory() {
 		return new File(FileConstants.getLocalFile(FileConstants.DATA_LOCAL));
 	}
+
 	public static File getImageDirectory() {
 		return new File(FileConstants.getLocalFile(FileConstants.IMAGES));
 	}
@@ -64,6 +65,7 @@ public class FileConstants {
 	public static String getCategoryOnline(String filename) {
 		return FileConstants.DATA_ONLINE + filename;
 	}
+
 	public static File getCategoriesLocal() {
 		return new File(getLocalFile(DATA_LOCAL + "categories.dat"));
 	}
@@ -94,9 +96,9 @@ public class FileConstants {
 
 	public static void deleteDirectory(File folder) {
 		File[] files = folder.listFiles();
-		if(files!=null) { //some JVMs return null for empty dirs
-			for(File f: files) {
-				if(f.isDirectory()) {
+		if (files != null) { //some JVMs return null for empty dirs
+			for (File f : files) {
+				if (f.isDirectory()) {
 					deleteDirectory(f);
 				} else {
 					f.delete();
@@ -119,14 +121,19 @@ public class FileConstants {
 					file = new File(userDir.getAbsolutePath() + File.separator + ".jwarframe");
 				}
 				ret = new File(file.getAbsolutePath() + File.separator + filename);
-				File parent = ret.getParentFile();
-				if (!parent.exists()
-								&& !parent.mkdirs()) {
-					LOG.error("failed to create directories for " + parent.getAbsolutePath());
-				}
+				
 			} else {
 				file = new File(net.nikr.warframe.Program.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
 				ret = new File(file.getAbsolutePath() + File.separator + filename);
+			}
+			File parent;
+			if (ret.isDirectory()) {
+				parent = ret;
+			} else {
+				parent = ret.getParentFile();
+			}
+			if (!parent.exists()) {
+				makeDirectory(parent);
 			}
 			LOG.debug("Found file at: {}", ret.getAbsolutePath());
 			return ret.getAbsolutePath();
@@ -138,5 +145,13 @@ public class FileConstants {
 
 	private static boolean onMac() {
 		return System.getProperty("os.name").toLowerCase().startsWith("mac os x");
+	}
+
+	private synchronized static void makeDirectory(File file) {
+		if (!file.exists()) {
+			if (!file.mkdirs()) {
+				LOG.error("failed to create directories for " + file.getAbsolutePath());
+			}
+		}
 	}
 }

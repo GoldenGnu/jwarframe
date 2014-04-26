@@ -19,7 +19,6 @@
  *
  */
 
-
 package net.nikr.warframe.io.shared;
 
 import java.io.BufferedReader;
@@ -133,9 +132,6 @@ public class RewardsGetter {
 		BufferedReader in = null;
 		BufferedWriter out = null;
 		try {
-			File dir = local.getParentFile();
-			dir.mkdirs();
-			
 			URL url = new URL(online);
 			in = new BufferedReader(new InputStreamReader(url.openStream()));
 			out = new BufferedWriter(new FileWriter(local));
