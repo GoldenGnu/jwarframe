@@ -86,8 +86,6 @@ public class ImageGetter {
 		}
 		String filename = s.toLowerCase().replace(" ", "_") + ".png";
 		File file = FileConstants.getImageLocal(filename);
-		File dir = file.getParentFile();
-		dir.mkdirs();
 		if (!file.exists()) { //Download from web
 			download(filename, file);
 		}
