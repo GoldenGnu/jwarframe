@@ -100,41 +100,20 @@
 			<version>1.9.0</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.1.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.1</version>
 		</dependency>
 		<dependency>
-			<!--
-				use the log4j adaptor, which sends the logging calls to
-				log4j. - the artifact is slf4j-log4j12, because we
-				are using the log4j 1.2.* library
-			-->
+			<!-- slf4j to log4j (log4j 1.2.*) -->
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
-			<!--<scope>runtime</scope>-->
-		</dependency>
-		<dependency>
-			<!--
-				This contains fake commons-logging classes that
-				redirect commons-logging calls to the slf4j API
-			-->
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
 			<version>1.6.1</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
-			<!--<scope>runtime</scope>-->
 		</dependency>
 	</dependencies>
 </project>
