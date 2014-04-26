@@ -39,6 +39,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -274,14 +275,8 @@ public class RewardTool implements Tool {
 		jPopupMenu.add(jLink);
 
 		//Alert or Ignored
-		JMenuItem jAlert = new JMenuItem();
-		if (program.getFilters().contains(reward.getName())) {
-			jAlert.setText("Alert");
-			jAlert.setIcon(Images.IGNORED.getIcon());
-		} else {
-			jAlert.setText("Ignore");
-			jAlert.setIcon(Images.PROGRAM_16.getIcon());
-		}
+		JCheckBoxMenuItem jAlert = new JCheckBoxMenuItem("Alert");
+		jAlert.setSelected(!program.getFilters().contains(reward.getName()));
 		jAlert.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
