@@ -50,6 +50,9 @@ public class AlertMatcher implements Matcher<Alert> {
 	@Override
 	public boolean matches(Alert alert) {
 		//Ignore credits
+		if (alert.isDone()) {
+			return false;
+		}
 		if (!alert.hasLoot()) {
 			if (credits == 1 && alert.getCredits() < 3000) { //3K
 				return false;
