@@ -45,12 +45,25 @@ public class SettingsTool implements Tool {
 	private final JCheckBox jAutoRun;
 	private final JCheckBox jAudioNotify;
 
+	private final Program program;
+
 	public SettingsTool(final Program program) {
+		this.program = program;
+
 		jPanel = new JPanel();
 		GroupLayout layout = new GroupLayout(jPanel);
 		jPanel.setLayout(layout);
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
+
+		jAutoRun = new JCheckBox("Run on startup (Windows only)");
+		jAutoRun.setSelected(AutoRun.isInstalled());
+		jAutoRun.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				autoRun();
+			}
+		});
 
 		jLoginReward = new JCheckBox("Notify on Login Reward");
 		jLoginReward.setSelected(program.getSettings(SettingsConstants.LOGIN_REWARD));
@@ -70,65 +83,20 @@ public class SettingsTool implements Tool {
 			}
 		});
 
-		jAutoRun = new JCheckBox("Run on startup (Windows only)");
-		jAutoRun.setSelected(AutoRun.isInstalled());
-		jAutoRun.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (jAutoRun.isSelected()) {
-					boolean installed = AutoRun.install();
-					if (!installed) {
-						File file = AutoRun.getStartup();
-						if (file != null) {
-							JOptionPane.showMessageDialog(program.getWindow(), "Failed install Auto Run\r\n"
-												+ "You can do it manually by:\r\n"
-												+ "1) Copy jWarframe.bat \r\n"
-												+ "From: " + FileConstants.getHome() +"\r\n"
-												+ "To: " + file.getAbsoluteFile()
-												, "AutoRun"
-												, JOptionPane.PLAIN_MESSAGE);
-						} else {
-							JOptionPane.showMessageDialog(program.getWindow(), "Failed install Auto Run\r\nOnly works on Windows", "AutoRun", JOptionPane.PLAIN_MESSAGE);
-						}
-						jAutoRun.setSelected(installed);
-					}
-				} else {
-					boolean uninstalled = AutoRun.uninstall();
-					if (!uninstalled) {
-						File file = AutoRun.getStartup();
-						if (file != null) {
-							JOptionPane.showMessageDialog(program.getWindow(), "Failed uninstall Auto Run\r\n"
-												+ "You can do it manually by:\r\n"
-												+ "1) Detele jWarframe.bat \r\n"
-												+ "From: " + FileConstants.getHome() +"\r\n"
-												, "AutoRun"
-												, JOptionPane.PLAIN_MESSAGE);
-						} else {
-							JOptionPane.showMessageDialog(program.getWindow(), "Failed uninstall Auto Run\r\nOnly works on Windows", "AutoRun", JOptionPane.PLAIN_MESSAGE);
-						}
-						jAutoRun.setSelected(uninstalled);
-					}
-				}
-				program.saveSettings();
-			}
-		});
-
 		layout.setHorizontalGroup(
 			layout.createParallelGroup()
-				.addComponent(jLoginReward)
 				.addComponent(jAutoRun)
+				.addComponent(jLoginReward)
 				.addComponent(jAudioNotify)
 		);
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
-				.addComponent(jLoginReward)
 				.addComponent(jAutoRun)
+				.addComponent(jLoginReward)
 				.addComponent(jAudioNotify)
 		);
 	}
 
-	
-	
 	@Override
 	public String getToolTip() {
 		return "Settings";
@@ -159,6 +127,44 @@ public class SettingsTool implements Tool {
 	@Override
 	public Icon getIcon() {
 		return Images.SETTINGS.getIcon();
+	}
+
+	private void autoRun() {
+		if (jAutoRun.isSelected()) {
+			boolean installed = AutoRun.install();
+			if (!installed) {
+				File file = AutoRun.getStartup();
+				if (file != null) {
+					JOptionPane.showMessageDialog(program.getWindow(), "Failed install Auto Run\r\n"
+										+ "You can do it manually by:\r\n"
+										+ "1) Copy jWarframe.bat \r\n"
+										+ "From: " + FileConstants.getHome() +"\r\n"
+										+ "To: " + file.getAbsoluteFile()
+										, "AutoRun"
+										, JOptionPane.PLAIN_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(program.getWindow(), "Failed install Auto Run\r\nOnly works on Windows", "AutoRun", JOptionPane.PLAIN_MESSAGE);
+				}
+				jAutoRun.setSelected(installed);
+			}
+		} else {
+			boolean uninstalled = AutoRun.uninstall();
+			if (!uninstalled) {
+				File file = AutoRun.getStartup();
+				if (file != null) {
+					JOptionPane.showMessageDialog(program.getWindow(), "Failed uninstall Auto Run\r\n"
+										+ "You can do it manually by:\r\n"
+										+ "1) Detele jWarframe.bat \r\n"
+										+ "From: " + FileConstants.getHome() +"\r\n"
+										, "AutoRun"
+										, JOptionPane.PLAIN_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(program.getWindow(), "Failed uninstall Auto Run\r\nOnly works on Windows", "AutoRun", JOptionPane.PLAIN_MESSAGE);
+				}
+				jAutoRun.setSelected(uninstalled);
+			}
+		}
+		program.saveSettings();
 	}
 	
 }
