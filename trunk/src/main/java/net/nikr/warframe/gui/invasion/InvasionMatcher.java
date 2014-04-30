@@ -28,7 +28,7 @@ import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.io.invasion.Invasion;
 
 
-public class InvasionMatcher implements Matcher<Invasion>{
+public class InvasionMatcher implements Matcher<Invasion> {
 	private final int credits;
 	private final boolean corpus;
 	private final boolean grineer;
