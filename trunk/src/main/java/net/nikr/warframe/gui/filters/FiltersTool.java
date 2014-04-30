@@ -109,20 +109,25 @@ public class FiltersTool implements Tool {
 		jImage.setVerticalTextPosition(JLabel.TOP);
 		jImage.setFont(new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 5)));
 
+		
+
 		layout.setHorizontalGroup(
-			layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup()
-					.addComponent(jAddFilter)
+			layout.createParallelGroup()
+				.addComponent(jAddFilter)
+				.addGroup(layout.createSequentialGroup()
 					.addComponent(jFiltersScroll)
+					.addComponent(jImage, 300, 300, 300)
 				)
-				.addComponent(jImage, 300, 300, 300)
 		);
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
 				.addComponent(jAddFilter)
 				.addGroup(layout.createParallelGroup()
 					.addComponent(jFiltersScroll)
-					.addComponent(jImage)
+					.addGroup(layout.createSequentialGroup()
+						.addGap(30)
+						.addComponent(jImage)
+					)
 				)
 		);
 	}
@@ -130,7 +135,7 @@ public class FiltersTool implements Tool {
 	
 	@Override
 	public String getToolTip() {
-		return "Filters";
+		return null;
 	}
 
 	@Override
@@ -194,10 +199,4 @@ public class FiltersTool implements Tool {
 			remove(rewardID.getName());
 		}
 	}
-
-
-	public void filter() {
-		
-	}
-	
 }

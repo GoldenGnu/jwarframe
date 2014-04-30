@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import static net.nikr.warframe.Program.PROGRAM_NAME;
 import static net.nikr.warframe.Program.PROGRAM_VERSION;
 import org.slf4j.Logger;
@@ -47,6 +48,9 @@ public final class Main {
 	 */
 	private final Program program;
 
+	private static boolean portable = false;
+	private static boolean startup = false;
+
 	/** Creates a new instance of Main. */
 	private Main() {
 		log.info("Starting {} {}", PROGRAM_NAME, PROGRAM_VERSION);
@@ -62,10 +66,6 @@ public final class Main {
 	 */
 	public static void main(final String[] args) {
 		boolean debug = false;
-		boolean portable = false;
-		boolean forceNoUpdate = false;
-		boolean forceUpdate = false;
-		boolean lazySave = false;
 
 		for (String arg : args) {
 			if (arg.toLowerCase().equals("-debug")) {
@@ -74,14 +74,8 @@ public final class Main {
 			if (arg.toLowerCase().equals("-portable")) {
 				portable = true;
 			}
-			if (arg.toLowerCase().equals("-noupdate")) {
-				forceNoUpdate = true;
-			}
-			if (arg.toLowerCase().equals("-update")) {
-				forceUpdate = true;
-			}
-			if (arg.toLowerCase().equals("-lazysave")) {
-				lazySave = true;
+			if (arg.toLowerCase().equals("-startup")) {
+				startup = true;
 			}
 		}
 
@@ -90,21 +84,21 @@ public final class Main {
 		// and thus we want to allow this to take priority over the
 		// configuration options here.
 		if (System.getProperty("log.home") == null) {
+			boolean ok = true;
 			if (portable) {
 				try {
 					//jwarframe.jar directory
 					File file = new File(net.nikr.warframe.Program.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
-					System.setProperty("log.home", file.getAbsolutePath() + File.separator);
+					System.setProperty("log.home", file.getAbsolutePath() + File.separator + "logs" + File.separator);
 				} catch (URISyntaxException ex) {
-					//Working directory
-					System.setProperty("log.home", System.getProperty("user.dir") + File.separator); //Working directory
+					ok = false;
 				}
-			} else {
-				//Note: We can not use Program.onMac() as that will initialize the Program LOG
-				if (System.getProperty("os.name").toLowerCase().startsWith("mac os x")) { //Mac
-					System.setProperty("log.home", System.getProperty("user.home") + File.separator + "Library" + File.separator + "Preferences" + File.separator + "jWarFrame" + File.separator);
+			}
+			if (!portable || !ok) {
+				if (isMac()) { //Mac
+					System.setProperty("log.home", System.getProperty("user.home") + File.separator + "Library" + File.separator + "Preferences" + File.separator + "jWarFrame" + File.separator + "logs" + File.separator);
 				} else { //Windows/Linux
-					System.setProperty("log.home", System.getProperty("user.home") + File.separator + ".jwarframe" + File.separator);
+					System.setProperty("log.home", System.getProperty("user.home") + File.separator + ".jwarframe" + File.separator + "logs" + File.separator);
 				}
 			}
 		}
@@ -137,6 +131,18 @@ public final class Main {
 			});
 	}
 
+	public static boolean isPortable() {
+		return portable;
+	}
+
+	public static boolean isStartup() {
+		return startup;
+	}
+
+	public static boolean isMac() {
+		return System.getProperty("os.name").toLowerCase().startsWith("mac os x");
+	}
+
 	private static void createAndShowGUI() {
 		SplashUpdater.start();
 		initLookAndFeel();
@@ -159,7 +165,13 @@ public final class Main {
 		//lookAndFeel = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
 		try {
 			UIManager.setLookAndFeel(lookAndFeel);
-		} catch (Exception ex) {
+		} catch (ClassNotFoundException ex) {
+			log.error("Failed to set LookAndFeel: " + lookAndFeel, ex);
+		} catch (InstantiationException ex) {
+			log.error("Failed to set LookAndFeel: " + lookAndFeel, ex);
+		} catch (IllegalAccessException ex) {
+			log.error("Failed to set LookAndFeel: " + lookAndFeel, ex);
+		} catch (UnsupportedLookAndFeelException ex) {
 			log.error("Failed to set LookAndFeel: " + lookAndFeel, ex);
 		}
 	}

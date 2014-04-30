@@ -68,6 +68,16 @@ public class SplashUpdater {
 		paineter.start();
 	}
 
+	public static void hide() {
+		if (isVisible()) {
+			try {
+				splash.close();
+			} catch (IllegalStateException ex) {
+				LOG.info("SplashScreen: Close failed (NO PROBLEM)");
+			}
+		}
+	}
+
 	public static void start() {
 		SplashUpdater splashUpdater = new SplashUpdater();
 		splashUpdater.run();

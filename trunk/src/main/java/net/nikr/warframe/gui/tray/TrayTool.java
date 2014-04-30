@@ -29,7 +29,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
-import net.nikr.warframe.gui.shared.NotifyListener;
+import net.nikr.warframe.gui.shared.listeners.NotifyListener;
 
 
 public class TrayTool implements NotifyListener {

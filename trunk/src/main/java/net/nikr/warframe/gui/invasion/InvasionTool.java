@@ -55,12 +55,12 @@ import javax.swing.event.TableModelListener;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.settings.SettingsConstants;
-import net.nikr.warframe.gui.shared.EnumTableFormat;
-import net.nikr.warframe.gui.shared.EventModels;
 import net.nikr.warframe.gui.shared.InvasionListener;
-import net.nikr.warframe.gui.shared.NotifyListener.NotifySource;
-import net.nikr.warframe.gui.shared.PaddingTableCellRenderer;
 import net.nikr.warframe.gui.shared.Tool;
+import net.nikr.warframe.gui.shared.listeners.NotifyListener.NotifySource;
+import net.nikr.warframe.gui.shared.table.EnumTableFormat;
+import net.nikr.warframe.gui.shared.table.EventModels;
+import net.nikr.warframe.gui.shared.table.PaddingTableCellRenderer;
 import net.nikr.warframe.io.invasion.Invasion;
 import net.nikr.warframe.io.invasion.Invasion.InvasionPercentage;
 
@@ -71,6 +71,11 @@ public class InvasionTool implements Tool, InvasionListener {
 	private final JRadioButton jShowAll;
 	private final JRadioButton jShowFiltered;
 	private final JSlider jCredits;
+	private final JCheckBox jBlueprints;
+	private final JCheckBox jMods;
+	private final JCheckBox jAuras;
+	private final JCheckBox jResources;
+	private final JCheckBox jFilters;
 	private final JCheckBox jCorpus;
 	private final JCheckBox jGrineer;
 	private final JCheckBox jInfested;
@@ -127,10 +132,17 @@ public class InvasionTool implements Tool, InvasionListener {
 		});
 		filterComponents.add(jCredits);
 
-		//VS. Factions
-		jCorpus = createCheckBox("Corpus", SettingsConstants.INVASION_CORPUS);
-		jGrineer = createCheckBox("Grineer", SettingsConstants.INVASION_GRINEER);
-		jInfested = createCheckBox("Infested", SettingsConstants.INVASION_INFESTED);
+		//Faction
+		jCorpus = createCheckBox("Kill Corpus", SettingsConstants.INVASION_CORPUS);
+		jGrineer = createCheckBox("Kill Grineer", SettingsConstants.INVASION_GRINEER);
+		jInfested = createCheckBox("Kill Infested", SettingsConstants.INVASION_INFESTED);
+		//Category
+		jBlueprints = createCheckBox("Blueprints", SettingsConstants.INVASION_BLUEPRINT);
+		jMods = createCheckBox("Mods", SettingsConstants.INVASION_MOD);
+		jAuras = createCheckBox("Auras", SettingsConstants.INVASION_AURA);
+		jResources = createCheckBox("Resources", SettingsConstants.INVASION_RESOURCE);
+		//Filters
+		jFilters = createCheckBox("Filters", SettingsConstants.INVASION_FILTERS);
 
 		JToggleButton jShowFilters = new JToggleButton("Filters");
 		jShowFilters.addActionListener(new ActionListener() {
@@ -152,7 +164,7 @@ public class InvasionTool implements Tool, InvasionListener {
 				showList.setMatcher(null);
 			}
 		});
-		jShowFiltered = new JRadioButton("Matching");
+		jShowFiltered = new JRadioButton("Notify");
 		jShowFiltered.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -214,6 +226,11 @@ public class InvasionTool implements Tool, InvasionListener {
 								.addComponent(jCorpus)
 								.addComponent(jGrineer)
 								.addComponent(jInfested)
+								.addComponent(jBlueprints)
+								.addComponent(jMods)
+								.addComponent(jAuras)
+								.addComponent(jResources)
+								.addComponent(jFilters)
 						)
 				)
 		);
@@ -228,9 +245,17 @@ public class InvasionTool implements Tool, InvasionListener {
 						.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 						.addGroup(layout.createSequentialGroup()
 								.addComponent(jCredits)
+								.addGap(20)
 								.addComponent(jCorpus)
 								.addComponent(jGrineer)
 								.addComponent(jInfested)
+								.addGap(20)
+								.addComponent(jBlueprints)
+								.addComponent(jMods)
+								.addComponent(jAuras)
+								.addComponent(jResources)
+								.addGap(20)
+								.addComponent(jFilters)
 						)
 				)
 		);
@@ -239,7 +264,6 @@ public class InvasionTool implements Tool, InvasionListener {
 
 	@Override
 	public void addInvasions(List<Invasion> invasions) {
-		boolean first = eventList.isEmpty();
 		List<Invasion> cache = new ArrayList<Invasion>(filterList);
 
 		try {
@@ -250,18 +274,15 @@ public class InvasionTool implements Tool, InvasionListener {
 			eventList.getReadWriteLock().writeLock().unlock();
 		}
 
-		if (!first) {
-			int count = 0;
-			for (Invasion invasion : filterList) {
-				if (!cache.contains(invasion)) {
-					count++;
-				}
-			}
-			if (count > 0) {
-				program.startNotify(count, NotifySource.INVASIONS);
+		int count = 0;
+		for (Invasion invasion : filterList) {
+			if (!cache.contains(invasion)) {
+				count++;
 			}
 		}
-
+		if (count > 0) {
+			program.startNotify(count, NotifySource.INVASIONS);
+		}
 	}
 
 	@Override
@@ -271,7 +292,7 @@ public class InvasionTool implements Tool, InvasionListener {
 
 	@Override
 	public String getToolTip() {
-		return "Invasions";
+		return null;
 	}
 
 	@Override
@@ -289,7 +310,12 @@ public class InvasionTool implements Tool, InvasionListener {
 		InvasionSettings settings = new InvasionSettings(jCredits.getValue(),
 				jCorpus.isSelected(),
 				jGrineer.isSelected(),
-				jInfested.isSelected());
+				jInfested.isSelected(),
+				jBlueprints.isSelected(),
+				jMods.isSelected(),
+				jAuras.isSelected(),
+				jResources.isSelected(),
+				jFilters.isSelected());
 		return settings.getSettings();
 	}
 
@@ -298,6 +324,11 @@ public class InvasionTool implements Tool, InvasionListener {
 				jCorpus.isSelected(),
 				jGrineer.isSelected(),
 				jInfested.isSelected(),
+				jBlueprints.isSelected(),
+				jMods.isSelected(),
+				jAuras.isSelected(),
+				jResources.isSelected(),
+				jFilters.isSelected(),
 				program.getFilters());
 		filterList.setMatcher(matcher);
 		if (jShowFiltered.isSelected()) {
@@ -308,7 +339,7 @@ public class InvasionTool implements Tool, InvasionListener {
 
 	private JCheckBox createCheckBox(String title, SettingsConstants settings) {
 		JCheckBox jCheckBox = new JCheckBox(title);
-		jCheckBox.setSelected(program.getSettings(settings) || !program.getSettings(SettingsConstants.SETTINGS_SET));
+		jCheckBox.setSelected(program.getSettings(settings));
 		jCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

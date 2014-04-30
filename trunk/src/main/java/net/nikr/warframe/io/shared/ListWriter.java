@@ -21,22 +21,33 @@
 
 package net.nikr.warframe.io.shared;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import org.junit.Test;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
 
 
-public class FileConstantsTest {
-	
-	public FileConstantsTest() { }
-
-	@Test
-	public void testClearData() {
-		//Clear old data on compile
-		File data = FileConstants.getDataDirectory();
-		FileConstants.deleteDirectory(data);
-		File images = FileConstants.getImageDirectory();
-		FileConstants.deleteDirectory(images);
+public class ListWriter {
+	public boolean save(Collection<String> strings, File file) {
+		BufferedWriter out = null;
+		try {
+			out = new BufferedWriter(new FileWriter(file));
+			for (String string : strings) {
+				out.write(string);
+				out.write("\r\n");
+			}
+			return true;
+		} catch (IOException e) {
+			return false;
+		} finally {
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException ex) {
+					
+				}
+			}
+		}
 	}
-
-	
 }

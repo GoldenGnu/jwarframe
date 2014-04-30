@@ -19,7 +19,7 @@
  *
  */
 
-package net.nikr.warframe.gui.shared;
+package net.nikr.warframe.gui.shared.table;
 
 import java.awt.Point;
 import java.awt.Rectangle;

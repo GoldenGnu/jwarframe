@@ -22,6 +22,8 @@
 package net.nikr.warframe.io.shared;
 
 import java.util.Date;
+import java.util.List;
+import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.reward.RewardID;
 
 
@@ -52,7 +54,7 @@ public class StringProcessor {
 		}
 	}
 
-	protected RewardID getReward(String loot) {
+	protected RewardID getRewardID(String loot) {
 		if (loot == null) {
 			return null;
 		}
@@ -66,5 +68,19 @@ public class StringProcessor {
 		} else {
 			return new RewardID(reward);
 		}
+	}
+
+	protected Category getCategory(RewardID rewardID, List<Category> categories) {
+		if (rewardID == null) {
+			return null;
+		}
+		for (Category category : categories) {
+			for (RewardID reward : category.getRewards()) {
+				if (rewardID.equals(reward)) {
+					return category;
+				}
+			}
+		}
+		return null;
 	}
 }

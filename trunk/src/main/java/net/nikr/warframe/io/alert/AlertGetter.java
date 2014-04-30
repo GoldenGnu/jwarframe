@@ -21,10 +21,10 @@
 package net.nikr.warframe.io.alert;
 
 import java.util.List;
-import net.nikr.warframe.io.shared.StringGetter;
+import net.nikr.warframe.io.shared.ListGetter;
 
 
-public class AlertGetter extends StringGetter {
+public class AlertGetter extends ListGetter {
 
 	public List<String> get() {
 		return get("http://deathsnacks.com/wf/data/alerts_raw.txt");

@@ -24,6 +24,7 @@ package net.nikr.warframe.gui.alert;
 import ca.odell.glazedlists.matchers.Matcher;
 import java.util.HashSet;
 import java.util.Set;
+import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.io.alert.Alert;
 
 
@@ -51,45 +52,60 @@ public class AlertMatcher implements Matcher<Alert> {
 	public boolean matches(Alert alert) {
 		//Ignore credits
 		if (alert.isDone()) {
+			alert.setMatch(false);
 			return false;
 		}
 		if (!alert.hasLoot()) {
 			if (credits == 1 && alert.getCredits() < 3000) { //3K
+				alert.setMatch(false);
 				return false;
 			}
 			if (credits == 2 && alert.getCredits() < 5000) { //5K
+				alert.setMatch(false);
 				return false;
 			}
 			if (credits == 3 && alert.getCredits() < 7000) { //7K
+				alert.setMatch(false);
 				return false;
 			}
 			if (credits == 4 && alert.getCredits() < 10000) { //10K
+				alert.setMatch(false);
 				return false;
 			}
 			if (credits == 5) { //No credits
+				alert.setMatch(false);
 				return false;
 			}
 		}
-		//Ignore Blueprints
-		if (!blueprints && alert.isBlueprint()) {
-			return false;
-		}
-		//Ignore Mods
-		if (!mods && alert.isMod()) {
-			return false;
-		}
-		//Ignore Aura
-		if (!auras && alert.isAura()) {
-			return false;
-		}
-		//Ignore Resources
-		if (!resources && alert.isResource()) {
-			return false;
+		//Ignore Category
+		Category category = alert.getCategory();
+		if (category != null) {
+			if (!blueprints && category.getType().isBlueprint()) {
+				alert.setMatch(false);
+				return false;
+			}
+			//Ignore Mods
+			if (!mods && category.getType().isMod()) {
+				alert.setMatch(false);
+				return false;
+			}
+			//Ignore Aura
+			if (!auras && category.getType().isAura()) {
+				alert.setMatch(false);
+				return false;
+			}
+			//Ignore Resources
+			if (!resources && category.getType().isResource()) {
+				alert.setMatch(false);
+				return false;
+			}
 		}
 		//Ignore
 		if (filter && alert.hasLoot() && filters.contains(alert.getRewordID().getName())) {
+			alert.setMatch(false);
 			return false;
 		}
+		alert.setMatch(true);
 		return true;
 	}
 	

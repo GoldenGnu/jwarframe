@@ -37,6 +37,7 @@ public enum Images {
 	LINK ("link.png"),
 	INVASION ("invasion.png"),
 	ALERT ("alert.png"),
+	SETTINGS ("settings.png"),
 	CORPUS ("corpus.png"),
 	GRINEER ("grineer.png"),
 	INFESTATION ("infestation.png"),

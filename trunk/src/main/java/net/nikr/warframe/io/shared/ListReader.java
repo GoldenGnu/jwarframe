@@ -19,14 +19,38 @@
  *
  */
 
-package net.nikr.warframe.gui.shared;
+package net.nikr.warframe.io.shared;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public interface NotifyListener {
-	public enum NotifySource {
-		ALERTS,
-		INVASIONS
+public class ListReader {
+
+	public List<String> load(File file) {
+		List<String> strings = new ArrayList<String>();
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new FileReader(file));
+			String str;
+			while ((str = in.readLine()) != null) {
+				strings.add(str);
+			}
+		} catch (IOException e) {
+			
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException ex) {
+					
+				}
+			}
+		}
+		return strings;
 	}
-	public void stopNotify();
-	public void startNotify(int count, NotifySource source);
 }

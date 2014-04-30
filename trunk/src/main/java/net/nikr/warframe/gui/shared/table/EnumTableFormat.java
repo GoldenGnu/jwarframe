@@ -21,7 +21,7 @@
  *
  */
 
-package net.nikr.warframe.gui.shared;
+package net.nikr.warframe.gui.shared.table;
 
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;

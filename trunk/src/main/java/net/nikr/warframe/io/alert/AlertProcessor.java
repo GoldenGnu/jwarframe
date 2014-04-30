@@ -60,7 +60,7 @@ public class AlertProcessor extends StringProcessor {
 		alert.setCredits(getCredits(reward));
 		String loot = getLoot(reward);
 		alert.setLoot(loot);
-		RewardID rewardID = getReward(loot);
+		RewardID rewardID = getRewardID(loot);
 		alert.setCategory(getCategory(rewardID, categories));
 		alert.setRewardID(rewardID);
 		alert.setDescription(getString(arr, ++count));
@@ -87,19 +87,4 @@ public class AlertProcessor extends StringProcessor {
 			return null;
 		}
 	}
-
-	private Category getCategory(RewardID rewardID, List<Category> categories) {
-		if (rewardID == null) {
-			return null;
-		}
-		for (Category category : categories) {
-			for (RewardID reward : category.getRewards()) {
-				if (rewardID.equals(reward)) {
-					return category;
-				}
-			}
-		}
-		return null;
-	}
-	
 }

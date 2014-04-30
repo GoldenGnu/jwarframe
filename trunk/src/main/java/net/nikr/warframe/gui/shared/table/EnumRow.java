@@ -3,6 +3,8 @@
  *
  * This file is part of jWarframe.
  *
+ * Original code from jEveAssets (https://code.google.com/p/jeveassets/)
+ *
  * jWarframe is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -19,25 +21,17 @@
  *
  */
 
-package net.nikr.warframe.io.shared;
+package net.nikr.warframe.gui.shared.table;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Set;
+import java.util.Comparator;
 
 
-public class StringWriter {
-	public void save(Set<String> strings, File file) {
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(file));
-			for (String string : strings) {
-				out.write(string);
-				out.write("\r\n");
-			}
-			out.close();
-		} catch (IOException e) {
-		}
-	}
+public interface EnumRow<E> {
+	public Class getColumnClass();
+	public Comparator getColumnComparator();
+	public String getColumnName();
+	public Object getColumnValue(E e);
+	public String name(Enum e);
+	public boolean isEditable(E e);
+	public E setColumnValue(E e, Object o);
 }

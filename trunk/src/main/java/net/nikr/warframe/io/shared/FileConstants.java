@@ -23,6 +23,7 @@ package net.nikr.warframe.io.shared;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import net.nikr.warframe.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,19 +32,14 @@ public class FileConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileConstants.class);
 
-	private static boolean portable = false;
-
 	private static final String IMAGES = "images" + File.separator;
 	private static final String DATA_LOCAL = "data" + File.separator + "data_";
+	private static final String SETTINGS_LOCAL = "settings" + File.separator;
 	private static final String DATA_ONLINE = "http://warframe.nikr.net/jwarframe/data_";
 	private static final String IMAGES_ONLINE = "http://warframe.nikr.net/jwarframe/images/";
 
-	public static void setPortable(boolean portable) {
-		FileConstants.portable = portable;
-	}
-
 	public static File getImageLocal(String filename) {
-		return new File(getLocalFile(IMAGES + filename));
+		return new File(getLocalFile(IMAGES + filename, Main.isPortable()));
 	}
 
 	public static String getImageOnline(String filename) {
@@ -51,15 +47,15 @@ public class FileConstants {
 	}
 
 	public static File getDataDirectory() {
-		return new File(FileConstants.getLocalFile(FileConstants.DATA_LOCAL));
+		return new File(FileConstants.getLocalFile(FileConstants.DATA_LOCAL, Main.isPortable()));
 	}
 
 	public static File getImageDirectory() {
-		return new File(FileConstants.getLocalFile(FileConstants.IMAGES));
+		return new File(FileConstants.getLocalFile(FileConstants.IMAGES, Main.isPortable()));
 	}
 
 	public static File getCategoryLocal(String filename) {
-		return new File(getLocalFile(DATA_LOCAL + filename));
+		return new File(getLocalFile(DATA_LOCAL + filename, Main.isPortable()));
 	}
 
 	public static String getCategoryOnline(String filename) {
@@ -67,7 +63,7 @@ public class FileConstants {
 	}
 
 	public static File getCategoriesLocal() {
-		return new File(getLocalFile(DATA_LOCAL + "categories.dat"));
+		return new File(getLocalFile(DATA_LOCAL + "categories.dat", Main.isPortable()));
 	}
 
 	public static String getCategoriesOnline() {
@@ -75,19 +71,31 @@ public class FileConstants {
 	}
 
 	public static File getFilters() {
-		return new File(getLocalFile("filters.dat"));
+		return new File(getLocalFile(SETTINGS_LOCAL + "filters.dat", Main.isPortable()));
 	}
 
 	public static File getSettings() {
-		return new File(getLocalFile("settings.dat"));
+		return new File(getLocalFile(SETTINGS_LOCAL + "settings.dat", Main.isPortable()));
 	}
 
 	public static File getDone() {
-		return new File(getLocalFile("done.dat"));
+		return new File(getLocalFile(SETTINGS_LOCAL + "done.dat", Main.isPortable()));
 	}
 
 	public static File getVersionLocal() {
-		return new File(getLocalFile(DATA_LOCAL + "version.dat"));
+		return new File(getLocalFile(DATA_LOCAL + "version.dat", Main.isPortable()));
+	}
+
+	public static File getJar() {
+		return new File(getLocalFile("jwarframe.jar", true));
+	}
+
+	public static File getBat() {
+		return new File(getLocalFile("jwarframe.bat", true));
+	}
+
+	public static File getHome() {
+		return new File(getLocalFile("", true));
 	}
 
 	public static String getVersionOnline() {
@@ -108,22 +116,22 @@ public class FileConstants {
 		folder.delete();
 	}
 
-	private static String getLocalFile(final String filename) {
-		LOG.debug("Looking for file: {} dynamic: {}", filename, portable);
+	private static String getLocalFile(final String filename, boolean portable) {
+		LOG.debug("Looking for file: {} portable: {}", filename, portable);
 		try {
 			File file;
 			File ret;
 			if (!portable) {
 				File userDir = new File(System.getProperty("user.home", "."));
-				if (onMac()) { // preferences are stored in user.home/Library/Preferences
+				if (Main.isMac()) { // preferences are stored in user.home/Library/Preferences
 					file = new File(userDir, "Library/Preferences/jWarframe");
 				} else {
 					file = new File(userDir.getAbsolutePath() + File.separator + ".jwarframe");
 				}
 				ret = new File(file.getAbsolutePath() + File.separator + filename);
-				
+
 			} else {
-				file = new File(net.nikr.warframe.Program.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+					file = new File(net.nikr.warframe.Program.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
 				ret = new File(file.getAbsolutePath() + File.separator + filename);
 			}
 			File parent;
@@ -139,12 +147,8 @@ public class FileConstants {
 			return ret.getAbsolutePath();
 		} catch (URISyntaxException ex) {
 			LOG.error("Failed to get program directory: Please email the latest error.txt in the logs directory to niklaskr@gmail.com", ex);
-		}
-		return null;
 	}
-
-	private static boolean onMac() {
-		return System.getProperty("os.name").toLowerCase().startsWith("mac os x");
+		return null;
 	}
 
 	private synchronized static void makeDirectory(File file) {
