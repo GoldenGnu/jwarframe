@@ -22,11 +22,8 @@
 package net.nikr.warframe.gui.invasion;
 
 import ca.odell.glazedlists.GlazedLists;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
-import net.nikr.warframe.gui.shared.EnumRow;
+import net.nikr.warframe.gui.shared.table.EnumRow;
 import net.nikr.warframe.io.invasion.Invasion;
 import net.nikr.warframe.io.invasion.Invasion.InvasionPercentage;
 
@@ -101,7 +98,6 @@ public enum InvasionTableFormat implements EnumRow<Invasion> {
 		}
 	};
 
-	private static final List<InvasionTableFormat> COLUMNS = new ArrayList<InvasionTableFormat>(Arrays.asList(InvasionTableFormat.values()));
 	private final Class columnClass;
 	private final String columnName;
 	private final Comparator columnComparator;
@@ -144,9 +140,5 @@ public enum InvasionTableFormat implements EnumRow<Invasion> {
 	@Override
 	public Invasion setColumnValue(Invasion e, Object o) {
 		return null;
-	}
-
-	public final static int indexOf(InvasionTableFormat input) {
-		return COLUMNS.indexOf(input);
 	}
 }

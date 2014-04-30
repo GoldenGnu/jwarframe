@@ -62,7 +62,7 @@ public class RewardTool implements Tool {
 	private static final Color BACKGROUND_COLOR = Color.BLACK;
 
 	private final JPanel jPanel;
-	private final JPanelMaxWidth jItems;
+	private final JPanelDynamicGrid jItems;
 	private final JRadioButton jAll;
 	private final JRadioButton jMissing;
 	private final JRadioButton jGot;
@@ -103,7 +103,7 @@ public class RewardTool implements Tool {
 		jCount = new JLabel();
 
 		jAll = createRadioButton("All");
-		jMissing = createRadioButton("Alert");
+		jMissing = createRadioButton("Notify");
 		jGot = createRadioButton("Ignore");
 
 		JLabel jHelp = new JLabel("Right click to show options");
@@ -115,12 +115,9 @@ public class RewardTool implements Tool {
 
 		jAll.setSelected(true);
 
-		jItems = new JPanelMaxWidth();
+		jItems = new JPanelDynamicGrid();
 		jItems.setBackground(BACKGROUND_COLOR);
 		jItems.setBorder(BorderFactory.createMatteBorder(BORDER_WIDTH, BORDER_WIDTH, 0, 0, BORDER_COLOR));
-		GridLayout experimentLayout = new GridLayout(0, 5, 0, 0);
-		//FlowLayout experimentLayout = new FlowLayout(FlowLayout.LEFT, 5, 35);
-		jItems.setLayout(experimentLayout);
 
 		JPanel jItemsPanel = new JPanel();
 		jItemsPanel.setBackground(BACKGROUND_COLOR);
@@ -137,7 +134,6 @@ public class RewardTool implements Tool {
 		);
 
 		JScrollPane jItemsScroll = new JScrollPane(jItemsPanel);
-		jItems.setScroll(jItemsScroll);
 		jItemsScroll.getVerticalScrollBar().setUnitIncrement(16);
 
 		layout.setHorizontalGroup(
@@ -275,15 +271,15 @@ public class RewardTool implements Tool {
 		jPopupMenu.add(jLink);
 
 		//Alert or Ignored
-		JCheckBoxMenuItem jAlert = new JCheckBoxMenuItem("Alert");
-		jAlert.setSelected(!program.getFilters().contains(reward.getName()));
-		jAlert.addActionListener(new ActionListener() {
+		JCheckBoxMenuItem jNotify = new JCheckBoxMenuItem("Notify");
+		jNotify.setSelected(!program.getFilters().contains(reward.getName()));
+		jNotify.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				program.getFiltersTool().toggle(reward.getName());
 			}
 		});
-		jPopupMenu.add(jAlert);
+		jPopupMenu.add(jNotify);
 
 		jPopupMenu.show(jLabel, e.getX(), e.getY());
 	}

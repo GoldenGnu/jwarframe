@@ -60,13 +60,13 @@ import javax.swing.event.TableModelListener;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.settings.SettingsConstants;
-import net.nikr.warframe.gui.shared.AlertListener;
 import net.nikr.warframe.gui.shared.DesktopUtil;
-import net.nikr.warframe.gui.shared.EnumTableFormat;
-import net.nikr.warframe.gui.shared.EventModels;
-import net.nikr.warframe.gui.shared.NotifyListener.NotifySource;
-import net.nikr.warframe.gui.shared.PaddingTableCellRenderer;
 import net.nikr.warframe.gui.shared.Tool;
+import net.nikr.warframe.gui.shared.listeners.AlertListener;
+import net.nikr.warframe.gui.shared.listeners.NotifyListener.NotifySource;
+import net.nikr.warframe.gui.shared.table.EnumTableFormat;
+import net.nikr.warframe.gui.shared.table.EventModels;
+import net.nikr.warframe.gui.shared.table.PaddingTableCellRenderer;
 import net.nikr.warframe.io.alert.Alert;
 
 
@@ -111,7 +111,7 @@ public class AlertTool implements AlertListener, Tool {
 				showList.setMatcher(null);
 			}
 		});
-		jShowFiltered = new JRadioButton("Matching");
+		jShowFiltered = new JRadioButton("Notify");
 		jShowFiltered.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -159,11 +159,12 @@ public class AlertTool implements AlertListener, Tool {
 			}
 		});
 		filterComponents.add(jCredits);
-
+		//Category
 		jBlueprints = createCheckBox("Blueprints", SettingsConstants.ALERT_BLUEPRINT);
 		jMods = createCheckBox("Mods", SettingsConstants.ALERT_MOD);
 		jAuras = createCheckBox("Auras", SettingsConstants.ALERT_AURA);
 		jResources = createCheckBox("Resources", SettingsConstants.ALERT_RESOURCE);
+		//Filter
 		jFilters = createCheckBox("Filters", SettingsConstants.ALERT_FILTERS);
 
 		JToggleButton jShowFilters = new JToggleButton("Filters");
@@ -265,10 +266,12 @@ public class AlertTool implements AlertListener, Tool {
 					.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 					.addGroup(layout.createSequentialGroup()
 						.addComponent(jCredits)
+						.addGap(20)
 						.addComponent(jBlueprints)
 						.addComponent(jMods)
 						.addComponent(jAuras)
 						.addComponent(jResources)
+						.addGap(20)
 						.addComponent(jFilters)
 					)
 				)
@@ -283,7 +286,7 @@ public class AlertTool implements AlertListener, Tool {
 
 	@Override
 	public String getToolTip() {
-		return "Alerts";
+		return null;
 	}
 
 	@Override
@@ -309,7 +312,6 @@ public class AlertTool implements AlertListener, Tool {
 
 	@Override
 	public void addAlerts(List<Alert> alerts) {
-		boolean first = eventList.isEmpty();
 		List<Alert> cache = new ArrayList<Alert>(filterList);
 
 		Set<Alert> all = new TreeSet<Alert>(eventList);
@@ -323,16 +325,14 @@ public class AlertTool implements AlertListener, Tool {
 			eventList.getReadWriteLock().writeLock().unlock();
 		}
 
-		if (!first) {
-			int count = 0;
-			for (Alert alert : filterList) {
-				if (!cache.contains(alert)) {
-					count++;
-				}
+		int count = 0;
+		for (Alert alert : filterList) {
+			if (!cache.contains(alert)) {
+				count++;
 			}
-			if (count > 0) {
-				program.startNotify(count, NotifySource.ALERTS);
-			}
+		}
+		if (count > 0) {
+			program.startNotify(count, NotifySource.ALERTS);
 		}
 		updateIgnored();
 	}
@@ -363,7 +363,7 @@ public class AlertTool implements AlertListener, Tool {
 
 	private JCheckBox createCheckBox(String title, SettingsConstants settings) {
 		JCheckBox jCheckBox = new JCheckBox(title);
-		jCheckBox.setSelected(program.getSettings(settings) || !program.getSettings(SettingsConstants.SETTINGS_SET));
+		jCheckBox.setSelected(program.getSettings(settings));
 		jCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

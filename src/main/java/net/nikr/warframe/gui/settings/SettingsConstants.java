@@ -23,23 +23,50 @@ package net.nikr.warframe.gui.settings;
 
 
 public enum SettingsConstants {
-	SETTINGS_SET,
-	ALERT_CREDIT_ALL,
-	ALERT_CREDIT_3K,
-	ALERT_CREDIT_5K,
-	ALERT_CREDIT_7K,
-	ALERT_CREDIT_10K,
-	ALERT_CREDIT_NONE,
-	ALERT_BLUEPRINT,
-	ALERT_MOD,
-	ALERT_AURA,
-	ALERT_RESOURCE,
-	ALERT_FILTERS,
-	INVASION_CREDITS_ALL,
-	INVASION_CREDITS_NONE,
-	INVASION_CREDITS_25K,
-	INVASION_CREDITS_35K,
-	INVASION_CORPUS,
-	INVASION_GRINEER,
-	INVASION_INFESTED,
+	SETTINGS_SET(0, true),
+	ALERT_CREDIT_ALL(0, true),
+	ALERT_CREDIT_3K(0, false),
+	ALERT_CREDIT_5K(0, false),
+	ALERT_CREDIT_7K(0, false),
+	ALERT_CREDIT_10K(0, false),
+	ALERT_CREDIT_NONE(0, false),
+	ALERT_BLUEPRINT(0, true),
+	ALERT_MOD(0, true),
+	ALERT_AURA(0, true),
+	ALERT_RESOURCE(0, true),
+	ALERT_FILTERS(0, true),
+	INVASION_CREDITS_ALL(0, true),
+	INVASION_CREDITS_NONE(0, false),
+	INVASION_CREDITS_25K(0, false),
+	INVASION_CREDITS_35K(0, false),
+	INVASION_CORPUS(0, true),
+	INVASION_GRINEER(0, true),
+	INVASION_INFESTED(0, true),
+	INVASION_BLUEPRINT(1, true),
+	INVASION_MOD(1, true),
+	INVASION_AURA(1, true),
+	INVASION_RESOURCE(1, true),
+	INVASION_FILTERS(1, true),
+	LOGIN_REWARD(1, true),
+	NOTIFY_AUDIO(1, true);
+
+	private final int version;
+	private final boolean value ;
+
+	private SettingsConstants(int version, boolean value) {
+		this.version = version;
+		this.value = value;
+	}
+
+	public static int getSettingsVersion() {
+		return 1;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public boolean getValue() {
+		return value;
+	}
 }

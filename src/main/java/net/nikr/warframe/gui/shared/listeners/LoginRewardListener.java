@@ -19,43 +19,9 @@
  *
  */
 
-package net.nikr.warframe.io.shared;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+package net.nikr.warframe.gui.shared.listeners;
 
 
-public class StringGetter {
-
-	protected List<String> get(String link) {
-		BufferedReader in = null;
-		List<String> raw = new ArrayList<String>();
-		try {
-			URL url = new URL(link);
-
-			in = new BufferedReader(new InputStreamReader(url.openStream()));
-			String str;
-			while ((str = in.readLine()) != null) {
-				raw.add(str);
-			}
-		} catch (MalformedURLException e) {
-
-		} catch (IOException e) {
-			
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException ex) {
-					//I give up...
-				}
-			}
-		}
-		return raw;
-	}
+public interface LoginRewardListener {
+	public void addLoginReward(Boolean available);
 }

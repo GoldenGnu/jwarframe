@@ -46,6 +46,7 @@ public class Alert implements Comparable<Alert>{
 
 	private boolean ignored;
 	private boolean done;
+	private boolean match;
 
 	public Alert() { }
 
@@ -177,22 +178,18 @@ public class Alert implements Comparable<Alert>{
 		this.done = done;
 	}
 
+	public boolean isMatch() {
+		return match;
+	}
+
+	public void setMatch(boolean match) {
+		this.match = match;
+	}
+
 	public String getLocation() {
 		return node + " (" + region + ")";
 	}
 
-	public boolean isMod() {
-		return getCategoryName().toLowerCase().contains("mod");
-	}
-	public boolean isAura() {
-		return getCategoryName().toLowerCase().contains("aura");
-	}
-	public boolean isBlueprint() {
-		return getCategoryName().toLowerCase().contains("blueprint");
-	}
-	public boolean isResource() {
-		return getCategoryName().toLowerCase().contains("resource");
-	}
 	public boolean isExpired() {
 		return expiry.before(new Date());
 	}
@@ -217,21 +214,25 @@ public class Alert implements Comparable<Alert>{
 		long hours = time / (60 * 60 * 1000) % 24;
 		
 		long minutes = time / (60 * 1000) % 60;
-		if (minutes != 0) {
-			timeLeft = Math.abs(minutes) + " minute";
-			if (Math.abs(minutes) > 1) {
+		if (days != 0) {
+			timeLeft = timeLeft + Math.abs(days) + " day";
+			if (Math.abs(days) > 1) {
 				timeLeft = timeLeft + "s";
 			}
 		}
 		if (hours != 0) {
-			timeLeft = Math.abs(hours) + " hour";
+			timeLeft = timeLeft + Math.abs(hours) + " hour";
 			if (Math.abs(hours) > 1) {
 				timeLeft = timeLeft + "s";
 			}
 		}
-		if (days != 0) {
-			timeLeft = Math.abs(days) + " day";
-			if (Math.abs(days) > 1) {
+		
+		if (minutes != 0 && days == 0) { //Only show if less than one day
+			if (hours != 0) {
+				timeLeft = timeLeft + " ";
+			}
+			timeLeft = timeLeft + Math.abs(minutes) + " minute";
+			if (Math.abs(minutes) > 1) {
 				timeLeft = timeLeft + "s";
 			}
 		}

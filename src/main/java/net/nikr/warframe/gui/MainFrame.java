@@ -21,40 +21,58 @@
 
 package net.nikr.warframe.gui;
 
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.SystemTray;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
+import net.nikr.warframe.Main;
 import net.nikr.warframe.Program;
+import net.nikr.warframe.SplashUpdater;
 import net.nikr.warframe.gui.images.Images;
-import net.nikr.warframe.gui.shared.NotifyListener;
+import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.shared.Tool;
+import net.nikr.warframe.gui.shared.listeners.LoginRewardListener;
+import net.nikr.warframe.gui.shared.listeners.NotifyListener;
 
 
-public class MainFrame implements NotifyListener {
-	private final JFrame jFrame;
-	private final JTabbedPane jTabs;
+public class MainFrame implements NotifyListener, LoginRewardListener {
+
+	private final int defaultDismissTimeout = ToolTipManager.sharedInstance().getDismissDelay();
+	private final int defaultInitialDelay = ToolTipManager.sharedInstance().getInitialDelay();
 	private final List<Image> active = Arrays.asList(Images.PROGRAM_16.getImage(), Images.PROGRAM_32.getImage(), Images.PROGRAM_64.getImage());
 	private final List<Image> passive = Arrays.asList(Images.PROGRAM_DISABLED_16.getImage(), Images.PROGRAM_DISABLED_32.getImage(), Images.PROGRAM_DISABLED_64.getImage());
+	
+	private final JFrame jFrame;
+	private final JTabbedPane jTabs;
+	private final JLabel jLoginReward;
 
 	private final Program program;
 
 	private boolean alarm = false;
 	private int alerts = 0;
 	private int invasions = 0;
+	private boolean login;
 
 	public MainFrame(Program program) {
 		this.program = program;
 		
 		this.jFrame = new JFrame(Program.PROGRAM_NAME + " " + Program.PROGRAM_VERSION);
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jFrame.setSize(850, 600);
 		jFrame.setIconImages(active);
 		jFrame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -76,12 +94,71 @@ public class MainFrame implements NotifyListener {
 				jFrame.setIconImages(active);
 			}
 		});
+
+		JPanel jPanel = new JPanel();
+		GroupLayout layout = new GroupLayout(jPanel);
+		jPanel.setLayout(layout);
+		layout.setAutoCreateGaps(false);
+		layout.setAutoCreateContainerGaps(false);
+		
 		jTabs = new JTabbedPane();
-		jFrame.getContentPane().add(jTabs);
+		jTabs.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent me) {
+				ToolTipManager.sharedInstance().setDismissDelay(60000);
+				ToolTipManager.sharedInstance().setInitialDelay(0);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent me) {
+				ToolTipManager.sharedInstance().setDismissDelay(defaultDismissTimeout);
+				ToolTipManager.sharedInstance().setInitialDelay(defaultInitialDelay);
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				MouseEvent phantom = new MouseEvent(jTabs, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, e.getX(), e.getY(), 0, false);
+				ToolTipManager.sharedInstance().mouseMoved(phantom);
+			}
+		});
+
+		JPanel jStatusBar = new JPanel();
+		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEADING);
+		jStatusBar.setLayout(flowLayout);
+
+		jLoginReward = new JLabel("Login Reward");
+		jLoginReward.setOpaque(true);
+		jLoginReward.setBorder(
+				BorderFactory.createCompoundBorder(
+					BorderFactory.createLineBorder(Color.BLACK, 1)
+					, BorderFactory.createEmptyBorder(2, 5, 2, 5))
+				);
+		jStatusBar.add(jLoginReward);
+
+		layout.setHorizontalGroup(
+			layout.createParallelGroup()
+				.addComponent(jTabs, 600, 600, Integer.MAX_VALUE)
+				.addComponent(jStatusBar, 0, 0, Integer.MAX_VALUE)
+		);
+		layout.setVerticalGroup(
+			layout.createSequentialGroup()
+				.addComponent(jTabs, 450, 450, Integer.MAX_VALUE)
+				.addComponent(jStatusBar, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+		);
+		jFrame.getContentPane().add(jPanel);
 	}
 
 	public void show() {
-		jFrame.setVisible(true);
+		//Find minimum size
+		jFrame.pack();
+		jFrame.setMinimumSize(jFrame.getSize());
+		jFrame.setSize(850, 600);
+
+		if (Main.isStartup()) {
+			SplashUpdater.hide();
+		} else {
+			jFrame.setVisible(true);
+		}
 	}
 
 	public void add(Tool tool) {
@@ -118,15 +195,14 @@ public class MainFrame implements NotifyListener {
 			alerts = alerts + count;
 		} else if (source == NotifySource.INVASIONS) {
 			invasions = invasions + count;
+		} else if (source == NotifySource.LOGIN_REWARD) {
+			login = true;
 		}
 		alarm = true;
 		updateIcons();
 	}
 
 	private void showWindow() {
-		if (alerts == 0 && invasions == 0) {
-			return;
-		}
 		//Finish current event chain...
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -151,7 +227,15 @@ public class MainFrame implements NotifyListener {
 						builder.append("s");
 					}
 				}
-				builder.append(" found");
+				if (alerts > 0 || invasions > 0) {
+					builder.append(" found");
+				}
+				if (login) {
+					if (alerts > 0 || invasions > 0) {
+						builder.append("\r\n");
+					}
+					builder.append("Login Reward Available");
+				}
 				JOptionPane.showMessageDialog(jFrame, builder.toString(), "Beep", JOptionPane.PLAIN_MESSAGE);
 				alerts = 0;
 				invasions = 0;
@@ -164,6 +248,17 @@ public class MainFrame implements NotifyListener {
 			jFrame.setIconImages(active);
 		} else {
 			jFrame.setIconImages(passive);
+		}
+	}
+
+	@Override
+	public void addLoginReward(Boolean available) {
+		if (available == null) {
+			jLoginReward.setBackground(Category.CategoryType.GRAY.getColor(false));
+		} else if (available) {
+			jLoginReward.setBackground(Category.CategoryType.GREEN.getColor(false));
+		} else {
+			jLoginReward.setBackground(Category.CategoryType.RED.getColor(false));
 		}
 	}
 }

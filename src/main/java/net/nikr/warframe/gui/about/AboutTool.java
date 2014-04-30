@@ -70,12 +70,8 @@ public class AboutTool implements Tool {
 				+ "<b>License</b><br>"
 				+ "&nbsp;<a href=\"http://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU General Public License 2.0</a><br>"
 				+ "<br>"
-				/*
 				+ "<b>www</b><br>"
-				+ "&nbsp;<a href=\"" + Program.PROGRAM_HOMEPAGE + "\">Homepage</a> (download and source)<br>"
-				+ "&nbsp;<a href=\"http://code.google.com/p/jeveassets/\">Google Code Project</a> (developers)<br>"
-				+ "&nbsp;<a href=\"https://forums.eveonline.com/default.aspx?g=posts&t=6419\">Forum Thread</a> (feedback)<br>"
-				*/
+				+ "&nbsp;<a href=\"https://code.google.com/p/jwarframe/\">Google Code Project</a> (developers)<br>"
 				+ "<br>"
 				+ "<br>"
 				);
@@ -98,9 +94,6 @@ public class AboutTool implements Tool {
 				
 						  /*
 				+ "&nbsp;<a href=\"" + Program.PROGRAM_HOMEPAGE + "\">OSXAdapter</a> (native mac os x support)<br>"
-				+ "&nbsp;<a href=\"" + Program.PROGRAM_HOMEPAGE + "\">Pricing</a> (parsing price data api)<br>"
-				+ "&nbsp;<a href=\"" + Program.PROGRAM_HOMEPAGE + "\">Routing</a> (routing tool)<br>"
-				+ "&nbsp;<a href=\"" + Program.PROGRAM_HOMEPAGE + "\">Translations</a> (i18n)<br>"
 		*/
 				//+ "<br>"
 				);

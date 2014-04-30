@@ -32,15 +32,15 @@ public class AlertSettings {
 	private final boolean mods;
 	private final boolean auras;
 	private final boolean resources;
-	private final boolean filters;
+	private final boolean filter;
 
-	public AlertSettings(int credits, boolean blueprints, boolean mods, boolean auras, boolean resources, boolean filters) {
+	public AlertSettings(int credits, boolean blueprints, boolean mods, boolean auras, boolean resources, boolean filter) {
 		this.credits = credits;
 		this.blueprints = blueprints;
 		this.mods = mods;
 		this.auras = auras;
 		this.resources = resources;
-		this.filters = filters;
+		this.filter = filter;
 	}
 
 	public Set<SettingsConstants> getSettings() {
@@ -71,7 +71,7 @@ public class AlertSettings {
 			settings.add(SettingsConstants.ALERT_RESOURCE);
 		}
 		//Filters
-		if (filters) {
+		if (filter) {
 			settings.add(SettingsConstants.ALERT_FILTERS);
 		}
 		return settings;

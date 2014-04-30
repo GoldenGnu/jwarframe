@@ -19,7 +19,7 @@
  *
  */
 
-package net.nikr.warframe.gui.shared;
+package net.nikr.warframe.gui.shared.listeners;
 
 import java.util.List;
 import net.nikr.warframe.io.alert.Alert;

@@ -22,11 +22,8 @@
 package net.nikr.warframe.gui.alert;
 
 import ca.odell.glazedlists.GlazedLists;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
-import net.nikr.warframe.gui.shared.EnumRow;
+import net.nikr.warframe.gui.shared.table.EnumRow;
 import net.nikr.warframe.io.alert.Alert;
 import net.nikr.warframe.io.alert.Alert.Mission;
 
@@ -109,7 +106,7 @@ public enum AlertTableFormat implements EnumRow<Alert> {
 			return true;
 		}
 	};
-	private static final List<AlertTableFormat> COLUMNS = new ArrayList<AlertTableFormat>(Arrays.asList(AlertTableFormat.values()));
+
 	private final Class columnClass;
 	private final String columnName;
 	private final Comparator columnComparator;
@@ -154,7 +151,4 @@ public enum AlertTableFormat implements EnumRow<Alert> {
 		return null;
 	}
 
-	public final static int indexOf(AlertTableFormat input) {
-		return COLUMNS.indexOf(input);
-	}
 }

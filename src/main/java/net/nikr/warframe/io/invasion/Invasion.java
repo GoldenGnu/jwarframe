@@ -22,6 +22,7 @@
 package net.nikr.warframe.io.invasion;
 
 import java.util.Date;
+import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.reward.RewardID;
 import net.nikr.warframe.io.shared.Faction;
 
@@ -34,12 +35,14 @@ public class Invasion implements Comparable<Invasion> {
 	private String invadingMissionType = null;
 	private String invadingReward = null;
 	private RewardID invadingRewardID = null;
+	private Category invadingCategory = null;
 	private Integer invadingCredits = null;
 	private String invadingLevelRange = null;
 	private String defendingFaction = null;
 	private String defendingMissionType = null;
 	private String defendingReward = null;
 	private RewardID defendingRewardID = null;
+	private Category defendingCategory = null;
 	private Integer defendingCredits = null;
 	private String defendingLevelRange = null;
 	private Date activationTime = null;
@@ -111,6 +114,14 @@ public class Invasion implements Comparable<Invasion> {
 		this.invadingRewardID = invadingRewardID;
 	}
 
+	public Category getInvadingCategory() {
+		return invadingCategory;
+	}
+
+	public void setInvadingCategory(Category invadingCategory) {
+		this.invadingCategory = invadingCategory;
+	}
+
 	public Integer getInvadingCredits() {
 		return invadingCredits;
 	}
@@ -160,6 +171,14 @@ public class Invasion implements Comparable<Invasion> {
 
 	public void setDefendingRewardID(RewardID defendingRewardID) {
 		this.defendingRewardID = defendingRewardID;
+	}
+
+	public Category getDefendingCategory() {
+		return defendingCategory;
+	}
+
+	public void setDefendingCategory(Category defendingCategory) {
+		this.defendingCategory = defendingCategory;
 	}
 
 	public Integer getDefendingCredits() {

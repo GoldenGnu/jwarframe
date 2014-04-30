@@ -35,27 +35,30 @@ import javax.swing.JFrame;
 import net.nikr.warframe.gui.MainFrame;
 import net.nikr.warframe.gui.about.AboutTool;
 import net.nikr.warframe.gui.alert.AlertTool;
-import net.nikr.warframe.gui.audio.AudioPlayer;
+import net.nikr.warframe.gui.audio.AudioTool;
 import net.nikr.warframe.gui.filters.FiltersTool;
 import net.nikr.warframe.gui.invasion.InvasionTool;
 import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.reward.RewardID;
 import net.nikr.warframe.gui.reward.RewardTool;
 import net.nikr.warframe.gui.settings.SettingsConstants;
-import net.nikr.warframe.gui.shared.AlertListener;
+import net.nikr.warframe.gui.settings.SettingsTool;
+import net.nikr.warframe.gui.shared.listeners.AlertListener;
 import net.nikr.warframe.gui.shared.InvasionListener;
-import net.nikr.warframe.gui.shared.NotifyListener;
-import net.nikr.warframe.gui.shared.NotifyListener.NotifySource;
+import net.nikr.warframe.gui.shared.listeners.NotifyListener;
+import net.nikr.warframe.gui.shared.listeners.NotifyListener.NotifySource;
 import net.nikr.warframe.gui.shared.Tool;
+import net.nikr.warframe.gui.shared.listeners.LoginRewardListener;
 import net.nikr.warframe.gui.tray.TrayTool;
 import net.nikr.warframe.io.alert.Alert;
 import net.nikr.warframe.io.invasion.Invasion;
+import net.nikr.warframe.io.run.AutoRun;
 import net.nikr.warframe.io.shared.DataUpdater;
 import net.nikr.warframe.io.shared.FileConstants;
 import net.nikr.warframe.io.shared.ImageGetter;
 import net.nikr.warframe.io.shared.RewardsGetter;
-import net.nikr.warframe.io.shared.StringReader;
-import net.nikr.warframe.io.shared.StringWriter;
+import net.nikr.warframe.io.shared.ListReader;
+import net.nikr.warframe.io.shared.ListWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +71,7 @@ public class Program {
 
 	private final List<InvasionListener> invasionListeners = new ArrayList<InvasionListener>();
 	private final List<AlertListener> alertListeners = new ArrayList<AlertListener>();
+	private final List<LoginRewardListener> loginRewardListeners = new ArrayList<LoginRewardListener>();
 	private final List<NotifyListener> notifyListeners = new ArrayList<NotifyListener>();
 	private final List<Tool> tools = new ArrayList<Tool>();
 	private final List<RewardTool> inventories = new ArrayList<RewardTool>();
@@ -76,24 +80,35 @@ public class Program {
 	private final InvasionTool invasionTool;
 	private final TrayTool trayTool;
 	private final FiltersTool filtersTool;
-	
+
 
 	private final List<Category> categories;
 	private final Set<String> filters;
 	private final Set<RewardID> rewards = new TreeSet<RewardID>();
 	private final Set<String> done = new TreeSet<String>();
-	private final Set<SettingsConstants> settings = EnumSet.noneOf(SettingsConstants.class);;
+	private final Set<SettingsConstants> settings = EnumSet.noneOf(SettingsConstants.class);
+
+	private int settingsVersion = 0;
 
 	public Program() {
 		//Static Data
 		SplashUpdater.setText("Loading DATA");
+		//
 		RewardsGetter rewardsGetter = new RewardsGetter();
 		rewardsGetter.checkUpdates();
+	//LOCAL
+		//AutoRun
+		AutoRun.update();
+		//Filters
 		filters = loadFilters();
+		//Categories
 		categories = loadCategories();
+		//Done
 		loadDone();
+		//Settings
 		loadSettings();
 		SplashUpdater.setProgress(5);
+		//Images
 		downloadImages();
 		
 
@@ -112,7 +127,7 @@ public class Program {
 		mainFrame.add(invasionTool);
 		SplashUpdater.setProgress(15);
 
-		AudioPlayer audioPlayer = new AudioPlayer();
+		AudioTool audioTool = new AudioTool(this);
 		SplashUpdater.setProgress(20);
 
 		float add = 60 / categories.size();
@@ -132,6 +147,10 @@ public class Program {
 		filtersTool = new FiltersTool(this);
 		tools.add(filtersTool);
 		mainFrame.add(filtersTool);
+
+		SettingsTool settingsTool = new SettingsTool(this);
+		tools.add(settingsTool);
+		mainFrame.add(settingsTool);
 		SplashUpdater.setProgress(85);
 
 		mainFrame.add(new AboutTool(this));
@@ -141,10 +160,11 @@ public class Program {
 		SplashUpdater.setProgress(95);
 
 		addAlertListener(alertTool);
-		addNotifyListener(audioPlayer);
+		addNotifyListener(audioTool);
 		addNotifyListener(trayTool);
 		addNotifyListener(mainFrame);
 		addInvasionListener(invasionTool);
+		addLoginRewardListener(mainFrame);
 	}
 
 	public void start() {
@@ -164,6 +184,10 @@ public class Program {
 		invasionListeners.add(listener);
 	}
 
+	private void addLoginRewardListener(LoginRewardListener listener) {
+		loginRewardListeners.add(listener);
+	}
+
 	private void addNotifyListener(NotifyListener listener) {
 		notifyListeners.add(listener);
 	}
@@ -177,6 +201,12 @@ public class Program {
 	public void addInvasions(final List<Invasion> invasions) {
 		for (InvasionListener listener : invasionListeners) {
 			listener.addInvasions(invasions);
+		}
+	}
+
+	public void addLoginReward(final Boolean available) {
+		for (LoginRewardListener listener : loginRewardListeners) {
+			listener.addLoginReward(available);
 		}
 	}
 
@@ -208,25 +238,30 @@ public class Program {
 		}
 		alertTool.filter();
 		invasionTool.filter();
-		filtersTool.filter();
-		StringWriter writer = new StringWriter();
+		ListWriter writer = new ListWriter();
 		writer.save(filters, FileConstants.getFilters());
 	}
 
 	public void saveSettings() {
 		Set<String> settingsValues = new HashSet<String>();
+		settingsValues.add(String.valueOf(SettingsConstants.getSettingsVersion()));
 		settingsValues.add(SettingsConstants.SETTINGS_SET.name());
 		for (Tool tool : tools) {
 			for (SettingsConstants setting : tool.getSettings()) {
 				settingsValues.add(setting.name());
 			}
 		}
-		StringWriter writer = new StringWriter();
+		ListWriter writer = new ListWriter();
 		writer.save(settingsValues, FileConstants.getSettings());
 	}
 
 	public boolean getSettings(SettingsConstants constants) {
-		return settings.contains(constants);
+		if (settings.contains(SettingsConstants.SETTINGS_SET) //Settings is set
+				&& constants.getVersion() <= settingsVersion) { //Not new setting
+			return settings.contains(constants);
+		} else { //New setting or settings not set
+			return constants.getValue();
+		}
 	}
 
 	public Set<RewardID> getRewards() {
@@ -255,13 +290,18 @@ public class Program {
 
 	private void loadSettings() {
 		settings.clear();
-		StringReader reader = new StringReader();
+		ListReader reader = new ListReader();
 		for (String s : reader.load(FileConstants.getSettings())) {
 			try {
 				settings.add(SettingsConstants.valueOf(s));
 			} catch (IllegalArgumentException ex) {
-				LOG.warn(s + " removed from settings enum");
+				try {
+					settingsVersion = Integer.valueOf(s);
+				} catch (NumberFormatException exception) {
+					LOG.warn(s + " removed from settings enum");
+				}				
 			}
+			
 		}
 	}
 
@@ -270,13 +310,13 @@ public class Program {
 	}
 
 	private Set<String> loadFilters() {
-		StringReader reader = new StringReader();
+		ListReader reader = new ListReader();
 		return new HashSet<String>(reader.load(FileConstants.getFilters()));
 	}
 
 	private Set<RewardID> loadRewards(Category category) {
 		File file = FileConstants.getCategoryLocal(category.getFilename());
-		StringReader reader = new StringReader();
+		ListReader reader = new ListReader();
 		Set<RewardID> categoryRewards = new TreeSet<RewardID>();
 		for (String s :reader.load(file)) {
 			categoryRewards.add(new RewardID(s));
@@ -286,7 +326,7 @@ public class Program {
 
 	private List<Category> loadCategories() {
 		List<Category> categoryList = new ArrayList<Category>();
-		StringReader reader = new StringReader();
+		ListReader reader = new ListReader();
 		for (String s : reader.load(FileConstants.getCategoriesLocal())) {
 			Category category = new Category(s);
 			Set<RewardID> categoryRewards = loadRewards(category);
@@ -328,12 +368,12 @@ public class Program {
     }
 
 	private void saveDone() {
-		StringWriter writer = new StringWriter();
+		ListWriter writer = new ListWriter();
 		writer.save(done, FileConstants.getDone());
 	}
 
 	private void loadDone() {
-		StringReader reader = new StringReader();
+		ListReader reader = new ListReader();
 		List<String> list = reader.load(FileConstants.getDone());
 		done.addAll(list);
 	}

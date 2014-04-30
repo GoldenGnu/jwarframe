@@ -31,12 +31,22 @@ public class InvasionSettings {
 	private final boolean corpus;
 	private final boolean grineer;
 	private final boolean infested;
+	private final boolean blueprints;
+	private final boolean mods;
+	private final boolean auras;
+	private final boolean resources;
+	private final boolean filter;
 
-	public InvasionSettings(int credits, boolean corpus, boolean grineer, boolean infested) {
+	public InvasionSettings(int credits, boolean corpus, boolean grineer, boolean infested, boolean blueprints, boolean mods, boolean auras, boolean resources, boolean filter) {
 		this.credits = credits;
 		this.corpus = corpus;
 		this.grineer = grineer;
 		this.infested = infested;
+		this.blueprints = blueprints;
+		this.mods = mods;
+		this.auras = auras;
+		this.resources = resources;
+		this.filter = filter;
 	}
 
 	public Set<SettingsConstants> getSettings() {
@@ -59,6 +69,26 @@ public class InvasionSettings {
 		//Infested
 		if (infested) {
 			settings.add(SettingsConstants.INVASION_INFESTED);
+		}
+		//Blueprints
+		if (blueprints) {
+			settings.add(SettingsConstants.INVASION_BLUEPRINT);
+		}
+		//Mods
+		if (mods) {
+			settings.add(SettingsConstants.INVASION_MOD);
+		}
+		//Aura
+		if (auras) {
+			settings.add(SettingsConstants.INVASION_AURA);
+		}
+		//Resources
+		if (resources) {
+			settings.add(SettingsConstants.INVASION_RESOURCE);
+		}
+		//Filters
+		if (filter) {
+			settings.add(SettingsConstants.INVASION_FILTERS);
 		}
 		return settings;
 	}

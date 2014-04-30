@@ -30,16 +30,23 @@ import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import net.nikr.warframe.gui.shared.NotifyListener;
+import net.nikr.warframe.Program;
+import net.nikr.warframe.gui.settings.SettingsConstants;
+import net.nikr.warframe.gui.shared.listeners.NotifyListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class AudioPlayer implements NotifyListener {
+public class AudioTool implements NotifyListener {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AudioPlayer.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AudioTool.class);
 
 	private Beeper beeper;
+	private final Program program;
+
+	public AudioTool(Program program) {
+		this.program = program;
+	}
 
 	private void playSafe() {
 		try {
@@ -57,7 +64,7 @@ public class AudioPlayer implements NotifyListener {
 
 	private void playIt() throws IOException, UnsupportedAudioFileException, LineUnavailableException, InterruptedException {
 		AudioListener listener = new AudioListener();
-		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(AudioPlayer.class.getResourceAsStream("alert.wav")));
+		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(AudioTool.class.getResourceAsStream("alert.wav")));
 		try {
 			Clip clip = AudioSystem.getClip();
 			clip.addLineListener(listener);
@@ -83,7 +90,7 @@ public class AudioPlayer implements NotifyListener {
 
 	@Override
 	public void startNotify(final int count, final NotifySource source) {
-		if (beeper == null) {
+		if (beeper == null && program.getSettings(SettingsConstants.NOTIFY_AUDIO)) {
 			beeper = new Beeper();
 			beeper.start();
 		}

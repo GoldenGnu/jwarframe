@@ -29,7 +29,7 @@ import java.awt.Component;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.table.TableCellRenderer;
-import net.nikr.warframe.gui.shared.JToolTipTable;
+import net.nikr.warframe.gui.shared.table.JToolTipTable;
 import net.nikr.warframe.io.invasion.Invasion;
 
 public class JInvasionTable extends JToolTipTable {
@@ -55,8 +55,8 @@ public class JInvasionTable extends JToolTipTable {
 		}
 		component.setForeground(Color.BLACK);
 
-		if (columnIndex == InvasionTableFormat.indexOf(InvasionTableFormat.INVADER_REWARD)
-				|| columnIndex == InvasionTableFormat.indexOf(InvasionTableFormat.INVADER_MISSION)) {
+		if (columnIndex == InvasionTableFormat.INVADER_REWARD.ordinal()
+				|| columnIndex == InvasionTableFormat.INVADER_MISSION.ordinal()) {
 			if (invasion.isMatchInvading()) {
 				component.setForeground(Color.BLACK);
 			} else {
@@ -67,8 +67,8 @@ public class JInvasionTable extends JToolTipTable {
 				}
 			}
 		}
-		if (columnIndex == InvasionTableFormat.indexOf(InvasionTableFormat.DEFENDER_REWARD)
-				|| columnIndex == InvasionTableFormat.indexOf(InvasionTableFormat.DEFENDER_MISSION)) {
+		if (columnIndex == InvasionTableFormat.DEFENDER_REWARD.ordinal()
+				|| columnIndex == InvasionTableFormat.DEFENDER_MISSION.ordinal()) {
 			if (invasion.isMatchDefending()) {
 				component.setForeground(Color.BLACK);
 			} else {
@@ -81,9 +81,9 @@ public class JInvasionTable extends JToolTipTable {
 		}
 		if (component instanceof JLabel) {
 			JLabel jLabel = (JLabel) component;
-			if (columnIndex == InvasionTableFormat.indexOf(InvasionTableFormat.DEFENDER_REWARD)) {
+			if (columnIndex == InvasionTableFormat.DEFENDER_REWARD.ordinal()) {
 				jLabel.setToolTipText(generateToolTip(invasion.getDefendingRewardID(), invasion.isDefendinCredits()));
-			} else if (columnIndex == InvasionTableFormat.indexOf(InvasionTableFormat.INVADER_REWARD)) {
+			} else if (columnIndex == InvasionTableFormat.INVADER_REWARD.ordinal()) {
 				jLabel.setToolTipText(generateToolTip(invasion.getInvadingRewardID(), invasion.isInvadingCredits()));
 			} else {
 				jLabel.setToolTipText(null);

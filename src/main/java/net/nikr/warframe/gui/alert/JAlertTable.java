@@ -30,7 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.table.TableCellRenderer;
 import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.reward.Category.CategoryType;
-import net.nikr.warframe.gui.shared.JToolTipTable;
+import net.nikr.warframe.gui.shared.table.JToolTipTable;
 import net.nikr.warframe.io.alert.Alert;
 
 public class JAlertTable extends JToolTipTable {
@@ -55,7 +55,20 @@ public class JAlertTable extends JToolTipTable {
 			component.setBackground(this.getSelectionBackground());
 		}
 		component.setForeground(Color.BLACK);
-		if (columnIndex == AlertTableFormat.indexOf(AlertTableFormat.TIME)) {
+		if (columnIndex == AlertTableFormat.LOOT.ordinal()||
+			columnIndex == AlertTableFormat.CREDITS.ordinal()
+				) {
+			if (alert.isMatch()) {
+				component.setForeground(Color.BLACK);
+			} else {
+				if (isSelected) {
+					component.setForeground(Color.LIGHT_GRAY);
+				} else {
+					component.setForeground(Color.GRAY);
+				}
+			}
+		}
+		if (columnIndex == AlertTableFormat.TIME.ordinal()) {
 			if (alert.isExpired()) {
 				if (!isSelected) {
 					component.setForeground(Color.GRAY);
@@ -66,7 +79,7 @@ public class JAlertTable extends JToolTipTable {
 				component.setForeground(Color.GREEN.darker().darker());
 			}
 		}
-		if (columnIndex == AlertTableFormat.indexOf(AlertTableFormat.TYPE)) {
+		if (columnIndex == AlertTableFormat.TYPE.ordinal()) {
 			if (alert.hasLoot()) {
 				Category category = alert.getCategory();
 				if (category != null) {
@@ -76,7 +89,7 @@ public class JAlertTable extends JToolTipTable {
 				}
 			}
 		}
-		if (columnIndex == AlertTableFormat.indexOf(AlertTableFormat.IGNORE)) {
+		if (columnIndex == AlertTableFormat.IGNORE.ordinal()) {
 			if (alert.hasLoot()) {
 				if (alert.isIgnored()) {
 					component.setBackground(CategoryType.RED.getColor(isSelected));
@@ -89,12 +102,12 @@ public class JAlertTable extends JToolTipTable {
 		}
 		if (component instanceof JLabel) {
 			JLabel jLabel = (JLabel) component;
-			if (columnIndex == AlertTableFormat.indexOf(AlertTableFormat.LOOT)) {
+			if (columnIndex == AlertTableFormat.LOOT.ordinal()) {
 				jLabel.setToolTipText(generateToolTip(alert.getRewordID(), false));
 			} else {
 				jLabel.setToolTipText(null);
 			}
-			if (columnIndex == AlertTableFormat.indexOf(AlertTableFormat.MISSION)) {
+			if (columnIndex == AlertTableFormat.MISSION.ordinal()) {
 				jLabel.setIcon(alert.getMission().getFaction().getIcon());
 			} else {
 				jLabel.setIcon(null);

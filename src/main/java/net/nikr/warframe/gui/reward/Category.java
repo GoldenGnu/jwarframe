@@ -24,7 +24,6 @@ package net.nikr.warframe.gui.reward;
 import java.awt.Color;
 import java.util.Set;
 import java.util.TreeSet;
-import net.nikr.warframe.gui.reward.RewardID;
 
 
 public class Category {
@@ -64,6 +63,22 @@ public class Category {
 			int b = Math.min(255, (int) (c.getBlue() * 1.0));
 			return new Color(r,g,b);
 		}
+
+		public boolean isMod() {
+			return name.toLowerCase().contains("mod");
+		}
+
+		public boolean isAura() {
+			return  name.toLowerCase().contains("aura");
+		}
+
+		public boolean isBlueprint() {
+			return  name.toLowerCase().contains("blueprint");
+		}
+
+		public boolean isResource() {
+			return  name.toLowerCase().contains("resource");
+		}
 	}
 
 	
@@ -71,7 +86,7 @@ public class Category {
 	private final String filename;
 	private final int width;
 	private final int height;
-	private final CategoryType color;
+	private final CategoryType type;
 	private final Set<RewardID> rewards = new TreeSet<RewardID>();
 
 	public Category(String data) {
@@ -80,7 +95,7 @@ public class Category {
 		this.filename = split[0].toLowerCase() + ".dat";
 		this.width = Integer.valueOf(split[1]);
 		this.height = Integer.valueOf(split[2]);
-		this.color = CategoryType.valueOf(split[3]);
+		this.type = CategoryType.valueOf(split[3]);
 	}
 
 	public void addAll(Set<RewardID> rewards) {
@@ -92,7 +107,7 @@ public class Category {
 	}
 
 	public CategoryType getType() {
-		return color;
+		return type;
 	}
 
 	public String getName() {
@@ -110,5 +125,4 @@ public class Category {
 	public int getHeight() {
 		return height;
 	}
-	
 }

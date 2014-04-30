@@ -21,7 +21,7 @@
  *
  */
 
-package net.nikr.warframe.gui.shared;
+package net.nikr.warframe.gui.shared.table;
 
 import java.awt.Component;
 import javax.swing.BorderFactory;
