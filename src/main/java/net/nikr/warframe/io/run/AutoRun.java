@@ -107,7 +107,7 @@ public class AutoRun {
 	}
 
 	private static String getBatContent() {
-		return "start javaw -jar \"" + FileConstants.getJar().getAbsolutePath() + "\" -startup";
+		return getJavaString() + "\"" + FileConstants.getJar().getAbsolutePath() + "\" -startup";
 	}
 
 	private static boolean canEdit() {
@@ -129,6 +129,16 @@ public class AutoRun {
 		} else {
 			return null;
 		}
+	}
+
+	private static String getJavaString() {
+		return "cd "
+				+ System.getProperty("java.home")
+				+ File.separator
+				+ "bin"
+				+ File.separator
+				+ "\r\n"
+				+ "start javaw -jar ";
 	}
 	private static String getStartupString() {
 		return readRegistry("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", "Startup");
