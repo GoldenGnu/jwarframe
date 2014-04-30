@@ -66,6 +66,7 @@ import net.nikr.warframe.gui.shared.listeners.AlertListener;
 import net.nikr.warframe.gui.shared.listeners.NotifyListener.NotifySource;
 import net.nikr.warframe.gui.shared.table.EnumTableFormat;
 import net.nikr.warframe.gui.shared.table.EventModels;
+import net.nikr.warframe.gui.shared.table.InvertMatcher;
 import net.nikr.warframe.gui.shared.table.PaddingTableCellRenderer;
 import net.nikr.warframe.io.alert.Alert;
 
@@ -73,8 +74,9 @@ import net.nikr.warframe.io.alert.Alert;
 public class AlertTool implements AlertListener, Tool {
 
 	private final JPanel jPanel;
-	private final JRadioButton jShowAll;
-	private final JRadioButton jShowFiltered;
+	private final JRadioButton jAll;
+	private final JRadioButton jNotify;
+	private final JRadioButton jIgnore;
 	private final JSlider jCredits;
 	private final JCheckBox jBlueprints;
 	private final JCheckBox jMods;
@@ -103,25 +105,33 @@ public class AlertTool implements AlertListener, Tool {
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 
-		jShowAll = new JRadioButton("All");
-		jShowAll.setSelected(true);
-		jShowAll.addActionListener(new ActionListener() {
+		jAll = new JRadioButton("All");
+		jAll.setSelected(true);
+		jAll.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				showList.setMatcher(null);
 			}
 		});
-		jShowFiltered = new JRadioButton("Notify");
-		jShowFiltered.addActionListener(new ActionListener() {
+		jNotify = new JRadioButton("Notify");
+		jNotify.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				showList.setMatcher(matcher);
 			}
 		});
+		jIgnore = new JRadioButton("Ignore");
+		jIgnore.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showList.setMatcher(new InvertMatcher<Alert>(matcher));
+			}
+		});
 
 		ButtonGroup buttonGroup = new ButtonGroup();
-		buttonGroup.add(jShowAll);
-		buttonGroup.add(jShowFiltered);
+		buttonGroup.add(jAll);
+		buttonGroup.add(jNotify);
+		buttonGroup.add(jIgnore);
 
 		jCredits = new JSlider(JSlider.HORIZONTAL, 0, 5, 0);
 		jCredits.setMinorTickSpacing(0);
@@ -238,8 +248,9 @@ public class AlertTool implements AlertListener, Tool {
 		layout.setHorizontalGroup(
 			layout.createParallelGroup()
 				.addGroup(layout.createSequentialGroup()
-					.addComponent(jShowAll)
-					.addComponent(jShowFiltered)
+					.addComponent(jAll)
+					.addComponent(jNotify)
+					.addComponent(jIgnore)
 					.addGap(0, 0, Integer.MAX_VALUE)
 					.addComponent(jShowFilters)	
 				)
@@ -258,8 +269,9 @@ public class AlertTool implements AlertListener, Tool {
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
 				.addGroup(layout.createParallelGroup()
-					.addComponent(jShowAll)
-					.addComponent(jShowFiltered)
+					.addComponent(jAll)
+					.addComponent(jNotify)
+					.addComponent(jIgnore)
 					.addComponent(jShowFilters)
 				)
 				.addGroup(layout.createParallelGroup()
@@ -355,8 +367,11 @@ public class AlertTool implements AlertListener, Tool {
 				jFilters.isSelected(),
 				program.getFilters());
 		filterList.setMatcher(matcher);
-		if (jShowFiltered.isSelected()) {
+		if (jNotify.isSelected()) {
 			showList.setMatcher(matcher);
+		}
+		if (jIgnore.isSelected()) {
+			showList.setMatcher(new InvertMatcher<Alert>(matcher));
 		}
 		updateIgnored();
 	}

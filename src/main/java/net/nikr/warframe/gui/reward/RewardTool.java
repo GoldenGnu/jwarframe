@@ -24,7 +24,6 @@ package net.nikr.warframe.gui.reward;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -64,8 +63,8 @@ public class RewardTool implements Tool {
 	private final JPanel jPanel;
 	private final JPanelDynamicGrid jItems;
 	private final JRadioButton jAll;
-	private final JRadioButton jMissing;
-	private final JRadioButton jGot;
+	private final JRadioButton jNotify;
+	private final JRadioButton jIgnore;
 	private final JLabel jCount;
 
 	private final Program program;
@@ -103,15 +102,15 @@ public class RewardTool implements Tool {
 		jCount = new JLabel();
 
 		jAll = createRadioButton("All");
-		jMissing = createRadioButton("Notify");
-		jGot = createRadioButton("Ignore");
+		jNotify = createRadioButton("Notify");
+		jIgnore = createRadioButton("Ignore");
 
 		JLabel jHelp = new JLabel("Right click to show options");
 
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.add(jAll);
-		buttonGroup.add(jMissing);
-		buttonGroup.add(jGot);
+		buttonGroup.add(jNotify);
+		buttonGroup.add(jIgnore);
 
 		jAll.setSelected(true);
 
@@ -140,8 +139,8 @@ public class RewardTool implements Tool {
 			layout.createParallelGroup()
 				.addGroup(layout.createSequentialGroup()
 					.addComponent(jAll)
-					.addComponent(jMissing)
-					.addComponent(jGot)
+					.addComponent(jNotify)
+					.addComponent(jIgnore)
 					.addGap(0, 0, Integer.MAX_VALUE)
 					.addComponent(jHelp)
 					.addGap(0, 0, Integer.MAX_VALUE)
@@ -153,8 +152,8 @@ public class RewardTool implements Tool {
 			layout.createSequentialGroup()
 				.addGroup(layout.createParallelGroup()
 					.addComponent(jAll)
-					.addComponent(jMissing)
-					.addComponent(jGot)
+					.addComponent(jNotify)
+					.addComponent(jIgnore)
 					.addComponent(jHelp)
 					.addComponent(jCount)
 				)
@@ -206,10 +205,10 @@ public class RewardTool implements Tool {
 		for (final RewardID reward : rewards) {
 			boolean got = program.getFilters().contains(reward.getName());
 			total++;
-			if (got && jMissing.isSelected()) {
+			if (got && jNotify.isSelected()) {
 				continue;
 			}
-			if (!got && jGot.isSelected()) {
+			if (!got && jIgnore.isSelected()) {
 				continue;
 			}
 			showing++;
