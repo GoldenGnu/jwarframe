@@ -59,6 +59,7 @@ import net.nikr.warframe.io.shared.ImageGetter;
 import net.nikr.warframe.io.shared.ListReader;
 import net.nikr.warframe.io.shared.ListWriter;
 import net.nikr.warframe.io.shared.RewardsGetter;
+import net.nikr.warframe.io.update.Updater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,10 @@ public class Program {
 	public Program() {
 		//Static Data
 		SplashUpdater.setText("Loading DATA");
-		//
+
+		Updater updater = new Updater();
+		updater.update();
+
 		RewardsGetter rewardsGetter = new RewardsGetter();
 		rewardsGetter.checkUpdates();
 	//LOCAL
