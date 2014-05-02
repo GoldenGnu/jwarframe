@@ -21,10 +21,8 @@
 
 package net.nikr.warframe.io.update;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -44,7 +42,10 @@ public class Updater {
 		String version = getter.get();
 		LOG.info("Online: " + version + " Local: " + Program.PROGRAM_VERSION);
 		if (version != null && !version.equals(Program.PROGRAM_VERSION)) {
-			int value = JOptionPane.showConfirmDialog(null, "Update jWarframe now?", "Update Available", JOptionPane.OK_CANCEL_OPTION);
+			int value = JOptionPane.showConfirmDialog(null, 
+					"Update jWarframe now?",
+					"Update Available",
+					JOptionPane.OK_CANCEL_OPTION);
 			if (value == JOptionPane.OK_OPTION) {
 				LOG.info("Updating program");
 				runUpdate();
@@ -57,20 +58,10 @@ public class Updater {
 		processBuilder.directory(getJavaHome());
 		processBuilder.command(getArgsString());
 		try {
-			Process process = processBuilder.start();
+			processBuilder.start();
 			System.exit(0);
-			/*
-			BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			StringBuilder builder = new StringBuilder();
-			String line = null;
-			while ( (line = br.readLine()) != null) {
-			   builder.append(line);
-			   builder.append(System.getProperty("line.separator"));
-			}
-			System.out.println(builder.toString());
-			*/
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			LOG.error("Failed to start jupdate.jat", ex);
 		}
 	}
 
