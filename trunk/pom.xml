@@ -36,7 +36,7 @@
 					<archive>
 						<manifest>
 							<mainClass>net.nikr.warframe.Main</mainClass>
-							<packageName>nnet.nikr.warframe</packageName>
+							<packageName>net.nikr.warframe</packageName>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib</classpathPrefix>
 						</manifest>
@@ -56,6 +56,7 @@
 							<target>
 								<copy todir="${project.build.directory}">
 									<fileset dir="" includes="*.txt"/>
+									<fileset dir="" includes="jupdate.jar"/>
 								</copy>
 							</target>
 						</configuration>

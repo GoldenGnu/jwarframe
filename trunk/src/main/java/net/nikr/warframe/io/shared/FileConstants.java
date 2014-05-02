@@ -90,6 +90,10 @@ public class FileConstants {
 		return new File(getLocalFile("jwarframe.jar", true));
 	}
 
+	public static String getUpdateJar() {
+		return getLocalFile("jupdate.jar", true);
+	}
+
 	public static File getBat() {
 		return new File(getLocalFile("jwarframe.bat", true));
 	}
@@ -124,7 +128,7 @@ public class FileConstants {
 			if (!portable) {
 				File userDir = new File(System.getProperty("user.home", "."));
 				if (Main.isMac()) { // preferences are stored in user.home/Library/Preferences
-					file = new File(userDir, "Library/Preferences/jWarframe");
+					file = new File(userDir, "Library" + File.separator + "Preferences" + File.separator + "jWarframe");
 				} else {
 					file = new File(userDir.getAbsolutePath() + File.separator + ".jwarframe");
 				}
