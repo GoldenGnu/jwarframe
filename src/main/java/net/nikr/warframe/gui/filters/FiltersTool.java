@@ -70,7 +70,7 @@ public class FiltersTool implements Tool {
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 
-		jAddFilter = new JButton("Add Filter");
+		jAddFilter = new JButton("Add Ignore");
 		jAddFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -140,7 +140,7 @@ public class FiltersTool implements Tool {
 
 	@Override
 	public String getTitle() {
-		return "Filters";
+		return "Ignore";
 	}
 
 	@Override

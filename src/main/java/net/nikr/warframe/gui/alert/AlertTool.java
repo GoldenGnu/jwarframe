@@ -180,7 +180,7 @@ public class AlertTool implements AlertListener, Tool {
 		jAuras = createCheckBox("Auras", SettingsConstants.ALERT_AURA);
 		jResources = createCheckBox("Resources", SettingsConstants.ALERT_RESOURCE);
 		//Filter
-		jFilters = createCheckBox("Filters", SettingsConstants.ALERT_FILTERS);
+		jFilters = createCheckBox("Ignore", SettingsConstants.ALERT_FILTERS);
 
 		JToggleButton jShowFilters = new JToggleButton("Filters");
 		jShowFilters.addActionListener(new ActionListener() {
