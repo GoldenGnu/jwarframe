@@ -25,8 +25,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.SystemTray;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
@@ -39,7 +37,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
 import net.nikr.warframe.Main;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.SplashUpdater;
@@ -48,12 +45,11 @@ import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.shared.Tool;
 import net.nikr.warframe.gui.shared.listeners.LoginRewardListener;
 import net.nikr.warframe.gui.shared.listeners.NotifyListener;
+import net.nikr.warframe.io.shared.FastToolTips;
 
 
 public class MainFrame implements NotifyListener, LoginRewardListener {
 
-	private final int defaultDismissTimeout = ToolTipManager.sharedInstance().getDismissDelay();
-	private final int defaultInitialDelay = ToolTipManager.sharedInstance().getInitialDelay();
 	private final List<Image> active = Arrays.asList(Images.PROGRAM_16.getImage(), Images.PROGRAM_32.getImage(), Images.PROGRAM_64.getImage());
 	private final List<Image> passive = Arrays.asList(Images.PROGRAM_DISABLED_16.getImage(), Images.PROGRAM_DISABLED_32.getImage(), Images.PROGRAM_DISABLED_64.getImage());
 	
@@ -102,25 +98,7 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 		layout.setAutoCreateContainerGaps(false);
 		
 		jTabs = new JTabbedPane();
-		jTabs.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent me) {
-				ToolTipManager.sharedInstance().setDismissDelay(60000);
-				ToolTipManager.sharedInstance().setInitialDelay(0);
-			}
-
-			@Override
-			public void mouseExited(MouseEvent me) {
-				ToolTipManager.sharedInstance().setDismissDelay(defaultDismissTimeout);
-				ToolTipManager.sharedInstance().setInitialDelay(defaultInitialDelay);
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				MouseEvent phantom = new MouseEvent(jTabs, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, e.getX(), e.getY(), 0, false);
-				ToolTipManager.sharedInstance().mouseMoved(phantom);
-			}
-		});
+		FastToolTips.install(jTabs);
 
 		JPanel jStatusBar = new JPanel();
 		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEADING);

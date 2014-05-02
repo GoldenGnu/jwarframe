@@ -23,44 +23,22 @@ package net.nikr.warframe.gui.shared.table;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.swing.JComponent;
-import javax.swing.ToolTipManager;
 import javax.swing.table.TableModel;
 import net.nikr.warframe.gui.reward.RewardID;
+import net.nikr.warframe.io.shared.FastToolTips;
 import net.nikr.warframe.io.shared.ImageGetter;
 
 
 public class JToolTipTable extends JAutoColumnTable {
 
-	private final int defaultDismissTimeout = ToolTipManager.sharedInstance().getDismissDelay();
-	private final int defaultInitialDelay = ToolTipManager.sharedInstance().getInitialDelay();
-
 	public JToolTipTable(final TableModel tableModel) {
 		super(tableModel);
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseEntered(MouseEvent me) {
-				ToolTipManager.sharedInstance().setDismissDelay(60000);
-				ToolTipManager.sharedInstance().setInitialDelay(0);
-			}
-
-			@Override
-			public void mouseExited(MouseEvent me) {
-				ToolTipManager.sharedInstance().setDismissDelay(defaultDismissTimeout);
-				ToolTipManager.sharedInstance().setInitialDelay(defaultInitialDelay);
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				MouseEvent phantom = new MouseEvent(getThis(), MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, e.getX(), e.getY(), 0, false);
-				ToolTipManager.sharedInstance().mouseMoved(phantom);
-			}
-		});
+		FastToolTips.install(this);
 	}
 
 	@Override
