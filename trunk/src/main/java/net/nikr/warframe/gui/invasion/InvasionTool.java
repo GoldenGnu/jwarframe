@@ -144,7 +144,7 @@ public class InvasionTool implements Tool, InvasionListener {
 		jAuras = createCheckBox("Auras", SettingsConstants.INVASION_AURA);
 		jResources = createCheckBox("Resources", SettingsConstants.INVASION_RESOURCE);
 		//Filters
-		jFilters = createCheckBox("Filters", SettingsConstants.INVASION_FILTERS);
+		jFilters = createCheckBox("Ignore", SettingsConstants.INVASION_FILTERS);
 
 		JToggleButton jShowFilters = new JToggleButton("Filters");
 		jShowFilters.addActionListener(new ActionListener() {

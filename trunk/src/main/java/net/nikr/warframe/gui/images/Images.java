@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public enum Images {
-	IGNORED ("ignored.png"),
+	HELP ("help.png"),
 	LINK ("link.png"),
 	INVASION ("invasion.png"),
 	ALERT ("alert.png"),
@@ -46,8 +46,7 @@ public enum Images {
 	PROGRAM_64 ("program_64.png"),
 	PROGRAM_DISABLED_16 ("program_disabled_16.png"),
 	PROGRAM_DISABLED_32 ("program_disabled_32.png"),
-	PROGRAM_DISABLED_64 ("program_disabled_64.png"),
-	HELP ("help.png");
+	PROGRAM_DISABLED_64 ("program_disabled_64.png");
 
 	private static final Logger LOG = LoggerFactory.getLogger(Images.class);
 	private final String filename;

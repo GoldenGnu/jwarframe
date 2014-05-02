@@ -191,11 +191,11 @@ public class RewardTool implements Tool {
 		});
 
 		for (final RewardID reward : rewards) {
-			boolean got = program.getFilters().contains(reward.getName());
-			if (got && jNotify.isSelected()) {
+			boolean ignore = program.getFilters().contains(reward.getName());
+			if (ignore && jNotify.isSelected()) {
 				continue;
 			}
-			if (!got && jIgnore.isSelected()) {
+			if (!ignore && jIgnore.isSelected()) {
 				continue;
 			}
 			final JLabel jLabel = new JLabel(reward.getName());
@@ -301,22 +301,22 @@ public class RewardTool implements Tool {
 		int showing = 0;
 		Percent percent = (Percent) jImageSize.getSelectedItem();
 		for (final JLabel jLabel : labels) {
-			boolean got = program.getFilters().contains(jLabel.getText());
+			boolean ignore = program.getFilters().contains(jLabel.getText());
 			total++;
-			if (got && jNotify.isSelected()) {
+			if (ignore && jNotify.isSelected()) {
 				continue;
 			}
-			if (!got && jIgnore.isSelected()) {
+			if (!ignore && jIgnore.isSelected()) {
 				continue;
 			}
 			showing++;
 			jLabel.setFont(percent.getFont());
-			if (got) {
-				jLabel.setForeground(Color.GREEN);
+			if (ignore) {
+				jLabel.setForeground(Color.GRAY);
 			} else {
 				jLabel.setForeground(Color.ORANGE);
 			}
-			jLabel.setIcon(getImage(jLabel.getText(), got));
+			jLabel.setIcon(getImage(jLabel.getText(), ignore));
 			jItems.add(jLabel);
 		}
 		jCount.setText("Showing " + showing + " of " + total);
@@ -355,11 +355,11 @@ public class RewardTool implements Tool {
 
 	
 
-	private Icon getImage(String rewardName, boolean got) {
+	private Icon getImage(String rewardName, boolean ignore) {
 		Percent percent = (Percent) jImageSize.getSelectedItem();
 		if (percent.getPercent() == 0) {
-			if (got) {
-				return Images.IGNORED.getIcon();
+			if (ignore) {
+				return Images.PROGRAM_DISABLED_16.getIcon();
 			} else {
 				return Images.PROGRAM_16.getIcon();
 			}
@@ -368,7 +368,7 @@ public class RewardTool implements Tool {
 			if (mapString != null) {
 				Map<Boolean, Icon> mapBoolean = mapString.get(rewardName);
 				if (mapBoolean != null) {
-					return mapBoolean.get(got);
+					return mapBoolean.get(ignore);
 				}
 			}
 			return null;
@@ -392,7 +392,7 @@ public class RewardTool implements Tool {
 			Map<Boolean, Icon> mapBoolean = new HashMap<Boolean, Icon>();
 			mapString.put(key, mapBoolean);
 			BufferedImage image = scale(ImageGetter.getBufferedImage(key), percent.getPercent());
-			mapBoolean.put(true, included(image, Images.IGNORED));
+			mapBoolean.put(true, included(image, Images.PROGRAM_DISABLED_16));
 			mapBoolean.put(false, included(image, Images.PROGRAM_16));
 		}
 	}
