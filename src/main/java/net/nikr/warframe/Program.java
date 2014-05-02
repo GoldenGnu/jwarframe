@@ -67,7 +67,7 @@ public class Program {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Program.class);
 
-	public static final String PROGRAM_VERSION = "1.0.0 DEV BUILD 3";
+	public static final String PROGRAM_VERSION = "1.0.0 DEV BUILD 4";
 	public static final String PROGRAM_NAME = "jWarframe";
 
 	private final List<InvasionListener> invasionListeners = new ArrayList<InvasionListener>();
