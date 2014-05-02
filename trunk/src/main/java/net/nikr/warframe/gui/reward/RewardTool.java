@@ -26,12 +26,19 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -39,6 +46,7 @@ import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -51,6 +59,7 @@ import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.settings.SettingsConstants;
 import net.nikr.warframe.gui.shared.DesktopUtil;
 import net.nikr.warframe.gui.shared.Tool;
+import net.nikr.warframe.io.shared.FastToolTips;
 import net.nikr.warframe.io.shared.ImageGetter;
 
 
@@ -66,6 +75,7 @@ public class RewardTool implements Tool {
 	private final JRadioButton jNotify;
 	private final JRadioButton jIgnore;
 	private final JLabel jCount;
+	private final JComboBox jImageSize;
 
 	private final Program program;
 
@@ -76,7 +86,10 @@ public class RewardTool implements Tool {
 
 	private final int width;
 	private final int height;
-	private final Font font;
+
+	private final Map<Integer, Map<String, Map<Boolean, Icon>>> images = new HashMap<Integer, Map<String, Map<Boolean, Icon>>>();
+	private final List<JLabel> labels = new ArrayList<JLabel>();
+	private final List<Percent> percents = new ArrayList<Percent>();
 
 	public RewardTool(final Program program, final Set<RewardID> rewards, final String title, final int width, final int height) {
 		this.program = program;
@@ -97,15 +110,16 @@ public class RewardTool implements Tool {
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 
-		font = new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 5));
-
 		jCount = new JLabel();
 
 		jAll = createRadioButton("All");
 		jNotify = createRadioButton("Notify");
 		jIgnore = createRadioButton("Ignore");
 
-		JLabel jHelp = new JLabel("Right click to show options");
+		JLabel jHelp = new JLabel(Images.HELP.getIcon());
+		FastToolTips.install(jHelp);
+		jHelp.setToolTipText("<html><body><b>Popup Menu:</b> Right click<br>"
+				+ "<b>Zoom:</b> Ctrl + Mouse wheel");
 
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.add(jAll);
@@ -113,6 +127,26 @@ public class RewardTool implements Tool {
 		buttonGroup.add(jIgnore);
 
 		jAll.setSelected(true);
+
+		//percents.add(new Percent("150%", 150, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 7))));
+		//percents.add(new Percent("125%", 125, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 6))));
+		Percent percent100 = new Percent("100%", 100, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 5)));
+		percents.add(percent100);
+		percents.add(new Percent("75%", 75, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 4))));
+		percents.add(new Percent("50%", 50, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 3)));
+		percents.add(new Percent("25%", 25, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 2)));
+		percents.add(new Percent("0%", 0, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 1)));
+
+		scaleImages();
+		
+		jImageSize = new JComboBox(percents.toArray());
+		jImageSize.setSelectedItem(percent100);
+		jImageSize.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				update();
+			}
+		});
 
 		jItems = new JPanelDynamicGrid();
 		jItems.setBackground(BACKGROUND_COLOR);
@@ -132,8 +166,67 @@ public class RewardTool implements Tool {
 				.addComponent(jItems, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 		);
 
-		JScrollPane jItemsScroll = new JScrollPane(jItemsPanel);
+		final JScrollPane jItemsScroll = new JScrollPane(jItemsPanel);
 		jItemsScroll.getVerticalScrollBar().setUnitIncrement(16);
+
+		jItemsPanel.addMouseWheelListener(new MouseWheelListener() {
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				if ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
+					int value = jImageSize.getSelectedIndex();
+					value = value + (e.getUnitsToScroll() / e.getScrollAmount());
+					if (value > (percents.size() - 1) ) {
+						value = (percents.size() - 1);
+					}
+					if (value < 0) {
+						value = 0;
+					}
+					jImageSize.setSelectedIndex(value);
+				} else {
+					int value = jItemsScroll.getVerticalScrollBar().getValue();
+					value = value + (e.getUnitsToScroll() * jItemsScroll.getVerticalScrollBar().getUnitIncrement());
+					jItemsScroll.getVerticalScrollBar().setValue(value);
+				}
+			}
+		});
+
+		for (final RewardID reward : rewards) {
+			boolean got = program.getFilters().contains(reward.getName());
+			if (got && jNotify.isSelected()) {
+				continue;
+			}
+			if (!got && jIgnore.isSelected()) {
+				continue;
+			}
+			final JLabel jLabel = new JLabel(reward.getName());
+			jLabel.setBorder(
+					BorderFactory.createCompoundBorder(
+						BorderFactory.createMatteBorder(0, 0, BORDER_WIDTH, BORDER_WIDTH, BORDER_COLOR),
+						BorderFactory.createEmptyBorder(10, 0, 10, 0)
+						));
+			jLabel.setIconTextGap(10);
+			jLabel.setVerticalTextPosition(SwingConstants.BOTTOM);
+			jLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+			jLabel.setVerticalAlignment(SwingConstants.CENTER);
+			jLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			jLabel.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					showPopupMenu(jLabel, e, reward);
+				}
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					showPopupMenu(jLabel, e, reward);
+				}
+				@Override
+				public void mousePressed(MouseEvent e) {
+					showPopupMenu(jLabel, e, reward);
+				}
+				
+			});
+			jItems.add(jLabel);
+			labels.add(jLabel);
+		}
 
 		layout.setHorizontalGroup(
 			layout.createParallelGroup()
@@ -141,24 +234,28 @@ public class RewardTool implements Tool {
 					.addComponent(jAll)
 					.addComponent(jNotify)
 					.addComponent(jIgnore)
+					.addComponent(jImageSize, 75, 75, 75)
 					.addGap(0, 0, Integer.MAX_VALUE)
-					.addComponent(jHelp)
 					.addGap(0, 0, Integer.MAX_VALUE)
 					.addComponent(jCount)
+					.addGap(10)
+					.addComponent(jHelp)
 				)
 				.addComponent(jItemsScroll)
 		);
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup()
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 					.addComponent(jAll)
 					.addComponent(jNotify)
 					.addComponent(jIgnore)
-					.addComponent(jHelp)
+					.addComponent(jImageSize, 25, 25, 25)
 					.addComponent(jCount)
+					.addComponent(jHelp)
 				)
 				.addComponent(jItemsScroll)
 		);
+		
 		update();
 	}
 
@@ -202,8 +299,9 @@ public class RewardTool implements Tool {
 		jItems.removeAll();
 		int total = 0;
 		int showing = 0;
-		for (final RewardID reward : rewards) {
-			boolean got = program.getFilters().contains(reward.getName());
+		Percent percent = (Percent) jImageSize.getSelectedItem();
+		for (final JLabel jLabel : labels) {
+			boolean got = program.getFilters().contains(jLabel.getText());
 			total++;
 			if (got && jNotify.isSelected()) {
 				continue;
@@ -212,41 +310,13 @@ public class RewardTool implements Tool {
 				continue;
 			}
 			showing++;
-			final JLabel jLabel = new JLabel(reward.getName());
-			jLabel.setBorder(
-					BorderFactory.createCompoundBorder(
-						BorderFactory.createMatteBorder(0, 0, BORDER_WIDTH, BORDER_WIDTH, BORDER_COLOR),
-						BorderFactory.createEmptyBorder(10, 0, 10, 0)
-						));
-			jLabel.setIconTextGap(10);
-			jLabel.setVerticalTextPosition(SwingConstants.BOTTOM);
-			jLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-			jLabel.setVerticalAlignment(SwingConstants.CENTER);
-			jLabel.setHorizontalAlignment(SwingConstants.CENTER);
-			jLabel.setFont(font);
-			jLabel.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					showPopupMenu(jLabel, e, reward);
-				}
-				@Override
-				public void mouseReleased(MouseEvent e) {
-					showPopupMenu(jLabel, e, reward);
-				}
-				@Override
-				public void mousePressed(MouseEvent e) {
-					showPopupMenu(jLabel, e, reward);
-				}
-				
-			});
-			
+			jLabel.setFont(percent.getFont());
 			if (got) {
 				jLabel.setForeground(Color.GREEN);
-				jLabel.setIcon(included(ImageGetter.getBufferedImage(reward.getName()), Images.IGNORED));
 			} else {
 				jLabel.setForeground(Color.ORANGE);
-				jLabel.setIcon(included(ImageGetter.getBufferedImage(reward.getName()), Images.PROGRAM_16));
 			}
+			jLabel.setIcon(getImage(jLabel.getText(), got));
 			jItems.add(jLabel);
 		}
 		jCount.setText("Showing " + showing + " of " + total);
@@ -270,26 +340,67 @@ public class RewardTool implements Tool {
 		jPopupMenu.add(jLink);
 
 		//Alert or Ignored
-		JCheckBoxMenuItem jNotify = new JCheckBoxMenuItem("Notify");
-		jNotify.setSelected(!program.getFilters().contains(reward.getName()));
-		jNotify.addActionListener(new ActionListener() {
+		JCheckBoxMenuItem jNotifyMenu = new JCheckBoxMenuItem("Notify");
+		jNotifyMenu.setSelected(!program.getFilters().contains(reward.getName()));
+		jNotifyMenu.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				program.getFiltersTool().toggle(reward.getName());
 			}
 		});
-		jPopupMenu.add(jNotify);
+		jPopupMenu.add(jNotifyMenu);
 
 		jPopupMenu.show(jLabel, e.getX(), e.getY());
 	}
 
-	private Icon included(BufferedImage image, Images imageoverlay) {
-		if (image == null) {
+	
+
+	private Icon getImage(String rewardName, boolean got) {
+		Percent percent = (Percent) jImageSize.getSelectedItem();
+		if (percent.getPercent() == 0) {
+			if (got) {
+				return Images.IGNORED.getIcon();
+			} else {
+				return Images.PROGRAM_16.getIcon();
+			}
+		} else {
+			Map<String, Map<Boolean, Icon>> mapString = images.get(percent.getPercent());
+			if (mapString != null) {
+				Map<Boolean, Icon> mapBoolean = mapString.get(rewardName);
+				if (mapBoolean != null) {
+					return mapBoolean.get(got);
+				}
+			}
 			return null;
 		}
-		// load source images
-		image = scale(image);
+	}
 
+	private void scaleImages() {
+		for (Percent percent : percents) {
+			scaleImages(percent);
+		}
+	}
+
+	private void scaleImages(Percent percent) {
+		if (percent.getPercent() == 0) {
+			return;
+		}
+		HashMap<String, Map<Boolean, Icon>> mapString = new HashMap<String, Map<Boolean, Icon>>();
+		images.put(percent.getPercent(), mapString);
+		for (final RewardID reward : rewards) {
+			String key = reward.getName();
+			Map<Boolean, Icon> mapBoolean = new HashMap<Boolean, Icon>();
+			mapString.put(key, mapBoolean);
+			BufferedImage image = scale(ImageGetter.getBufferedImage(key), percent.getPercent());
+			mapBoolean.put(true, included(image, Images.IGNORED));
+			mapBoolean.put(false, included(image, Images.PROGRAM_16));
+		}
+	}
+
+	private Icon included(BufferedImage image, Images imageoverlay) {
+		if (image == null) {
+			return imageoverlay.getIcon();
+		}
 		BufferedImage overlay = imageoverlay.getBufferedImage();
 
 		// create the new image, canvas size is the max. of both image sizes
@@ -300,29 +411,59 @@ public class RewardTool implements Tool {
 		// paint both images, preserving the alpha channels
 		Graphics g = combined.getGraphics();
 		g.drawImage(image, 0, 0, null);
-		g.drawImage(overlay, image.getWidth() - 30, image.getHeight() - 30, null);
+		g.drawImage(overlay, image.getWidth() - ((image.getWidth() * 5 / 100) + 16), image.getHeight() - ((image.getHeight() * 5 / 100) + 16), null);
 		
 		return new ImageIcon(combined);
 	}
 
-	private BufferedImage scale(BufferedImage image) {
+	private BufferedImage scale(BufferedImage image, int percent) {
 		if (image == null) { //Null
 			return null;
 		}
 		int imageWidth  = image.getWidth();
 		int imageHeight = image.getHeight();
 
+		int fixedWidth = width * percent / 100;
+		int fixedHeight = height * percent / 100;
 		//No resize needed
-		if (imageWidth == width && height == imageHeight) {
+		if (imageWidth == fixedWidth && fixedHeight == imageHeight) {
 			return image;
 		}
 
-		double scaleX = (double)width/imageWidth;
-		double scaleY = (double)height/imageHeight;
+		
+		double scaleX = (double)fixedWidth/imageWidth;
+		double scaleY = (double)fixedHeight/imageHeight;
 		AffineTransform scaleTransform = AffineTransform.getScaleInstance(scaleX, scaleY);
 		AffineTransformOp bilinearScaleOp = new AffineTransformOp(scaleTransform, AffineTransformOp.TYPE_BILINEAR);
 
-		return bilinearScaleOp.filter(image, new BufferedImage(width, height, image.getType()));
+		return bilinearScaleOp.filter(image, new BufferedImage(fixedWidth, fixedHeight, image.getType()));
+	}
+
+	private static class Percent {
+		private final String text;
+		private final int percent;
+		private final Font font;
+
+		public Percent(String text, int percent, Font font) {
+			this.text = text;
+			this.percent = percent;
+			this.font = font;
+		}
+
+		public int getPercent() {
+			return percent;
+		}
+
+		public Font getFont() {
+			return font;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+
+		
 	}
 	
 }
