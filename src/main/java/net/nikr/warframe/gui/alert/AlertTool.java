@@ -69,6 +69,7 @@ import net.nikr.warframe.gui.shared.table.EventModels;
 import net.nikr.warframe.gui.shared.table.InvertMatcher;
 import net.nikr.warframe.gui.shared.table.PaddingTableCellRenderer;
 import net.nikr.warframe.io.alert.Alert;
+import net.nikr.warframe.io.shared.FastToolTips;
 
 
 public class AlertTool implements AlertListener, Tool {
@@ -132,6 +133,10 @@ public class AlertTool implements AlertListener, Tool {
 		buttonGroup.add(jAll);
 		buttonGroup.add(jNotify);
 		buttonGroup.add(jIgnore);
+
+		JLabel jHelp = new JLabel(Images.HELP.getIcon());
+		FastToolTips.install(jHelp);
+		jHelp.setToolTipText("<html><body><b>Show on Wikia:</b> Double click a table row with reward<br>");
 
 		jCredits = new JSlider(JSlider.HORIZONTAL, 0, 5, 0);
 		jCredits.setMinorTickSpacing(0);
@@ -253,6 +258,8 @@ public class AlertTool implements AlertListener, Tool {
 					.addComponent(jIgnore)
 					.addGap(0, 0, Integer.MAX_VALUE)
 					.addComponent(jShowFilters)	
+					.addGap(10)
+					.addComponent(jHelp)	
 				)
 				.addGroup(layout.createSequentialGroup()
 					.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
@@ -268,11 +275,12 @@ public class AlertTool implements AlertListener, Tool {
 		);
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup()
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 					.addComponent(jAll)
 					.addComponent(jNotify)
 					.addComponent(jIgnore)
 					.addComponent(jShowFilters)
+					.addComponent(jHelp)
 				)
 				.addGroup(layout.createParallelGroup()
 					.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)

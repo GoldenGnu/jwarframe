@@ -46,7 +46,8 @@ public enum Images {
 	PROGRAM_64 ("program_64.png"),
 	PROGRAM_DISABLED_16 ("program_disabled_16.png"),
 	PROGRAM_DISABLED_32 ("program_disabled_32.png"),
-	PROGRAM_DISABLED_64 ("program_disabled_64.png");
+	PROGRAM_DISABLED_64 ("program_disabled_64.png"),
+	HELP ("help.png");
 
 	private static final Logger LOG = LoggerFactory.getLogger(Images.class);
 	private final String filename;

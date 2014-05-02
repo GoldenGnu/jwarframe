@@ -37,6 +37,7 @@ public class JPanelDynamicGrid extends JPanel {
 
 	private JScrollPane jScrollPane;
 	private final Listener listener;
+	private int maxWidth;
 
 	public JPanelDynamicGrid() {
 		super(new GridLayout(0, 5, 0, 0));
@@ -60,24 +61,18 @@ public class JPanelDynamicGrid extends JPanel {
 	@Override
 	protected void addImpl(Component comp, Object constraints, int index) {
 		super.addImpl(comp, constraints, index);
-		updateSize();
+		maxWidth = Math.max(maxWidth, comp.getPreferredSize().width);
 	}
 
 	@Override
 	public void removeAll() {
 		super.removeAll();
-		updateSize();
+		maxWidth = 0;
 	}
 
 	@Override
-	public void remove(Component comp) {
-		super.remove(comp);
-		updateSize();
-	}
-
-	@Override
-	public void remove(int index) {
-		super.remove(index);
+	public void updateUI() {
+		super.updateUI();
 		updateSize();
 	}
 
@@ -109,9 +104,9 @@ public class JPanelDynamicGrid extends JPanel {
 
 	private int getScrollSize() {
 		if (jScrollPane != null) {
-			return jScrollPane.getSize().width;
+			return jScrollPane.getSize().width - 30;
 		} else {
-			return getSize().width;
+			return 0;
 		}
 	}
 
@@ -120,11 +115,11 @@ public class JPanelDynamicGrid extends JPanel {
 		if (layout instanceof GridLayout && getSize().width > 0 && isVisible()) {
 			GridLayout grid = (GridLayout) layout;
 			//Columns
-			int width = 0;
+			int totalWidth = 0;
 			int columns = 0;
 			for (int i = 0; i < getComponentCount(); i++) {
-				width = width + getComponent(i).getPreferredSize().width + grid.getHgap();
-				if (width < getScrollSize() - 20) {
+				totalWidth = totalWidth + maxWidth;
+				if (totalWidth < getScrollSize()) {
 					columns++;
 				} else {
 					break;
@@ -135,7 +130,7 @@ public class JPanelDynamicGrid extends JPanel {
 			} else {
 				grid.setColumns(1);
 			}
-			updateUI();
+			super.updateUI();
 		}
 	}
 
@@ -158,5 +153,4 @@ public class JPanelDynamicGrid extends JPanel {
 		@Override
 		public void componentHidden(ComponentEvent e) { }
 	}
-	
 }
