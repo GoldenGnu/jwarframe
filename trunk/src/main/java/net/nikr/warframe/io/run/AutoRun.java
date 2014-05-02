@@ -26,21 +26,25 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.Collections;
 import java.util.List;
 import net.nikr.warframe.io.shared.FileConstants;
 import net.nikr.warframe.io.shared.ListReader;
 import net.nikr.warframe.io.shared.ListWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Oleg Ryaboy, based on work by Miguel Enriquez 
  */
 public class AutoRun {
 
+	private static final Logger LOG = LoggerFactory.getLogger(AutoRun.class);
+
 	private static final File STARTUP_FILE = getStartupFile("jWarframe.bat");
 	private static final File STARTUP_DIR = getStartupDirectory();
 
 	public static boolean uninstall() {
+		LOG.info("Uninstalling AutoRun");
 		if (!canEdit()) {
 			return false;
 		}
@@ -51,6 +55,7 @@ public class AutoRun {
 	}
 
 	public static boolean install() {
+		LOG.info("Installing AutoRun");
 		if (!canEdit()) {
 			writeBat(FileConstants.getBat());
 			return false;
@@ -72,6 +77,7 @@ public class AutoRun {
 			return false;
 		}
 		if (!valid()) {
+			LOG.info("Updating AutoRun");
 			install();
 		}
 		return valid();
@@ -90,7 +96,7 @@ public class AutoRun {
 
 	private static void writeBat(File file) {
 		ListWriter writer = new ListWriter();
-		writer.save(Collections.singleton(getBatContent()), file);
+		writer.save(getBatContent(), file);
 	}
 
 	private static boolean valid() {
@@ -102,7 +108,17 @@ public class AutoRun {
 		if (list.isEmpty()) {
 			return false;
 		}
-		return list.get(0).equals(getBatContent());
+		StringBuilder builder = new StringBuilder();
+		boolean first = true;
+		for (String s : list) {
+			if (first) {
+				first = false;
+			} else {
+				builder.append("\r\n");
+			}
+			builder.append(s);
+		}
+		return builder.toString().equals(getBatContent());
 		
 	}
 
