@@ -26,9 +26,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 
 
 public class ListWriter {
+
+	public boolean save(String content, File file) {
+		return save(Collections.singletonList(content), file);
+	}
+
 	public boolean save(Collection<String> strings, File file) {
 		BufferedWriter out = null;
 		try {

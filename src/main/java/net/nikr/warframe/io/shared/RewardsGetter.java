@@ -123,7 +123,7 @@ public class RewardsGetter {
 
 	private void writeData(String online) {
 		ListWriter writer = new ListWriter();
-		writer.save(Collections.singletonList(online), FileConstants.getVersionLocal());
+		writer.save(online, FileConstants.getVersionLocal());
 	}
 
 	private boolean updateRewards(File local, String online) {
