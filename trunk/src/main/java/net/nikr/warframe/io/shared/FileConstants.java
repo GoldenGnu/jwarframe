@@ -70,6 +70,10 @@ public class FileConstants {
 		return DATA_ONLINE + "categories.dat";
 	}
 
+	public static String getFiltersOnline() {
+		return DATA_ONLINE + "filters.dat";
+	}
+
 	public static File getFilters() {
 		return new File(getLocalFile(SETTINGS_LOCAL + "filters.dat", Main.isPortable()));
 	}
