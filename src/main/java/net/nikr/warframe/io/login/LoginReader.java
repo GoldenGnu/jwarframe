@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +59,7 @@ public class LoginReader {
 
 	private Date getResetTime() {
 		// today
-		Calendar date = new GregorianCalendar();
+		Calendar date = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 		// reset hour, minutes, seconds and millis
 		date.set(Calendar.HOUR_OF_DAY, 0);
 		date.set(Calendar.MINUTE, 0);
