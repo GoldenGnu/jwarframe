@@ -51,6 +51,7 @@ import net.nikr.warframe.gui.shared.listeners.NotifyListener;
 import net.nikr.warframe.gui.shared.listeners.NotifyListener.NotifySource;
 import net.nikr.warframe.gui.tray.TrayTool;
 import net.nikr.warframe.io.alert.Alert;
+import net.nikr.warframe.io.filters.FiltersGetter;
 import net.nikr.warframe.io.invasion.Invasion;
 import net.nikr.warframe.io.run.AutoRun;
 import net.nikr.warframe.io.shared.DataUpdater;
@@ -105,6 +106,7 @@ public class Program {
 		AutoRun.update();
 		//Filters
 		filters = loadFilters();
+		updateFilters();
 		//Categories
 		categories = loadCategories();
 		//Done
@@ -315,7 +317,25 @@ public class Program {
 
 	private Set<String> loadFilters() {
 		ListReader reader = new ListReader();
-		return new HashSet<String>(reader.load(FileConstants.getFilters()));
+		return new TreeSet<String>(reader.load(FileConstants.getFilters()));
+	}
+
+	private void updateFilters() {
+		FiltersGetter getter = new FiltersGetter();
+		List<String> filerFix = getter.get();
+		for (String fix : filerFix) {
+			String[] split = fix.split("=");
+			if (split.length == 2) {
+				String oldName = split[0];
+				String newName = split[1];
+				if (filters.contains(oldName)) {
+					filters.remove(oldName);
+					filters.add(newName);
+				}
+			} else {
+				LOG.warn("Failed to split: " + fix);
+			}
+		}
 	}
 
 	private Set<RewardID> loadRewards(Category category) {
