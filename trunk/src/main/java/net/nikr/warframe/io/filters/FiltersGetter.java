@@ -19,25 +19,15 @@
  *
  */
 
-package net.nikr.warframe.io.shared;
+package net.nikr.warframe.io.filters;
 
-import java.io.File;
-import org.junit.Ignore;
-import org.junit.Test;
+import java.util.List;
+import net.nikr.warframe.io.shared.FileConstants;
+import net.nikr.warframe.io.shared.ListGetter;
 
 
-public class FileConstantsTest {
-	
-	public FileConstantsTest() { }
-
-	@Test @Ignore
-	public void testClearData() {
-		//Clear old data on compile
-		File data = FileConstants.getDataDirectory();
-		FileConstants.deleteDirectory(data);
-		File images = FileConstants.getImageDirectory();
-		FileConstants.deleteDirectory(images);
+public class FiltersGetter extends ListGetter {
+	public List<String> get() {
+		return get(FileConstants.getFiltersOnline());
 	}
-
-	
 }
