@@ -62,7 +62,7 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 	private boolean alarm = false;
 	private int alerts = 0;
 	private int invasions = 0;
-	private boolean login;
+	private boolean login = false;
 
 	public MainFrame(Program program) {
 		this.program = program;
@@ -217,6 +217,7 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 				JOptionPane.showMessageDialog(jFrame, builder.toString(), "Beep", JOptionPane.PLAIN_MESSAGE);
 				alerts = 0;
 				invasions = 0;
+				login = false;
 			}
 		});
 	}
