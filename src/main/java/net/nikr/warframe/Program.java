@@ -252,9 +252,12 @@ public class Program {
 		Set<String> settingsValues = new HashSet<String>();
 		settingsValues.add(String.valueOf(SettingsConstants.getSettingsVersion()));
 		settingsValues.add(SettingsConstants.SETTINGS_SET.name());
+		settings.clear(); //Clear old settings
+		settings.add(SettingsConstants.SETTINGS_SET); //Settings have been saved!
 		for (Tool tool : tools) {
 			for (SettingsConstants setting : tool.getSettings()) {
 				settingsValues.add(setting.name());
+				settings.add(setting); //Add new settings
 			}
 		}
 		ListWriter writer = new ListWriter();
