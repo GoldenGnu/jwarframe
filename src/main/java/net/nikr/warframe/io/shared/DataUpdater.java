@@ -83,7 +83,7 @@ public class DataUpdater extends Thread {
 				LOG.info(alerts.size() + " alerts updated");
 				program.addAlerts(alerts);
 			//LOGIN REWARD
-				if (program.getSettings(SettingsConstants.LOGIN_REWARD)) { //Only notify once...
+				if (program.getSettings(SettingsConstants.LOGIN_REWARD)) { //Notify on login reward enabled
 					loginReward = loginReader.loginRewardAvailible();
 					if (loginReward != null) {
 						if (loginReward && !loginNotify) { //Login avalible and not notified
