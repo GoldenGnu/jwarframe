@@ -233,11 +233,11 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 	@Override
 	public void addLoginReward(Boolean available) {
 		if (available == null) {
-			jLoginReward.setBackground(Category.CategoryType.GRAY.getColor(false));
+			jLoginReward.setBackground(Category.CategoryColor.GRAY.getColor(false));
 		} else if (available) {
-			jLoginReward.setBackground(Category.CategoryType.GREEN.getColor(false));
+			jLoginReward.setBackground(Category.CategoryColor.GREEN.getColor(false));
 		} else {
-			jLoginReward.setBackground(Category.CategoryType.RED.getColor(false));
+			jLoginReward.setBackground(Category.CategoryColor.RED.getColor(false));
 		}
 	}
 }

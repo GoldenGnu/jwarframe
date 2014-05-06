@@ -27,66 +27,11 @@ import java.util.TreeSet;
 
 
 public class Category {
-	public enum CategoryType {
-		RED("", new Color(255, 200, 200)),
-		GREEN("Resource", new Color(200, 255, 200)),
-		BLUE("Blueprint", new Color(160, 220, 255)),
-		YELLOW("Aura", new Color(255, 255, 160)),
-		ORANGE("Mod", new Color(255, 160, 120)),
-		GRAY("Unknown", new Color(230, 230, 230));
-
-		private final String name;
-		private final Color color;
-		private final Color selected;
-
-		private CategoryType(String name, Color color) {
-			this.name = name;
-			this.color = color;
-			this.selected = moreBlue(color);
-		}
-
-		public Color getColor(boolean b) {
-			if (b) {
-				return selected;
-			} else {
-				return color;
-			}
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		private Color moreBlue(Color c) {
-			int r = Math.min(255, (int) (c.getRed() * 0.75));
-			int g = Math.min(255, (int) (c.getGreen() * 0.75));
-			int b = Math.min(255, (int) (c.getBlue() * 1.0));
-			return new Color(r,g,b);
-		}
-
-		public boolean isMod() {
-			return name.toLowerCase().contains("mod");
-		}
-
-		public boolean isAura() {
-			return  name.toLowerCase().contains("aura");
-		}
-
-		public boolean isBlueprint() {
-			return  name.toLowerCase().contains("blueprint");
-		}
-
-		public boolean isResource() {
-			return  name.toLowerCase().contains("resource");
-		}
-	}
-
-	
 	private final String name;
 	private final String filename;
 	private final int width;
 	private final int height;
-	private final CategoryType type;
+	private final CategoryColor type;
 	private final Set<RewardID> rewards = new TreeSet<RewardID>();
 
 	public Category(String data) {
@@ -95,7 +40,7 @@ public class Category {
 		this.filename = split[0].toLowerCase() + ".dat";
 		this.width = Integer.valueOf(split[1]);
 		this.height = Integer.valueOf(split[2]);
-		this.type = CategoryType.valueOf(split[3]);
+		this.type = CategoryColor.valueOf(split[3]);
 	}
 
 	public void addAll(Set<RewardID> rewards) {
@@ -106,7 +51,7 @@ public class Category {
 		return rewards;
 	}
 
-	public CategoryType getType() {
+	public CategoryColor getType() {
 		return type;
 	}
 
@@ -124,5 +69,37 @@ public class Category {
 
 	public int getHeight() {
 		return height;
+	}
+
+	public enum CategoryColor {
+		RED(new Color(255, 200, 200)),
+		GREEN(new Color(200, 255, 200)),
+		BLUE(new Color(160, 220, 255)),
+		YELLOW(new Color(255, 255, 160)),
+		ORANGE(new Color(255, 160, 120)),
+		GRAY(new Color(230, 230, 230));
+
+		private final Color color;
+		private final Color selected;
+
+		private CategoryColor(Color color) {
+			this.color = color;
+			this.selected = moreBlue(color);
+		}
+
+		public Color getColor(boolean b) {
+			if (b) {
+				return selected;
+			} else {
+				return color;
+			}
+		}
+
+		private Color moreBlue(Color c) {
+			int r = Math.min(255, (int) (c.getRed() * 0.75));
+			int g = Math.min(255, (int) (c.getGreen() * 0.75));
+			int b = Math.min(255, (int) (c.getBlue() * 1.0));
+			return new Color(r,g,b);
+		}
 	}
 }

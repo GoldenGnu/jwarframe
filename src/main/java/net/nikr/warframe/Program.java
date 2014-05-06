@@ -27,8 +27,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.swing.JFrame;
@@ -43,6 +45,7 @@ import net.nikr.warframe.gui.reward.RewardID;
 import net.nikr.warframe.gui.reward.RewardTool;
 import net.nikr.warframe.gui.settings.SettingsConstants;
 import net.nikr.warframe.gui.settings.SettingsTool;
+import net.nikr.warframe.gui.shared.CategoryFilter;
 import net.nikr.warframe.gui.shared.Tool;
 import net.nikr.warframe.gui.shared.listeners.AlertListener;
 import net.nikr.warframe.gui.shared.listeners.InvasionListener;
@@ -51,6 +54,8 @@ import net.nikr.warframe.gui.shared.listeners.NotifyListener;
 import net.nikr.warframe.gui.shared.listeners.NotifyListener.NotifySource;
 import net.nikr.warframe.gui.tray.TrayTool;
 import net.nikr.warframe.io.alert.Alert;
+import net.nikr.warframe.io.category.CategoryReader;
+import net.nikr.warframe.io.category.CategoryWriter;
 import net.nikr.warframe.io.filters.FiltersGetter;
 import net.nikr.warframe.io.invasion.Invasion;
 import net.nikr.warframe.io.run.AutoRun;
@@ -89,6 +94,7 @@ public class Program {
 	private final Set<RewardID> rewards = new TreeSet<RewardID>();
 	private final Set<String> done = new TreeSet<String>();
 	private final Set<SettingsConstants> settings = EnumSet.noneOf(SettingsConstants.class);
+	private final Map<String, Map<String, CategoryFilter>> categoryFilter = new HashMap<String, Map<String, CategoryFilter>>();
 
 	private int settingsVersion = 0;
 
@@ -262,6 +268,12 @@ public class Program {
 		}
 		ListWriter writer = new ListWriter();
 		writer.save(settingsValues, FileConstants.getSettings());
+
+		categoryFilter.clear();
+		categoryFilter.put(alertTool.getToolName(), alertTool.getCategoryFilters());
+		categoryFilter.put(invasionTool.getToolName(), invasionTool.getCategoryFilters());
+		CategoryWriter categoryWriter = new CategoryWriter();
+		categoryWriter.save(categoryFilter);
 	}
 
 	public boolean getSettings(SettingsConstants constants) {
@@ -297,6 +309,15 @@ public class Program {
 		return categories;
 	}
 
+	public Map<String, CategoryFilter> getCategoryFilter(String toolName) {
+		Map<String, CategoryFilter> categoryFilters = categoryFilter.get(toolName);
+		if (categoryFilters != null) {
+			return categoryFilters;
+		} else {
+			return new HashMap<String, CategoryFilter>();
+		}
+	}
+
 	private void loadSettings() {
 		settings.clear();
 		ListReader reader = new ListReader();
@@ -310,8 +331,11 @@ public class Program {
 					LOG.warn(s + " removed from settings enum");
 				}				
 			}
-			
 		}
+
+		CategoryReader categoryReader = new CategoryReader();
+		categoryFilter.clear();
+		categoryFilter.putAll(categoryReader.load());
 	}
 
 	public Set<String> getFilters() {

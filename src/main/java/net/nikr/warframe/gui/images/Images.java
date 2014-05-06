@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public enum Images {
+	ALL ("all.png"),
+	NONE ("none.png"),
 	HELP ("help.png"),
 	LINK ("link.png"),
 	INVASION ("invasion.png"),

@@ -40,11 +40,13 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import net.nikr.warframe.Program;
+import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.reward.RewardID;
 import net.nikr.warframe.gui.settings.SettingsConstants;
 import net.nikr.warframe.gui.shared.SimpleListModel;
 import net.nikr.warframe.gui.shared.Tool;
 import net.nikr.warframe.io.alert.Alert;
+import net.nikr.warframe.io.shared.FastToolTips;
 import net.nikr.warframe.io.shared.ImageGetter;
 
 
@@ -77,6 +79,12 @@ public class FiltersTool implements Tool {
 				jFilterAdder.show();
 			}
 		});
+
+		JLabel jHelp = new JLabel(Images.HELP.getIcon());
+		FastToolTips.install(jHelp);
+		jHelp.setToolTipText("<html><body>"
+				+ "<b>Show:</b> Single click list<br>"
+				+ "<b>Delete:</b> Double click list<br>");
 
 		listModel = new SimpleListModel<String>(program.getFilters());
 		final JList jFilterList = new JList(listModel);
@@ -113,7 +121,11 @@ public class FiltersTool implements Tool {
 
 		layout.setHorizontalGroup(
 			layout.createParallelGroup()
-				.addComponent(jAddFilter)
+				.addGroup(layout.createSequentialGroup()
+					.addComponent(jAddFilter)
+					.addGap(0, 0, Integer.MAX_VALUE)
+					.addComponent(jHelp)
+				)
 				.addGroup(layout.createSequentialGroup()
 					.addComponent(jFiltersScroll)
 					.addComponent(jImage, 300, 300, 300)
@@ -121,13 +133,13 @@ public class FiltersTool implements Tool {
 		);
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
-				.addComponent(jAddFilter)
+				.addGroup(layout.createParallelGroup()
+					.addComponent(jAddFilter)
+					.addComponent(jHelp)
+				)
 				.addGroup(layout.createParallelGroup()
 					.addComponent(jFiltersScroll)
-					.addGroup(layout.createSequentialGroup()
-						.addGap(30)
-						.addComponent(jImage)
-					)
+					.addComponent(jImage)
 				)
 		);
 	}

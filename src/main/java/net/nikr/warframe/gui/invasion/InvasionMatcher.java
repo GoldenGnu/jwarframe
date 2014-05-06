@@ -22,35 +22,32 @@
 package net.nikr.warframe.gui.invasion;
 
 import ca.odell.glazedlists.matchers.Matcher;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import net.nikr.warframe.gui.reward.Category;
+import net.nikr.warframe.gui.shared.CategoryFilter;
 import net.nikr.warframe.io.invasion.Invasion;
 
 
 public class InvasionMatcher implements Matcher<Invasion> {
 	private final int credits;
-	private final boolean corpus;
-	private final boolean grineer;
-	private final boolean infested;
-	private final boolean blueprints;
-	private final boolean mods;
-	private final boolean auras;
-	private final boolean resources;
-	private final boolean filter;
+	private final boolean killCorpus;
+	private final boolean killGrineer;
+	private final boolean killInfested;
+	private final boolean helpCorpus;
+	private final boolean helpGrineer;
+	private final Map<String, CategoryFilter> categoryFilters;
 	private final Set<String> filters;
 
-	public InvasionMatcher(int credits, boolean corpus, boolean grineer, boolean infested, boolean blueprints, boolean mods, boolean auras, boolean resources, boolean filter, Set<String> filters) {
+	public InvasionMatcher(int credits, boolean killCorpus, boolean killGrineer, boolean killInfested, boolean helpCorpus, boolean helpGrineer, Map<String, CategoryFilter> categoryFilters, Set<String> filters) {
 		this.credits = credits;
-		this.corpus = corpus;
-		this.grineer = grineer;
-		this.infested = infested;
-		this.blueprints = blueprints;
-		this.mods = mods;
-		this.auras = auras;
-		this.resources = resources;
-		this.filter = filter;
-		this.filters = new HashSet<String>(filters);
+		this.killCorpus = killCorpus;
+		this.killGrineer = killGrineer;
+		this.killInfested = killInfested;
+		this.helpCorpus = helpCorpus;
+		this.helpGrineer = helpGrineer;
+		this.categoryFilters = categoryFilters;
+		this.filters = filters;
 	}
 
 	@Override
@@ -83,93 +80,114 @@ public class InvasionMatcher implements Matcher<Invasion> {
 				defendinReward = false;
 			}
 		}
-		if (invasion.isInfestedInvading()) {
-			invadingReward = false;
-		}
 		//Ignore invading category
-		Category invadingCategory =  invasion.getInvadingCategory();
-		if (invadingCategory != null) {
-			if (!blueprints && invadingCategory.getType().isBlueprint()) {
-				invadingReward = false;
+		if (invasion.getInvadingRewardID() != null) {
+			Category category = invasion.getInvadingCategory();
+			CategoryFilter filter = null;
+			if (category != null) { //If category is known
+				filter = categoryFilters.get(category.getName());
 			}
-			//Ignore Mods
-			if (!mods && invadingCategory.getType().isMod()) {
-				invadingReward = false;
+			if (filter == null) { //Fallback on filters
+				filter = CategoryFilter.FILTERS;
 			}
-			//Ignore Aura
-			if (!auras && invadingCategory.getType().isAura()) {
-				invadingReward = false;
-			}
-			//Ignore Resources
-			if (!resources && invadingCategory.getType().isResource()) {
-				invadingReward = false;
+			switch (filter) {
+				case ALL:
+					invadingReward = true;
+					break;
+				case FILTERS:
+					invadingReward = !filters.contains(invasion.getInvadingRewardID().getName());
+					break;
+				case NONE:
+					invadingReward = false;
+					break;
 			}
 		}
 		//Ignore defending category
-		Category defendingCategory=  invasion.getDefendingCategory();
-		if (defendingCategory != null) {
-			if (!blueprints && defendingCategory.getType().isBlueprint()) {
-				defendinReward = false;
+		if (invasion.getDefendingRewardID() != null) {
+			Category category = invasion.getDefendingCategory();
+			CategoryFilter filter = null;
+			if (category != null) { //If category is known
+				filter = categoryFilters.get(category.getName());
 			}
-			//Ignore Mods
-			if (!mods && defendingCategory.getType().isMod()) {
-				defendinReward = false;
+			if (filter == null) { //Fallback on filters
+				filter = CategoryFilter.FILTERS;
 			}
-			//Ignore Aura
-			if (!auras && defendingCategory.getType().isAura()) {
-				defendinReward = false;
-			}
-			//Ignore Resources
-			if (!resources && defendingCategory.getType().isResource()) {
-				defendinReward = false;
-			}
-		}
-	//FACTIONS
-		boolean invadingFaction = false;
-		boolean defendinFaction = false;
-		//Corpus
-		if (corpus) {
-			if (invasion.isInvadingCorpus()) {
-				defendinFaction = true;
-			}
-			if (invasion.isDefendinCorpus()) {
-				invadingFaction = true;
+			switch (filter) {
+				case ALL:
+					defendinReward = true;
+					break;
+				case FILTERS:
+					defendinReward = !filters.contains(invasion.getDefendingRewardID().getName());
+					break;
+				case NONE:
+					defendinReward = false;
+					break;
 			}
 		}
-		//Grineer
-		if (grineer) {
-			if (invasion.isInvadingGrineer()) {
-				defendinFaction = true;
-			}
-			if (invasion.isDefendinGrineer()) {
-				invadingFaction = true;
-			}
-		}
-		//Infested
-		if (infested) {
-			if (invasion.isInvadingInfested()) {
-				defendinFaction = true;
-			}
-			if (invasion.isDefendinInfested()) {
-				invadingFaction = true;
-			}
-		}
-	//FILTER (REWARDS)
-		if (filter && invasion.getInvadingRewardID() != null && filters.contains(invasion.getInvadingRewardID().getName())) {
+		//Can not support infested...
+		if (invasion.isInfestedInvading()) {
 			invadingReward = false;
 		}
-		if (filter && invasion.getDefendingRewardID() != null && filters.contains(invasion.getDefendingRewardID().getName())) {
-			defendinReward = false;
-		}
-	//Done (No match)
+		//Done (No match)
 		if (invasion.isDone()) {
 			defendinReward = false;
 			invadingReward = false;
 		}
+	//FACTIONS
+		boolean invadingKillFaction = false;
+		boolean defendinKillFaction = false;
+		//Kill Corpus
+		if (killCorpus) {
+			if (invasion.isInvadingCorpus()) {
+				defendinKillFaction = true;
+			}
+			if (invasion.isDefendinCorpus()) {
+				invadingKillFaction = true;
+			}
+		}
+		//Kill Grineer
+		if (killGrineer) {
+			if (invasion.isInvadingGrineer()) {
+				defendinKillFaction = true;
+			}
+			if (invasion.isDefendinGrineer()) {
+				invadingKillFaction = true;
+			}
+		}
+		//Kill Infested
+		if (killInfested) {
+			if (invasion.isInvadingInfested()) {
+				defendinKillFaction = true;
+			}
+			if (invasion.isDefendinInfested()) {
+				invadingKillFaction = true;
+			}
+		}
+		boolean invadingHelpFaction = false;
+		boolean defendinHelpFaction = false;
+		//Help Corpus
+		if (helpCorpus) {
+			if (invasion.isInvadingCorpus()) {
+				invadingHelpFaction = true;
+			}
+			if (invasion.isDefendinCorpus()) {
+				defendinHelpFaction = true;
+			}
+		}
+		//Help Grineer
+		if (helpGrineer) {
+			if (invasion.isInvadingGrineer()) {
+				invadingHelpFaction = true;
+			}
+			if (invasion.isDefendinGrineer()) {
+				defendinHelpFaction = true;
+			}
+		}
 	//UPDATE
-		invasion.setMatchDefending(defendinReward && defendinFaction);
-		invasion.setMatchInvading(invadingReward && invadingFaction);
-		return (invadingReward && invadingFaction) || (defendinReward && defendinFaction);
+		invasion.setMatchDefending(defendinReward && defendinKillFaction && defendinHelpFaction);
+		invasion.setMatchInvading(invadingReward && invadingKillFaction && invadingHelpFaction);
+		return (invadingReward && invadingKillFaction && invadingHelpFaction)
+				|| (defendinReward && defendinKillFaction && defendinHelpFaction);
 	}
 	
 }
