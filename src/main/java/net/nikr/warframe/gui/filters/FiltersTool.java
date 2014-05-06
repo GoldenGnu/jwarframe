@@ -133,7 +133,7 @@ public class FiltersTool implements Tool {
 		);
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup()
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 					.addComponent(jAddFilter)
 					.addComponent(jHelp)
 				)
