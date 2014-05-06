@@ -248,7 +248,7 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		);
 		layout.setVerticalGroup(
 				layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup()
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(jAll)
 						.addComponent(jNotify)
 						.addComponent(jIgnore)
