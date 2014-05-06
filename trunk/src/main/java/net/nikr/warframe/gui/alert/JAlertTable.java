@@ -29,7 +29,7 @@ import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.table.TableCellRenderer;
 import net.nikr.warframe.gui.reward.Category;
-import net.nikr.warframe.gui.reward.Category.CategoryType;
+import net.nikr.warframe.gui.reward.Category.CategoryColor;
 import net.nikr.warframe.gui.shared.table.JToolTipTable;
 import net.nikr.warframe.io.alert.Alert;
 
@@ -85,19 +85,19 @@ public class JAlertTable extends JToolTipTable {
 				if (category != null) {
 					component.setBackground(category.getType().getColor(isSelected));
 				} else {
-					component.setBackground(CategoryType.GRAY.getColor(isSelected));
+					component.setBackground(CategoryColor.GRAY.getColor(isSelected));
 				}
 			}
 		}
 		if (columnIndex == AlertTableFormat.IGNORE.ordinal()) {
 			if (alert.hasLoot()) {
 				if (alert.isIgnored()) {
-					component.setBackground(CategoryType.RED.getColor(isSelected));
+					component.setBackground(CategoryColor.RED.getColor(isSelected));
 				} else {
-					component.setBackground(CategoryType.GREEN.getColor(isSelected));
+					component.setBackground(CategoryColor.GREEN.getColor(isSelected));
 				}
 			} else {
-				component.setBackground(CategoryType.GRAY.getColor(isSelected));
+				component.setBackground(CategoryColor.GRAY.getColor(isSelected));
 			}
 		}
 		if (component instanceof JLabel) {

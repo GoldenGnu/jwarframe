@@ -22,90 +22,73 @@
 package net.nikr.warframe.gui.alert;
 
 import ca.odell.glazedlists.matchers.Matcher;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import net.nikr.warframe.gui.reward.Category;
+import net.nikr.warframe.gui.shared.CategoryFilter;
 import net.nikr.warframe.io.alert.Alert;
 
 
 public class AlertMatcher implements Matcher<Alert> {
 
 	private final int credits;
-	private final boolean blueprints;
-	private final boolean mods;
-	private final boolean auras;
-	private final boolean resources;
-	private final boolean filter;
+	private final Map<String, CategoryFilter> categoryFilters;
 	private final Set<String> filters;
 
-	public AlertMatcher(int credits, boolean blueprints, boolean mods, boolean auras, boolean resources, boolean filter, Set<String> filters) {
+	public AlertMatcher(int credits, Map<String, CategoryFilter> categoryFilters, Set<String> filters) {
 		this.credits = credits;
-		this.blueprints = blueprints;
-		this.mods = mods;
-		this.auras = auras;
-		this.resources = resources;
-		this.filter = filter;
-		this.filters = new HashSet<String>(filters);
+		this.categoryFilters = categoryFilters;
+		this.filters = filters;
 	}
 
 	@Override
 	public boolean matches(Alert alert) {
+		boolean matches = matchesIt(alert);
+		alert.setMatch(matches);
+		return matches;
+	}
+
+	public boolean matchesIt(Alert alert) {
 		//Ignore credits
 		if (alert.isDone()) {
-			alert.setMatch(false);
 			return false;
 		}
 		if (!alert.hasLoot()) {
 			if (credits == 1 && alert.getCredits() < 3000) { //3K
-				alert.setMatch(false);
 				return false;
 			}
 			if (credits == 2 && alert.getCredits() < 5000) { //5K
-				alert.setMatch(false);
 				return false;
 			}
 			if (credits == 3 && alert.getCredits() < 7000) { //7K
-				alert.setMatch(false);
 				return false;
 			}
 			if (credits == 4 && alert.getCredits() < 10000) { //10K
-				alert.setMatch(false);
 				return false;
 			}
 			if (credits == 5) { //No credits
-				alert.setMatch(false);
 				return false;
 			}
 		}
-		//Ignore Category
-		Category category = alert.getCategory();
-		if (category != null) {
-			if (!blueprints && category.getType().isBlueprint()) {
-				alert.setMatch(false);
-				return false;
+		//Category
+		if (alert.hasLoot()) {
+			Category category = alert.getCategory();
+			CategoryFilter filter = null;
+			if (category != null) { //If category is known
+				filter = categoryFilters.get(category.getName());
 			}
-			//Ignore Mods
-			if (!mods && category.getType().isMod()) {
-				alert.setMatch(false);
-				return false;
+			if (filter == null) { //Fallback on filters
+				filter = CategoryFilter.FILTERS;
 			}
-			//Ignore Aura
-			if (!auras && category.getType().isAura()) {
-				alert.setMatch(false);
-				return false;
-			}
-			//Ignore Resources
-			if (!resources && category.getType().isResource()) {
-				alert.setMatch(false);
-				return false;
+			switch (filter) {
+				case ALL:
+					return true;
+				case FILTERS:
+					return !filters.contains(alert.getRewordID().getName());
+				case NONE:
+					return false;
 			}
 		}
-		//Ignore
-		if (filter && alert.hasLoot() && filters.contains(alert.getRewordID().getName())) {
-			alert.setMatch(false);
-			return false;
-		}
-		alert.setMatch(true);
 		return true;
 	}
 	

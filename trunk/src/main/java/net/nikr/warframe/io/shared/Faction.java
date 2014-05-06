@@ -25,21 +25,21 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import javax.swing.Icon;
 import net.nikr.warframe.gui.images.Images;
-import net.nikr.warframe.gui.reward.Category.CategoryType;
+import net.nikr.warframe.gui.reward.Category.CategoryColor;
 
 
 public enum Faction {
-	GRINEER("Grineer", CategoryType.RED, Images.GRINEER),
-	CORPUS("Corpus", CategoryType.BLUE, Images.CORPUS),
-	INFESTATION("Infestation", CategoryType.GREEN, Images.INFESTATION),
-	UNKNOWN("Unknown", CategoryType.GRAY, Images.INVASION);
+	GRINEER("Grineer", CategoryColor.RED, Images.GRINEER),
+	CORPUS("Corpus", CategoryColor.BLUE, Images.CORPUS),
+	INFESTATION("Infestation", CategoryColor.GREEN, Images.INFESTATION),
+	UNKNOWN("Unknown", CategoryColor.GRAY, Images.INVASION);
 	;
 
 	private final String name;
-	private final CategoryType category;
+	private final CategoryColor category;
 	private final Images image;
 
-	private Faction(String name, CategoryType category, Images image) {
+	private Faction(String name, CategoryColor category, Images image) {
 		this.name = name;
 		this.category = category;
 		this.image = image;

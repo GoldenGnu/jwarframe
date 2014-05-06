@@ -28,19 +28,9 @@ import net.nikr.warframe.gui.settings.SettingsConstants;
 
 public class AlertSettings {
 	private final int credits;
-	private final boolean blueprints;
-	private final boolean mods;
-	private final boolean auras;
-	private final boolean resources;
-	private final boolean filter;
 
-	public AlertSettings(int credits, boolean blueprints, boolean mods, boolean auras, boolean resources, boolean filter) {
+	public AlertSettings(int credits) {
 		this.credits = credits;
-		this.blueprints = blueprints;
-		this.mods = mods;
-		this.auras = auras;
-		this.resources = resources;
-		this.filter = filter;
 	}
 
 	public Set<SettingsConstants> getSettings() {
@@ -53,26 +43,6 @@ public class AlertSettings {
 			case 3: settings.add(SettingsConstants.ALERT_CREDIT_7K); break;
 			case 4: settings.add(SettingsConstants.ALERT_CREDIT_10K); break;
 			case 5: settings.add(SettingsConstants.ALERT_CREDIT_NONE); break;
-		}
-		//Blueprints
-		if (blueprints) {
-			settings.add(SettingsConstants.ALERT_BLUEPRINT);
-		}
-		//Mods
-		if (mods) {
-			settings.add(SettingsConstants.ALERT_MOD);
-		}
-		//Aura
-		if (auras) {
-			settings.add(SettingsConstants.ALERT_AURA);
-		}
-		//Resources
-		if (resources) {
-			settings.add(SettingsConstants.ALERT_RESOURCE);
-		}
-		//Filters
-		if (filter) {
-			settings.add(SettingsConstants.ALERT_FILTERS);
 		}
 		return settings;
 	}

@@ -55,6 +55,7 @@ import javax.swing.event.TableModelListener;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.settings.SettingsConstants;
+import net.nikr.warframe.gui.shared.FilterTool;
 import net.nikr.warframe.gui.shared.Tool;
 import net.nikr.warframe.gui.shared.listeners.InvasionListener;
 import net.nikr.warframe.gui.shared.listeners.NotifyListener.NotifySource;
@@ -64,99 +65,32 @@ import net.nikr.warframe.gui.shared.table.InvertMatcher;
 import net.nikr.warframe.gui.shared.table.PaddingTableCellRenderer;
 import net.nikr.warframe.io.invasion.Invasion;
 import net.nikr.warframe.io.invasion.Invasion.InvasionPercentage;
+import net.nikr.warframe.io.shared.FastToolTips;
 
 
-public class InvasionTool implements Tool, InvasionListener {
+public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 
-	private final JPanel jPanel;
 	private final JRadioButton jAll;
 	private final JRadioButton jNotify;
 	private final JRadioButton jIgnore;
 	private final JSlider jCredits;
-	private final JCheckBox jBlueprints;
-	private final JCheckBox jMods;
-	private final JCheckBox jAuras;
-	private final JCheckBox jResources;
-	private final JCheckBox jFilters;
-	private final JCheckBox jCorpus;
-	private final JCheckBox jGrineer;
-	private final JCheckBox jInfested;
+	private final JToggleButton jKillCorpus;
+	private final JToggleButton jKillGrineer;
+	private final JToggleButton jKillInfested;
+	private final JToggleButton jHelpCorpus;
+	private final JToggleButton jHelpGrineer;
 	private final JTable jTable;
 
 	private final DefaultEventSelectionModel<Invasion> selectionModel;
 	private final DefaultEventTableModel<Invasion> eventTableModel;
 
-	private final List<JComponent> filterComponents = new ArrayList<JComponent>();
 	private final EventList<Invasion> eventList = new BasicEventList<Invasion>();
 	private final FilterList<Invasion> filterList;
 	private final FilterList<Invasion> showList;
 	private Matcher<Invasion> matcher = null;
 
-	private final Program program;
-
 	public InvasionTool(final Program program) {
-		this.program = program;
-
-		jPanel = new JPanel();
-		GroupLayout layout = new GroupLayout(jPanel);
-		jPanel.setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-
-		jCredits = new JSlider(JSlider.HORIZONTAL, 0, 3, 0);
-		jCredits.setMinorTickSpacing(0);
-		jCredits.setMajorTickSpacing(1);
-		jCredits.setPaintTicks(true);
-		jCredits.setSnapToTicks(true);
-		Dictionary<Integer, JLabel> labels = new Hashtable<Integer, JLabel>();
-		labels.put(0, new JLabel("All"));
-		labels.put(1, new JLabel("25k"));
-		labels.put(2, new JLabel("35k"));
-		labels.put(3, new JLabel("None"));
-		jCredits.setLabelTable(labels);
-		jCredits.setPaintLabels(true);
-		jCredits.setVisible(false);
-		if (program.getSettings(SettingsConstants.INVASION_CREDITS_25K)) {
-			jCredits.setValue(1);
-		} else if (program.getSettings(SettingsConstants.INVASION_CREDITS_35K)) {
-			jCredits.setValue(2);
-		} else if (program.getSettings(SettingsConstants.INVASION_CREDITS_NONE)) {
-			jCredits.setValue(3);
-		} else { //No settings or INVASION_CREDITS_ALL
-			jCredits.setValue(0);
-		}
-		jCredits.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				filter();
-				program.saveSettings();
-			}
-		});
-		filterComponents.add(jCredits);
-
-		//Faction
-		jCorpus = createCheckBox("Kill Corpus", SettingsConstants.INVASION_CORPUS);
-		jGrineer = createCheckBox("Kill Grineer", SettingsConstants.INVASION_GRINEER);
-		jInfested = createCheckBox("Kill Infested", SettingsConstants.INVASION_INFESTED);
-		//Category
-		jBlueprints = createCheckBox("Blueprints", SettingsConstants.INVASION_BLUEPRINT);
-		jMods = createCheckBox("Mods", SettingsConstants.INVASION_MOD);
-		jAuras = createCheckBox("Auras", SettingsConstants.INVASION_AURA);
-		jResources = createCheckBox("Resources", SettingsConstants.INVASION_RESOURCE);
-		//Filters
-		jFilters = createCheckBox("Ignore", SettingsConstants.INVASION_FILTERS);
-
-		JToggleButton jShowFilters = new JToggleButton("Filters");
-		jShowFilters.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				boolean b = !jCredits.isVisible();
-				for (JComponent component : filterComponents) {
-					component.setVisible(b);
-				}
-				jPanel.validate();
-			}
-		});
+		super(program);
 
 		jAll = new JRadioButton("All");
 		jAll.setSelected(true);
@@ -185,6 +119,78 @@ public class InvasionTool implements Tool, InvasionListener {
 		buttonGroup.add(jAll);
 		buttonGroup.add(jNotify);
 		buttonGroup.add(jIgnore);
+
+		JToggleButton jFilters = new JToggleButton("Filters");
+		jFilters.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean b = !jCredits.isVisible();
+				for (JComponent component : filterComponents) {
+					component.setVisible(b);
+				}
+				jPanel.validate();
+			}
+		});
+
+		JLabel jHelp = new JLabel(Images.HELP.getIcon());
+		FastToolTips.install(jHelp);
+		jHelp.setToolTipText("<html><body>"
+				+ "<b>Show:</b> Hover mouse over reward cell<br>");
+
+		jCredits = new JSlider(JSlider.HORIZONTAL, 0, 3, 0);
+		jCredits.setMinorTickSpacing(0);
+		jCredits.setMajorTickSpacing(1);
+		jCredits.setPaintTicks(true);
+		jCredits.setSnapToTicks(true);
+		Dictionary<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+		labelTable.put(0, new JLabel("All"));
+		labelTable.put(1, new JLabel("25k"));
+		labelTable.put(2, new JLabel("35k"));
+		labelTable.put(3, new JLabel("None"));
+		jCredits.setLabelTable(labelTable);
+		jCredits.setPaintLabels(true);
+		jCredits.setVisible(false);
+		if (program.getSettings(SettingsConstants.INVASION_CREDITS_25K)) {
+			jCredits.setValue(1);
+		} else if (program.getSettings(SettingsConstants.INVASION_CREDITS_35K)) {
+			jCredits.setValue(2);
+		} else if (program.getSettings(SettingsConstants.INVASION_CREDITS_NONE)) {
+			jCredits.setValue(3);
+		} else { //No settings or INVASION_CREDITS_ALL
+			jCredits.setValue(0);
+		}
+		jCredits.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				filter();
+				program.saveSettings();
+			}
+		});
+		filterComponents.add(jCredits);
+
+		JLabel jKillLabel = new JLabel("Kill");
+		jKillLabel.setVisible(false);
+		filterComponents.add(jKillLabel);
+		//Faction
+		jKillCorpus = createToggleButton(Images.CORPUS.getIcon(), "Corpus", null, program.getSettings(SettingsConstants.INVASION_CORPUS));
+		jKillGrineer = createToggleButton(Images.GRINEER.getIcon(), "Grineer", null, program.getSettings(SettingsConstants.INVASION_GRINEER));
+		jKillInfested = createToggleButton(Images.INFESTATION.getIcon(), "Infestation", null, program.getSettings(SettingsConstants.INVASION_INFESTED));
+
+		JLabel jHelpLabel = new JLabel("Help");
+		jHelpLabel.setVisible(false);
+		filterComponents.add(jHelpLabel);
+
+		//Faction
+		jHelpCorpus = createToggleButton(Images.CORPUS.getIcon(), "Corpus", null, program.getSettings(SettingsConstants.INVASION_HELP_CORPUS));
+		jHelpGrineer = createToggleButton(Images.GRINEER.getIcon(), "Grineer", null, program.getSettings(SettingsConstants.INVASION_HELP_GRINEER));
+
+		addColumn1(jKillLabel);
+		addColumn2(jKillCorpus);
+		addColumn3(jKillGrineer);
+		addColumn4(jKillInfested);
+		addColumn1(jHelpLabel);
+		addColumn2(jHelpCorpus);
+		addColumn3(jHelpGrineer);
 
 		filterList = new FilterList<Invasion>(eventList);
 		showList = new FilterList<Invasion>(eventList);
@@ -228,20 +234,15 @@ public class InvasionTool implements Tool, InvasionListener {
 						.addComponent(jNotify)
 						.addComponent(jIgnore)
 						.addGap(0, 0, Integer.MAX_VALUE)
-						.addComponent(jShowFilters)
+						.addComponent(jFilters)
+						.addGap(10)
+						.addComponent(jHelp)
 				)
 				.addGroup(layout.createSequentialGroup()
 						.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 						.addGroup(layout.createParallelGroup()
 								.addComponent(jCredits, 170, 170, 170)
-								.addComponent(jCorpus)
-								.addComponent(jGrineer)
-								.addComponent(jInfested)
-								.addComponent(jBlueprints)
-								.addComponent(jMods)
-								.addComponent(jAuras)
-								.addComponent(jResources)
-								.addComponent(jFilters)
+								.addGroup(categoryHorizontalGroup)
 						)
 				)
 		);
@@ -251,23 +252,18 @@ public class InvasionTool implements Tool, InvasionListener {
 						.addComponent(jAll)
 						.addComponent(jNotify)
 						.addComponent(jIgnore)
-						.addComponent(jShowFilters)
+						.addComponent(jFilters)
+						.addComponent(jHelp)
 				)
 				.addGroup(layout.createParallelGroup()
 						.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 						.addGroup(layout.createSequentialGroup()
 								.addComponent(jCredits)
 								.addGap(20)
-								.addComponent(jCorpus)
-								.addComponent(jGrineer)
-								.addComponent(jInfested)
+								.addGroup(createRow(jKillLabel, jKillCorpus, jKillGrineer, jKillInfested))
+								.addGroup(createRow(jHelpLabel, jHelpCorpus, jHelpGrineer, null))
 								.addGap(20)
-								.addComponent(jBlueprints)
-								.addComponent(jMods)
-								.addComponent(jAuras)
-								.addComponent(jResources)
-								.addGap(20)
-								.addComponent(jFilters)
+								.addGroup(categoryVerticalGroup)
 						)
 				)
 		);
@@ -320,27 +316,23 @@ public class InvasionTool implements Tool, InvasionListener {
 	@Override
 	public Set<SettingsConstants> getSettings() {
 		InvasionSettings settings = new InvasionSettings(jCredits.getValue(),
-				jCorpus.isSelected(),
-				jGrineer.isSelected(),
-				jInfested.isSelected(),
-				jBlueprints.isSelected(),
-				jMods.isSelected(),
-				jAuras.isSelected(),
-				jResources.isSelected(),
-				jFilters.isSelected());
+				jKillCorpus.isSelected(),
+				jKillGrineer.isSelected(),
+				jKillInfested.isSelected(),
+				jHelpCorpus.isSelected(),
+				jHelpGrineer.isSelected());
 		return settings.getSettings();
 	}
 
+	@Override
 	public final void filter() {
 		matcher = new InvasionMatcher(jCredits.getValue(),
-				jCorpus.isSelected(),
-				jGrineer.isSelected(),
-				jInfested.isSelected(),
-				jBlueprints.isSelected(),
-				jMods.isSelected(),
-				jAuras.isSelected(),
-				jResources.isSelected(),
-				jFilters.isSelected(),
+				jKillCorpus.isSelected(),
+				jKillGrineer.isSelected(),
+				jKillInfested.isSelected(),
+				jHelpCorpus.isSelected(),
+				jHelpGrineer.isSelected(),
+				getCategoryFilters(),
 				program.getFilters());
 		filterList.setMatcher(matcher);
 		if (jNotify.isSelected()) {

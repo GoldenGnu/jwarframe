@@ -24,7 +24,6 @@ package net.nikr.warframe.io.alert;
 import java.util.Date;
 import java.util.Set;
 import net.nikr.warframe.gui.reward.Category;
-import net.nikr.warframe.gui.reward.Category.CategoryType;
 import net.nikr.warframe.gui.reward.RewardID;
 import net.nikr.warframe.io.shared.Faction;
 
@@ -198,9 +197,9 @@ public class Alert implements Comparable<Alert>{
 	}
 	public String getCategoryName() {
 		if (category != null) {
-			return category.getType().getName();
+			return category.getName();
 		} else if (hasLoot()) {
-			return CategoryType.GRAY.getName();
+			return "Unknown";
 		} else {
 			return "";
 		}

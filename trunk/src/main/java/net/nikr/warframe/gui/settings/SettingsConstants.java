@@ -30,11 +30,6 @@ public enum SettingsConstants {
 	ALERT_CREDIT_7K(0, false),
 	ALERT_CREDIT_10K(0, false),
 	ALERT_CREDIT_NONE(0, false),
-	ALERT_BLUEPRINT(0, true),
-	ALERT_MOD(0, true),
-	ALERT_AURA(0, true),
-	ALERT_RESOURCE(0, true),
-	ALERT_FILTERS(0, true),
 	INVASION_CREDITS_ALL(0, true),
 	INVASION_CREDITS_NONE(0, false),
 	INVASION_CREDITS_25K(0, false),
@@ -42,11 +37,8 @@ public enum SettingsConstants {
 	INVASION_CORPUS(0, true),
 	INVASION_GRINEER(0, true),
 	INVASION_INFESTED(0, true),
-	INVASION_BLUEPRINT(1, true),
-	INVASION_MOD(1, true),
-	INVASION_AURA(1, true),
-	INVASION_RESOURCE(1, true),
-	INVASION_FILTERS(1, true),
+	INVASION_HELP_CORPUS(2, true),
+	INVASION_HELP_GRINEER(2, true),
 	LOGIN_REWARD(1, true),
 	NOTIFY_AUDIO(1, true);
 
@@ -59,7 +51,7 @@ public enum SettingsConstants {
 	}
 
 	public static int getSettingsVersion() {
-		return 1;
+		return 2;
 	}
 
 	public int getVersion() {

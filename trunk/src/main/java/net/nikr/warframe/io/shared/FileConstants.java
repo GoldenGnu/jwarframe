@@ -82,6 +82,10 @@ public class FileConstants {
 		return new File(getLocalFile(SETTINGS_LOCAL + "settings.dat", Main.isPortable()));
 	}
 
+	public static File getCategoryFilters() {
+		return new File(getLocalFile(SETTINGS_LOCAL + "category.dat", Main.isPortable()));
+	}
+
 	public static File getDone() {
 		return new File(getLocalFile(SETTINGS_LOCAL + "done.dat", Main.isPortable()));
 	}

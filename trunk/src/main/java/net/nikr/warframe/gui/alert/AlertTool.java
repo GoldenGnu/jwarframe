@@ -43,7 +43,6 @@ import java.util.TreeSet;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.Icon;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -61,6 +60,7 @@ import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.settings.SettingsConstants;
 import net.nikr.warframe.gui.shared.DesktopUtil;
+import net.nikr.warframe.gui.shared.FilterTool;
 import net.nikr.warframe.gui.shared.Tool;
 import net.nikr.warframe.gui.shared.listeners.AlertListener;
 import net.nikr.warframe.gui.shared.listeners.NotifyListener.NotifySource;
@@ -72,18 +72,12 @@ import net.nikr.warframe.io.alert.Alert;
 import net.nikr.warframe.io.shared.FastToolTips;
 
 
-public class AlertTool implements AlertListener, Tool {
+public class AlertTool extends FilterTool implements AlertListener, Tool {
 
-	private final JPanel jPanel;
 	private final JRadioButton jAll;
 	private final JRadioButton jNotify;
 	private final JRadioButton jIgnore;
 	private final JSlider jCredits;
-	private final JCheckBox jBlueprints;
-	private final JCheckBox jMods;
-	private final JCheckBox jAuras;
-	private final JCheckBox jResources;
-	private final JCheckBox jFilters;
 	private final Timer timeLeft;
 
 	private final EventList<Alert> eventList = new BasicEventList<Alert>();
@@ -93,18 +87,8 @@ public class AlertTool implements AlertListener, Tool {
 	private final DefaultEventTableModel<Alert> eventTableModel;
 	private Matcher<Alert> matcher = null;
 
-	private final List<JComponent> filterComponents = new ArrayList<JComponent>();
-
-	private final Program program;
-
 	public AlertTool(final Program program) {
-		this.program = program;
-
-		jPanel = new JPanel();
-		GroupLayout layout = new GroupLayout(jPanel);
-		jPanel.setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
+		super(program);
 
 		jAll = new JRadioButton("All");
 		jAll.setSelected(true);
@@ -134,9 +118,23 @@ public class AlertTool implements AlertListener, Tool {
 		buttonGroup.add(jNotify);
 		buttonGroup.add(jIgnore);
 
+		JToggleButton jFilters = new JToggleButton("Filters");
+		jFilters.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean b = !jCredits.isVisible();
+				for (JComponent component : filterComponents) {
+					component.setVisible(b);
+				}
+				jPanel.validate();
+			}
+		});
+
 		JLabel jHelp = new JLabel(Images.HELP.getIcon());
 		FastToolTips.install(jHelp);
-		jHelp.setToolTipText("<html><body><b>Show on Wikia:</b> Double click a table row with reward<br>");
+		jHelp.setToolTipText("<html><body>"
+				+ "<b>Wikia:</b>\tDouble click a table row with reward<br>"
+				+ "<b>Show:</b>\tHover mouse over reward cell<br>");
 
 		jCredits = new JSlider(JSlider.HORIZONTAL, 0, 5, 0);
 		jCredits.setMinorTickSpacing(0);
@@ -174,25 +172,6 @@ public class AlertTool implements AlertListener, Tool {
 			}
 		});
 		filterComponents.add(jCredits);
-		//Category
-		jBlueprints = createCheckBox("Blueprints", SettingsConstants.ALERT_BLUEPRINT);
-		jMods = createCheckBox("Mods", SettingsConstants.ALERT_MOD);
-		jAuras = createCheckBox("Auras", SettingsConstants.ALERT_AURA);
-		jResources = createCheckBox("Resources", SettingsConstants.ALERT_RESOURCE);
-		//Filter
-		jFilters = createCheckBox("Ignore", SettingsConstants.ALERT_FILTERS);
-
-		JToggleButton jShowFilters = new JToggleButton("Filters");
-		jShowFilters.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				boolean b = !jCredits.isVisible();
-				for (JComponent component : filterComponents) {
-					component.setVisible(b);
-				}
-				jPanel.validate();
-			}
-		});
 
 		SortedList<Alert> sortedList = new SortedList<Alert>(eventList);
 		filterList = new FilterList<Alert>(sortedList);
@@ -257,7 +236,7 @@ public class AlertTool implements AlertListener, Tool {
 					.addComponent(jNotify)
 					.addComponent(jIgnore)
 					.addGap(0, 0, Integer.MAX_VALUE)
-					.addComponent(jShowFilters)	
+					.addComponent(jFilters)	
 					.addGap(10)
 					.addComponent(jHelp)	
 				)
@@ -265,11 +244,7 @@ public class AlertTool implements AlertListener, Tool {
 					.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 					.addGroup(layout.createParallelGroup()
 						.addComponent(jCredits, 170, 170, 170)
-						.addComponent(jBlueprints)
-						.addComponent(jMods)
-						.addComponent(jAuras)
-						.addComponent(jResources)
-						.addComponent(jFilters)
+						.addGroup(categoryHorizontalGroup)
 					)
 				)
 		);
@@ -279,7 +254,7 @@ public class AlertTool implements AlertListener, Tool {
 					.addComponent(jAll)
 					.addComponent(jNotify)
 					.addComponent(jIgnore)
-					.addComponent(jShowFilters)
+					.addComponent(jFilters)
 					.addComponent(jHelp)
 				)
 				.addGroup(layout.createParallelGroup()
@@ -287,12 +262,7 @@ public class AlertTool implements AlertListener, Tool {
 					.addGroup(layout.createSequentialGroup()
 						.addComponent(jCredits)
 						.addGap(20)
-						.addComponent(jBlueprints)
-						.addComponent(jMods)
-						.addComponent(jAuras)
-						.addComponent(jResources)
-						.addGap(20)
-						.addComponent(jFilters)
+						.addGroup(categoryVerticalGroup)
 					)
 				)
 		);
@@ -321,12 +291,7 @@ public class AlertTool implements AlertListener, Tool {
 
 	@Override
 	public Set<SettingsConstants> getSettings() {
-		AlertSettings alertSettings = new AlertSettings(jCredits.getValue(),
-				jBlueprints.isSelected(),
-				jMods.isSelected(),
-				jAuras.isSelected(),
-				jResources.isSelected(),
-				jFilters.isSelected());
+		AlertSettings alertSettings = new AlertSettings(jCredits.getValue());
 		return alertSettings.getSettings();
 	}
 
@@ -366,14 +331,9 @@ public class AlertTool implements AlertListener, Tool {
 		}
 	}
 
+	@Override
 	public final void filter() {
-		matcher = new AlertMatcher(jCredits.getValue(),
-				jBlueprints.isSelected(),
-				jMods.isSelected(),
-				jAuras.isSelected(),
-				jResources.isSelected(),
-				jFilters.isSelected(),
-				program.getFilters());
+		matcher = new AlertMatcher(jCredits.getValue(), getCategoryFilters(), program.getFilters());
 		filterList.setMatcher(matcher);
 		if (jNotify.isSelected()) {
 			showList.setMatcher(matcher);
@@ -382,21 +342,6 @@ public class AlertTool implements AlertListener, Tool {
 			showList.setMatcher(new InvertMatcher<Alert>(matcher));
 		}
 		updateIgnored();
-	}
-
-	private JCheckBox createCheckBox(String title, SettingsConstants settings) {
-		JCheckBox jCheckBox = new JCheckBox(title);
-		jCheckBox.setSelected(program.getSettings(settings));
-		jCheckBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				filter();
-				program.saveSettings();
-			}
-		});
-		jCheckBox.setVisible(false);
-		filterComponents.add(jCheckBox);
-		return jCheckBox;
 	}
 }
 	

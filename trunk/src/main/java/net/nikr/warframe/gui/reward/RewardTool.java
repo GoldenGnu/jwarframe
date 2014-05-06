@@ -118,7 +118,7 @@ public class RewardTool implements Tool {
 
 		JLabel jHelp = new JLabel(Images.HELP.getIcon());
 		FastToolTips.install(jHelp);
-		jHelp.setToolTipText("<html><body><b>Popup Menu:</b> Right click<br>"
+		jHelp.setToolTipText("<html><body><b>Edit:</b> Right click<br>"
 				+ "<b>Zoom:</b> Ctrl + Mouse wheel");
 
 		ButtonGroup buttonGroup = new ButtonGroup();
