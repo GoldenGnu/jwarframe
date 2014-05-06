@@ -343,19 +343,4 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		}
 		jTable.updateUI();
 	}
-
-	private JCheckBox createCheckBox(String title, SettingsConstants settings) {
-		JCheckBox jCheckBox = new JCheckBox(title);
-		jCheckBox.setSelected(program.getSettings(settings));
-		jCheckBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				filter();
-				program.saveSettings();
-			}
-		});
-		jCheckBox.setVisible(false);
-		filterComponents.add(jCheckBox);
-		return jCheckBox;
-	}
 }
