@@ -16,6 +16,16 @@
                   #### #  # #  # #  # #### #### #### #### ####
 
 ________________________________________________________________________________
+_ALPHA_6________________________________________________________________________
+
+New Features:
+-Each category now have options to include all, use filters, or exclude all
+
+Bug Fixes:
+-Login reward kept showing up in notify messages
+-Settings could get outdated while running the program
+
+________________________________________________________________________________
 _ALPHA_5________________________________________________________________________
 
 Bug Fixes:
