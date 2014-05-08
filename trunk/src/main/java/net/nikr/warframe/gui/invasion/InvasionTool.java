@@ -39,7 +39,6 @@ import java.util.Set;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.Icon;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -221,6 +220,7 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 							program.doneRemove(invasion.getId());
 						}
 					}
+					updateStatusBar();
 				}
 			}
 		});
@@ -270,6 +270,10 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		filter();
 	}
 
+	private void updateStatusBar() {
+		program.setInvasions(filterList.size(), eventList.size());
+	}
+
 	@Override
 	public void addInvasions(List<Invasion> invasions) {
 		List<Invasion> cache = new ArrayList<Invasion>(filterList);
@@ -291,6 +295,7 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		if (count > 0) {
 			program.startNotify(count, NotifySource.INVASIONS);
 		}
+		updateStatusBar();
 	}
 
 	@Override
@@ -342,5 +347,6 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 			showList.setMatcher(new InvertMatcher<Invasion>(matcher));
 		}
 		jTable.updateUI();
+		updateStatusBar();
 	}
 }

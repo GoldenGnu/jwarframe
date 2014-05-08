@@ -37,6 +37,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 import net.nikr.warframe.Main;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.SplashUpdater;
@@ -56,6 +57,8 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 	private final JFrame jFrame;
 	private final JTabbedPane jTabs;
 	private final JLabel jLoginReward;
+	private final JLabel jAlerts;
+	private final JLabel jInvasions;
 
 	private final Program program;
 
@@ -104,13 +107,31 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEADING);
 		jStatusBar.setLayout(flowLayout);
 
-		jLoginReward = new JLabel("Login Reward");
+		Border border = BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(Color.BLACK, 1)
+				, BorderFactory.createEmptyBorder(2, 3, 2, 3));
+
+		jAlerts = new JLabel(Images.ALERT.getIcon());
+		jAlerts.setToolTipText("Alerts");
+		jAlerts.setOpaque(true);
+		jAlerts.setBorder(border);
+		FastToolTips.install(jAlerts);
+		jStatusBar.add(jAlerts);
+		setAlert(0, 0);
+
+		jInvasions = new JLabel(Images.INVASION.getIcon());
+		jInvasions.setToolTipText("Invasions");
+		jInvasions.setOpaque(true);
+		jInvasions.setBorder(border);
+		FastToolTips.install(jInvasions);
+		jStatusBar.add(jInvasions);
+		setInvasions(0, 0);
+
+		jLoginReward = new JLabel(Images.LOGIN_REWARD.getIcon());
+		jLoginReward.setToolTipText("Login Reward");
 		jLoginReward.setOpaque(true);
-		jLoginReward.setBorder(
-				BorderFactory.createCompoundBorder(
-					BorderFactory.createLineBorder(Color.BLACK, 1)
-					, BorderFactory.createEmptyBorder(2, 5, 2, 5))
-				);
+		jLoginReward.setBorder(border);
+		FastToolTips.install(jLoginReward);
 		jStatusBar.add(jLoginReward);
 
 		layout.setHorizontalGroup(
@@ -145,6 +166,28 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 
 	public JFrame getWindow() {
 		return jFrame;
+	}
+
+	public final void setAlert(int match, int total) {
+		jAlerts.setText(match + " of " + total + " ");
+		if (total == 0) {
+			jAlerts.setBackground(Category.CategoryColor.GRAY.getColor(false));
+		} else if (match > 0) {
+			jAlerts.setBackground(Category.CategoryColor.GREEN.getColor(false));
+		} else {
+			jAlerts.setBackground(Category.CategoryColor.RED.getColor(false));
+		}
+	}
+
+	public final void setInvasions(int match, int total) {
+		jInvasions.setText(match + " of " + total + " ");
+		if (total == 0) {
+			jInvasions.setBackground(Category.CategoryColor.GRAY.getColor(false));
+		} else if (match > 0) {
+			jInvasions.setBackground(Category.CategoryColor.GREEN.getColor(false));
+		} else {
+			jInvasions.setBackground(Category.CategoryColor.RED.getColor(false));
+		}
 	}
 
 	@Override

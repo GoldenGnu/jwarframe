@@ -42,6 +42,7 @@ public enum Images {
 	SETTINGS ("settings.png"),
 	CORPUS ("corpus.png"),
 	GRINEER ("grineer.png"),
+	LOGIN_REWARD ("login_reward.png"),
 	INFESTATION ("infestation.png"),
 	PROGRAM_16 ("program_16.png"),
 	PROGRAM_32 ("program_32.png"),
