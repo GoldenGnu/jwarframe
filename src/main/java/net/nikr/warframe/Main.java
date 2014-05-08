@@ -31,6 +31,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import static net.nikr.warframe.Program.PROGRAM_NAME;
 import static net.nikr.warframe.Program.PROGRAM_VERSION;
+import net.nikr.warframe.io.shared.FileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,27 +47,17 @@ public final class Main {
 	/**
 	 * jWarframe main launcher.
 	 */
-	private final Program program;
 
 	private static boolean portable = false;
 	private static boolean startup = false;
-
-	/** Creates a new instance of Main. */
-	private Main() {
-		log.info("Starting {} {}", PROGRAM_NAME, PROGRAM_VERSION);
-		log.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.version"));
-		log.info("Java: " + System.getProperty("java.vendor") + " " + System.getProperty("java.version"));
-		program = new Program();
-		program.start();
-	}
+	private static boolean debug = false;
+	private static boolean cleardata = false;
 
 	/**
 	 * Entry point for jWarframe.
 	 * @param args the command line arguments
 	 */
 	public static void main(final String[] args) {
-		boolean debug = false;
-
 		for (String arg : args) {
 			if (arg.toLowerCase().equals("-debug")) {
 				debug = true;
@@ -76,6 +67,9 @@ public final class Main {
 			}
 			if (arg.toLowerCase().equals("-startup")) {
 				startup = true;
+			}
+			if (arg.toLowerCase().equals("-cleardata")) {
+				cleardata = true;
 			}
 		}
 
@@ -118,17 +112,21 @@ public final class Main {
 		System.setProperty("sun.awt.exception.handler", "net.nikr.eve.jeveasset.NikrUncaughtExceptionHandler");
 		Thread.setDefaultUncaughtExceptionHandler(new NikrUncaughtExceptionHandler());
 
+		if (cleardata) {
+			clearData();
+		}
+
 		//XXX - Workaround for IPv6 fail (force IPv4)
 		//eveonline.com is not IPv6 ready...
 		System.setProperty("java.net.preferIPv4Stack" , "true");
 
 		javax.swing.SwingUtilities.invokeLater(
-			new Runnable() {
-				@Override
-				public void run() {
-					createAndShowGUI();
-				}
-			});
+				new Runnable() {
+					@Override
+					public void run() {
+						createAndShowGUI();
+					}
+				});
 	}
 
 	public static boolean isPortable() {
@@ -151,7 +149,23 @@ public final class Main {
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		JDialog.setDefaultLookAndFeelDecorated(true);
 
-		Main main = new Main();
+		log.info("Starting {} {}", PROGRAM_NAME, PROGRAM_VERSION);
+		log.info("OS: " + System.getProperty("os.name") + " " + System.getProperty("os.version"));
+		log.info("Java: " + System.getProperty("java.vendor") + " " + System.getProperty("java.version"));
+		log.info("Debug: " + debug);
+		log.info("Portable: " + portable);
+		log.info("Startup: " + startup);
+		log.info("ClearData: " + cleardata);
+		Program program = new Program();
+		program.start();
+	}
+
+	private static void clearData() {
+		//Clear all downloadable data
+		File data = FileConstants.getDataDirectory();
+		FileConstants.deleteDirectory(data);
+		File images = FileConstants.getImageDirectory();
+		FileConstants.deleteDirectory(images);
 	}
 
 	private static void initLookAndFeel() {
