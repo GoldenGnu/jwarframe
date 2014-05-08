@@ -244,6 +244,14 @@ public class Program {
 		return mainFrame.getWindow();
 	}
 
+	public final void setAlert(int match, int total) {
+		mainFrame.setAlert(match, total);
+	}
+
+	public final void setInvasions(int match, int total) {
+		mainFrame.setInvasions(match, total);
+	}
+
 	public void saveFilters() {
 		for (RewardTool inventory : inventories) {
 			inventory.update();
@@ -294,13 +302,11 @@ public class Program {
 	}
 
 	public void doneAdd(String id) {
-		System.out.println("done > add");
 		done.add(id);
 		saveDone();
 	}
 
 	public void doneRemove(String id) {
-		System.out.println("done > remove");
 		done.remove(id);
 		saveDone();
 	}

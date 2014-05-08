@@ -192,6 +192,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 							program.doneRemove(alert.getId());
 						}
 					}
+					updateStatusBar();
 				}
 			}
 		});
@@ -269,6 +270,19 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		filter();
 	}
 
+	private void updateStatusBar() {
+		program.setAlert(filterList.size(), eventList.size());;
+	}
+
+	private void updateIgnored() {
+		for (Alert alert : eventList) {
+			alert.setIgnored(program.getFilters());
+		}
+		for (int row = 0; row < eventTableModel.getRowCount(); row++) {
+			eventTableModel.fireTableCellUpdated(row, 5);
+		}
+	}
+
 	@Override
 	public String getTitle() {
 		return "Alerts";
@@ -319,16 +333,8 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		if (count > 0) {
 			program.startNotify(count, NotifySource.ALERTS);
 		}
+		updateStatusBar();
 		updateIgnored();
-	}
-
-	public void updateIgnored() {
-		for (Alert alert : eventList) {
-			alert.setIgnored(program.getFilters());
-		}
-		for (int row = 0; row < eventTableModel.getRowCount(); row++) {
-			eventTableModel.fireTableCellUpdated(row, 5);
-		}
 	}
 
 	@Override
@@ -342,6 +348,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 			showList.setMatcher(new InvertMatcher<Alert>(matcher));
 		}
 		updateIgnored();
+		updateStatusBar();
 	}
 }
 	
