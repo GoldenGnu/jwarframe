@@ -87,6 +87,7 @@ public class Program {
 	private final InvasionTool invasionTool;
 	private final TrayTool trayTool;
 	private final FiltersTool filtersTool;
+	private final AudioTool audioTool;
 
 
 	private final List<Category> categories;
@@ -139,7 +140,7 @@ public class Program {
 		mainFrame.add(invasionTool);
 		SplashUpdater.setProgress(15);
 
-		AudioTool audioTool = new AudioTool(this);
+		audioTool = new AudioTool(this);
 		SplashUpdater.setProgress(20);
 
 		float add = 60 / categories.size();
@@ -220,6 +221,14 @@ public class Program {
 		for (LoginRewardListener listener : loginRewardListeners) {
 			listener.addLoginReward(available);
 		}
+	}
+
+	public void audioStartTest() {
+		audioTool.startTest();
+	}
+
+	public void audioStopTest() {
+		audioTool.stopTest();
 	}
 
 	public FiltersTool getFiltersTool() {

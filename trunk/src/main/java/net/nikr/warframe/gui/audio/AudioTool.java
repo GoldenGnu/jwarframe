@@ -22,7 +22,10 @@
 package net.nikr.warframe.gui.audio;
 
 import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -33,15 +36,16 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.settings.SettingsConstants;
 import net.nikr.warframe.gui.shared.listeners.NotifyListener;
+import net.nikr.warframe.io.shared.FileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class AudioTool implements NotifyListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AudioTool.class);
 
 	private Beeper beeper;
+	private Tester tester;
 	private final Program program;
 
 	public AudioTool(Program program) {
@@ -50,7 +54,13 @@ public class AudioTool implements NotifyListener {
 
 	private void playSafe() {
 		try {
-			playIt();
+			if (FileConstants.getAudioLocal().exists()) {
+				playIt(new FileInputStream(FileConstants.getAudioLocal()));
+			} else {
+				playIt(AudioTool.class.getResourceAsStream("alert.wav"));
+			}
+		} catch (MalformedURLException ex) {
+			LOG.error(ex.getMessage(), ex);
 		} catch (IOException ex) {
 			LOG.error(ex.getMessage(), ex);
 		} catch (UnsupportedAudioFileException ex) {
@@ -58,13 +68,47 @@ public class AudioTool implements NotifyListener {
 		} catch (LineUnavailableException ex) {
 			LOG.error(ex.getMessage(), ex);
 		} catch (InterruptedException ex) {
+			//No problem, we just got interupted
+		}
+	}
+
+	public void startTest() {
+		stopTest();
+		tester = new Tester();
+		tester.start();
+		try {
+			tester.join();
+		} catch (InterruptedException ex) {
 			LOG.error(ex.getMessage(), ex);
 		}
 	}
 
-	private void playIt() throws IOException, UnsupportedAudioFileException, LineUnavailableException, InterruptedException {
+	public void stopTest() {
+		if (tester != null) {
+			tester.interrupt();
+			tester = null;
+		}
+	}
+
+	public void playTest() {
+		try {
+			playIt(new FileInputStream(FileConstants.getAudioLocal()));
+		} catch (MalformedURLException ex) {
+			LOG.error(ex.getMessage(), ex);
+		} catch (IOException ex) {
+			LOG.error(ex.getMessage(), ex);
+		} catch (UnsupportedAudioFileException ex) {
+			LOG.error(ex.getMessage(), ex);
+		} catch (LineUnavailableException ex) {
+			LOG.error(ex.getMessage(), ex);
+		} catch (InterruptedException ex) {
+			//No problem, we just got interupted
+		}
+	}
+
+	private void playIt(InputStream inputStream) throws IOException, UnsupportedAudioFileException, LineUnavailableException, InterruptedException {
 		AudioListener listener = new AudioListener();
-		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(AudioTool.class.getResourceAsStream("alert.wav")));
+		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(inputStream));
 		try {
 			Clip clip = AudioSystem.getClip();
 			clip.addLineListener(listener);
@@ -84,6 +128,7 @@ public class AudioTool implements NotifyListener {
 	public void stopNotify() {
 		if (beeper != null) {
 			beeper.stopASAP();
+			beeper.interrupt();
 			beeper = null;
 		}
 	}
@@ -97,6 +142,7 @@ public class AudioTool implements NotifyListener {
 	}
 
 	private class AudioListener implements LineListener {
+
 		private boolean done = false;
 
 		@Override
@@ -115,7 +161,16 @@ public class AudioTool implements NotifyListener {
 		}
 	}
 
+	private class Tester extends Thread {
+
+		@Override
+		public void run() {
+			playTest();
+		}
+	}
+
 	private class Beeper extends Thread {
+
 		private boolean run = true;
 
 		@Override
