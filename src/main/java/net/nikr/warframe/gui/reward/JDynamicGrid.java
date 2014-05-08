@@ -21,103 +21,99 @@
 
 package net.nikr.warframe.gui.reward;
 
+import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
+import java.awt.event.MouseWheelListener;
+import javax.swing.GroupLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.border.Border;
 
 
-public class JPanelDynamicGrid extends JPanel {
+public class JDynamicGrid {
 
-	private JScrollPane jScrollPane;
-	private final Listener listener;
 	private int maxWidth;
+	private final JPanel jInner;
+	private final JPanel jOuter;
+	private final JScrollPane jScroll;
 
-	public JPanelDynamicGrid() {
-		super(new GridLayout(0, 5, 0, 0));
-		listener = new Listener();
-		addHierarchyListener(new HierarchyListener() {
-			@Override
-			public void hierarchyChanged(HierarchyEvent e) {
-				updateScroll();
-			}
-		});
+	public JDynamicGrid() {
+		jInner = new JPanel(new GridLayout(0, 1, 0, 0));
+		jInner.setOpaque(true);
+		jOuter = new JPanel();
+		GroupLayout groupLayout = new GroupLayout(jOuter);
+		jOuter.setLayout(groupLayout);
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup()
+				.addComponent(jInner, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Integer.MAX_VALUE)
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup()
+				.addComponent(jInner, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+		);
+		jScroll = new JScrollPane(jOuter);
+		jScroll.addComponentListener(new Listener());
 	}
 
-	@Override
-	public void setLayout(LayoutManager mgr) {
-		if (!(mgr instanceof GridLayout)) {
-			throw new IllegalArgumentException("Only GridLayout supported");
-		}
-		super.setLayout(mgr); //To change body of generated methods, choose Tools | Templates.
+	public void setBackground(Color bg) {
+		jInner.setBackground(bg);
+		jOuter.setBackground(bg);
 	}
 
-	@Override
-	protected void addImpl(Component comp, Object constraints, int index) {
-		super.addImpl(comp, constraints, index);
+	public void setBorder(Border border) {
+		jInner.setBorder(border);
+	}
+
+	public Component add(Component comp) {
+		jInner.add(comp);
 		maxWidth = Math.max(maxWidth, comp.getPreferredSize().width);
+		updateSize(); //Can be removed if we do updateUI() after adding
+		return comp;
 	}
 
-	@Override
 	public void removeAll() {
-		super.removeAll();
+		jInner.removeAll();
 		maxWidth = 0;
 	}
 
-	@Override
 	public void updateUI() {
-		super.updateUI();
+		jInner.updateUI();
 		updateSize();
 	}
 
-	private void updateScroll() {
-		if (jScrollPane != null) {
-			jScrollPane.removeComponentListener(listener);
-		}
-		jScrollPane = getParentScrollPane();
-		if (jScrollPane != null) {
-			jScrollPane.addComponentListener(listener);
-		}
+	public JScrollBar getVerticalScrollBar() {
+		return jScroll.getVerticalScrollBar();
 	}
 
-	private JScrollPane getParentScrollPane() {
-		boolean searching = true;
-		Container container = this.getParent();
-		while (searching) {
-			if (container instanceof JScrollPane) {
-				return (JScrollPane) container;
-			}
-			if (container == null) {
-				return null;
-			}
-			//One level up
-			container = container.getParent();
-		}
-		return null;
+	public Component getComponent() {
+		return jScroll;
+	}
+
+	public void addMouseWheelListener(MouseWheelListener l) {
+		jOuter.addMouseWheelListener(l);
 	}
 
 	private int getScrollSize() {
-		if (jScrollPane != null) {
-			return jScrollPane.getSize().width - 30;
-		} else {
-			return 0;
-		}
+		return jScroll.getSize().width - 30;
+	}
+
+	private boolean isVisible() {
+		return jScroll.isVisible();
 	}
 
 	private void updateSize() {
-		LayoutManager layout =  getLayout();
-		if (layout instanceof GridLayout && getSize().width > 0 && isVisible()) {
+		LayoutManager layout =  jInner.getLayout();
+		if (layout instanceof GridLayout &&  getScrollSize() > 0 && isVisible()) {
 			GridLayout grid = (GridLayout) layout;
 			//Columns
 			int totalWidth = 0;
 			int columns = 0;
-			for (int i = 0; i < getComponentCount(); i++) {
+			for (int i = 0; i < jInner.getComponentCount(); i++) {
 				totalWidth = totalWidth + maxWidth;
 				if (totalWidth < getScrollSize()) {
 					columns++;
@@ -130,7 +126,7 @@ public class JPanelDynamicGrid extends JPanel {
 			} else {
 				grid.setColumns(1);
 			}
-			super.updateUI();
+			jInner.updateUI();
 		}
 	}
 

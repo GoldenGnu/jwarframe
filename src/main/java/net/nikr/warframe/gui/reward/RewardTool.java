@@ -52,7 +52,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
@@ -70,7 +69,7 @@ public class RewardTool implements Tool {
 	private static final Color BACKGROUND_COLOR = Color.BLACK;
 
 	private final JPanel jPanel;
-	private final JPanelDynamicGrid jItems;
+	private final JDynamicGrid jItems;
 	private final JRadioButton jAll;
 	private final JRadioButton jNotify;
 	private final JRadioButton jIgnore;
@@ -148,28 +147,11 @@ public class RewardTool implements Tool {
 			}
 		});
 
-		jItems = new JPanelDynamicGrid();
+		jItems = new JDynamicGrid();
 		jItems.setBackground(BACKGROUND_COLOR);
 		jItems.setBorder(BorderFactory.createMatteBorder(BORDER_WIDTH, BORDER_WIDTH, 0, 0, BORDER_COLOR));
-
-		JPanel jItemsPanel = new JPanel();
-		jItemsPanel.setBackground(BACKGROUND_COLOR);
-		GroupLayout groupLayout = new GroupLayout(jItemsPanel);
-		jItemsPanel.setLayout(groupLayout);
-
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup()
-				.addComponent(jItems, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Integer.MAX_VALUE)
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup()
-				.addComponent(jItems, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-		);
-
-		final JScrollPane jItemsScroll = new JScrollPane(jItemsPanel);
-		jItemsScroll.getVerticalScrollBar().setUnitIncrement(16);
-
-		jItemsPanel.addMouseWheelListener(new MouseWheelListener() {
+		jItems.getVerticalScrollBar().setUnitIncrement(16);
+		jItems.addMouseWheelListener(new MouseWheelListener() {
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				if ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
@@ -183,9 +165,9 @@ public class RewardTool implements Tool {
 					}
 					jImageSize.setSelectedIndex(value);
 				} else {
-					int value = jItemsScroll.getVerticalScrollBar().getValue();
-					value = value + (e.getUnitsToScroll() * jItemsScroll.getVerticalScrollBar().getUnitIncrement());
-					jItemsScroll.getVerticalScrollBar().setValue(value);
+					int value = jItems.getVerticalScrollBar().getValue();
+					value = value + (e.getUnitsToScroll() * jItems.getVerticalScrollBar().getUnitIncrement());
+					jItems.getVerticalScrollBar().setValue(value);
 				}
 			}
 		});
@@ -241,7 +223,7 @@ public class RewardTool implements Tool {
 					.addGap(10)
 					.addComponent(jHelp)
 				)
-				.addComponent(jItemsScroll)
+				.addComponent(jItems.getComponent())
 		);
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
@@ -253,7 +235,7 @@ public class RewardTool implements Tool {
 					.addComponent(jCount)
 					.addComponent(jHelp)
 				)
-				.addComponent(jItemsScroll)
+				.addComponent(jItems.getComponent())
 		);
 		
 		update();
