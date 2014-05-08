@@ -18,20 +18,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-
 package net.nikr.warframe.io.shared;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.MalformedInputException;
 import net.nikr.warframe.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class FileConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileConstants.class);
 
+	private static final String AUDIO = "audio" + File.separator;
 	private static final String IMAGES = "images" + File.separator;
 	private static final String DATA_LOCAL = "data" + File.separator + "data_";
 	private static final String SETTINGS_LOCAL = "settings" + File.separator;
@@ -40,6 +45,10 @@ public class FileConstants {
 
 	public static File getImageLocal(String filename) {
 		return new File(getLocalFile(IMAGES + filename, Main.isPortable()));
+	}
+
+	public static File getAudioLocal() {
+		return new File(getLocalFile(AUDIO + "alert.wav", Main.isPortable()));
 	}
 
 	public static String getImageOnline(String filename) {
@@ -114,20 +123,6 @@ public class FileConstants {
 		return DATA_ONLINE + "version.dat";
 	}
 
-	public static void deleteDirectory(File folder) {
-		File[] files = folder.listFiles();
-		if (files != null) { //some JVMs return null for empty dirs
-			for (File f : files) {
-				if (f.isDirectory()) {
-					deleteDirectory(f);
-				} else {
-					f.delete();
-				}
-			}
-		}
-		folder.delete();
-	}
-
 	private static String getLocalFile(final String filename, boolean portable) {
 		LOG.debug("Looking for file: {} portable: {}", filename, portable);
 		try {
@@ -143,7 +138,7 @@ public class FileConstants {
 				ret = new File(file.getAbsolutePath() + File.separator + filename);
 
 			} else {
-					file = new File(net.nikr.warframe.Program.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+				file = new File(net.nikr.warframe.Program.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
 				ret = new File(file.getAbsolutePath() + File.separator + filename);
 			}
 			File parent;
@@ -159,7 +154,7 @@ public class FileConstants {
 			return ret.getAbsolutePath();
 		} catch (URISyntaxException ex) {
 			LOG.error("Failed to get program directory: Please email the latest error.txt in the logs directory to niklaskr@gmail.com", ex);
-	}
+		}
 		return null;
 	}
 
@@ -167,6 +162,53 @@ public class FileConstants {
 		if (!file.exists()) {
 			if (!file.mkdirs()) {
 				LOG.error("failed to create directories for " + file.getAbsolutePath());
+			}
+		}
+	}
+
+	public static void deleteDirectory(File folder) {
+		File[] files = folder.listFiles();
+		if (files != null) { //some JVMs return null for empty dirs
+			for (File f : files) {
+				if (f.isDirectory()) {
+					deleteDirectory(f);
+				} else {
+					f.delete();
+				}
+			}
+		}
+		folder.delete();
+	}
+
+	public static void copyFile(File source, File dest) {
+		BufferedInputStream input = null;
+		BufferedOutputStream output = null;
+		int i;
+		try {
+			input = new BufferedInputStream(new FileInputStream(source));
+			output = new BufferedOutputStream(new FileOutputStream(dest));
+			while ((i = input.read()) != -1) {
+				output.write(i);
+			}
+			output.flush();
+		} catch (MalformedInputException ex) {
+			LOG.error("Failed to copy file", ex);
+		} catch (IOException ex) {
+			LOG.error("Failed to copy file", ex);
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException ex) {
+					LOG.error("Failed to copy file", ex);
+				}
+			}
+			if (output != null) {
+				try {
+					output.close();
+				} catch (IOException ex) {
+					LOG.error("Failed to copy file", ex);
+				}
 			}
 		}
 	}
