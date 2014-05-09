@@ -1,0 +1,95 @@
+Common Issues and Solutions
+
+<wiki:toc max_depth="1" />
+<br>
+----
+<br>
+
+
+
+
+
+
+= Requirements =
+
+ # Java Runtime Environment (Get it free at: [http://java.com/ java.com])
+<br>
+----
+<br>
+
+
+
+
+
+
+
+= How to run =
+
+== Windows ==
+
+Double click on jwarframe.jar
+
+== Linux ==
+
+in terminal run:<br>
+cd to jWarframe directory and run:
+<pre>java -jar jwarframe.jar</pre>
+<br>
+----
+<br>
+
+
+
+
+
+= Settings location =
+
+Replace *USERNAME* with your username
+
+==Windows==
+XP: C:\Documents and Settings\*USERNAME*\.jwarframe\<br>
+Vista: C:\Users\*USERNAME*\.jwarframe<br>
+
+==Linux==
+/home/*USERNAME*/.jwarframe/
+
+==Mac==
+~/Library/Preferences/jWarframe<br>
+<br>
+----
+<br>
+
+
+
+
+
+= jWarframe will not run =
+
+== Solutions 1 ==
+Re-download jWarframe (jWarframe can get corrupted doing download)
+
+ # [https://forums.warframe.com/index.php?/topic/221940-jwarframe-alpha-6-alert-and-invasion-notifier-for-winlinuxmac/ Download]
+ # Unzip
+ # Double click on jwarframe.jar
+
+== Solutions 2 ==
+Re-install java (old versions of java are bad)
+
+ # Uninstall all versions of java ([http://www.java.com/en/download/uninstall.jsp help])
+ # Download the latest version of [http://www.java.com/en/download/index.jsp java]
+ # Install java ([http://www.java.com/en/download/help/windows_manual_download.xml help])
+<br>
+----
+<br>
+
+
+
+
+
+= Bugs =
+
+Please send an email to niklaskr@gmail.com and include the following:<br>
+ # The jwarframe.log in the [https://code.google.com/p/jwarframe/wiki/ReadMe#Settings_location settings location] (logs/jwarframe.log)<br>
+ # Instructions on how to reproduce the bug<br>
+<br>
+----
