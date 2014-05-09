@@ -90,7 +90,7 @@ public final class Main {
 			}
 			if (!portable || !ok) {
 				if (isMac()) { //Mac
-					System.setProperty("log.home", System.getProperty("user.home") + File.separator + "Library" + File.separator + "Preferences" + File.separator + "jWarFrame" + File.separator + "logs" + File.separator);
+					System.setProperty("log.home", System.getProperty("user.home") + File.separator + "Library" + File.separator + "Preferences" + File.separator + "jWarframe" + File.separator + "logs" + File.separator);
 				} else { //Windows/Linux
 					System.setProperty("log.home", System.getProperty("user.home") + File.separator + ".jwarframe" + File.separator + "logs" + File.separator);
 				}
@@ -109,8 +109,7 @@ public final class Main {
 		log = LoggerFactory.getLogger(Main.class);
 
 		// fix the uncaught exception handlers
-		System.setProperty("sun.awt.exception.handler", "net.nikr.eve.jeveasset.NikrUncaughtExceptionHandler");
-		Thread.setDefaultUncaughtExceptionHandler(new NikrUncaughtExceptionHandler());
+		NikrUncaughtExceptionHandler.install();
 
 		if (cleardata) {
 			clearData();
