@@ -73,7 +73,7 @@ public class Program {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Program.class);
 
-	public static final String PROGRAM_VERSION = "Alpha 6";
+	public static final String PROGRAM_VERSION = "Alpha 7";
 	public static final String PROGRAM_NAME = "jWarframe";
 
 	private final List<InvasionListener> invasionListeners = new ArrayList<InvasionListener>();
