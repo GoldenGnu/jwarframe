@@ -1,0 +1,54 @@
+<?php
+include 'conn.php';
+
+$os_in = filter_input(INPUT_POST, 'os');
+$java_in = filter_input(INPUT_POST, 'java');
+$version_in = filter_input(INPUT_POST, 'version');
+$log_in = filter_input(INPUT_POST, 'log');
+
+//Find existing bug report
+$dbh = con(); //Get connection
+$stmt = $dbh->prepare("SELECT * FROM jwarframe where log = ?");
+if ($stmt->execute(array($log_in))) {
+	while ($row = $stmt->fetch()) {
+		$foundRow = $row;
+		break;
+	}
+}
+
+if (empty($foundRow)) { //New bug report
+	$count = '1';
+	$stmt = $dbh->prepare("INSERT INTO jwarframe (os,java,version,log,count) VALUES (:os, :java, :version, :log, :count)");
+	$stmt->bindParam(':os', $os_in);
+	$stmt->bindParam(':java', $java_in);
+	$stmt->bindParam(':version', $version_in);
+	$stmt->bindParam(':log', $log_in);
+	$stmt->bindParam(':count', $count);
+	$stmt->execute();
+	print $dbh->lastInsertId(); 
+} else { //Old bug report, add: count, os, java, version
+	$count = $foundRow['count'];
+	$count++;
+	$id = $foundRow['id'];
+	$stmt = $dbh->prepare("UPDATE jwarframe SET os=:os,java=:java,version=:version,count=:count WHERE id=:id");
+	$stmt->bindParam(':os', add($foundRow['os'], $os_in));
+	$stmt->bindParam(':java', add($foundRow['java'], $java_in));
+	$stmt->bindParam(':version', add($foundRow['version'], $version_in));
+	$stmt->bindParam(':count', $count);
+	$stmt->bindParam(':id', $id);
+	$stmt->execute();
+	
+	print $id;
+}
+
+function add($in, $add) {
+	if (strpos($in,';') !==  false) { //Single entry
+		$out = array($in); //Single item array
+	} else { //Multiple entries
+		$out = explode(";", $in); //Split to array
+	}
+	$out[] = $add; //Add new
+	$out = array_unique($out); //Remove dubs
+	return implode(";", $out); //Return string
+}
+?>
