@@ -1,4 +1,4 @@
-#Common Issues and Solutions
+#summary Common Issues and Solutions
 
 <wiki:toc max_depth="1" />
 <br>
