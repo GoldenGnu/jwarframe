@@ -53,22 +53,20 @@ public class AlertMatcher implements Matcher<Alert> {
 		if (alert.isDone()) {
 			return false;
 		}
-		if (!alert.hasLoot()) {
-			if (credits == 1 && alert.getCredits() < 3000) { //3K
-				return false;
-			}
-			if (credits == 2 && alert.getCredits() < 5000) { //5K
-				return false;
-			}
-			if (credits == 3 && alert.getCredits() < 7000) { //7K
-				return false;
-			}
-			if (credits == 4 && alert.getCredits() < 10000) { //10K
-				return false;
-			}
-			if (credits == 5) { //No credits
-				return false;
-			}
+		if (credits == 0 && alert.getCredits() > 0) { //3K
+			return true;
+		}
+		if (credits == 1 && alert.getCredits() >= 3000) { //3K
+			return true;
+		}
+		if (credits == 2 && alert.getCredits() >= 5000) { //5K
+			return true;
+		}
+		if (credits == 3 && alert.getCredits() >= 7000) { //7K
+			return true;
+		}
+		if (credits == 4 && alert.getCredits() >= 10000) { //10K
+			return true;
 		}
 		//Category
 		if (alert.hasLoot()) {
@@ -89,7 +87,7 @@ public class AlertMatcher implements Matcher<Alert> {
 					return false;
 			}
 		}
-		return true;
+		return false;
 	}
 	
 }
