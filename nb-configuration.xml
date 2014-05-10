@@ -17,8 +17,9 @@
 	</properties>
 	<config-data xmlns="http://www.netbeans.org/ns/maven-config-data/1">
 		<configurations>
-			<configuration id="startup" profiles=""/>
 			<configuration id="cleardata" profiles=""/>
+			<configuration id="startup" profiles=""/>
+			<configuration id="nomemory" profiles=""/>
 		</configurations>
 	</config-data>
 </project-shared-configuration>
