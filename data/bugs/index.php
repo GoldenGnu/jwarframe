@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jWarframe Bug Database</title>
+	<link rel="icon" type="image/png" href="favicon.ico" />
+</head>
+<body>
+	<h1>jWarframe Bug Database</h1>
+	<hr>
 <?php
 include 'conn.php';
 
@@ -66,3 +75,5 @@ function makeSafe($find, $in, $default) {
 	}
 }
 ?>
+</body>
+</html>
