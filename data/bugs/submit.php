@@ -25,7 +25,20 @@ if (empty($foundRow)) { //New bug report
 	$stmt->bindParam(':log', $log_in);
 	$stmt->bindParam(':count', $count);
 	$stmt->execute();
-	print $dbh->lastInsertId(); 
+	$id = $dbh->lastInsertId();
+
+	print $id;
+
+	$to      = 'nkr@niklaskr.dk';
+	$subject = 'New jWarframe bug report';
+	$message = 'jWarframe bug report'."\r\n"
+				.'BugID: ' . $id . "\r\n"
+				.'http://warframe.nikr.net/jwarframe/bugs/'
+				;
+	$headers = 'From: nkr@niklaskr.dk' . "\r\n" .
+			 'X-Mailer: PHP/' . phpversion();
+	
+	mail($to, $subject, $message, $headers);
 } else { //Old bug report, add: count, os, java, version
 	$count = $foundRow['count'];
 	$count++;
