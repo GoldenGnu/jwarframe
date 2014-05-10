@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class NikrUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NikrUncaughtExceptionHandler.class);
-	private static final String REQUEST = "http://warframe.nikr.net/jwarframe/bugs/submit.php";
+	private static final String SUBMIT = "http://warframe.nikr.net/jwarframe/bugs/submit.php";
 
 	private static boolean error = false;
 
@@ -66,21 +66,32 @@ public class NikrUncaughtExceptionHandler implements Thread.UncaughtExceptionHan
 			error = true;
 			LOG.error("Uncaught Exception (" + s + "): " + t.getMessage(), t);
 
-			int value = JOptionPane.showConfirmDialog(null,
-					"Send bug report?\r\n"
-					+ "\r\n"
-					+ "Data send and saved:\r\n"
-					+ "-OS (name and version)\r\n"
-					+ "-Java (vendor and version)\r\n"
-					+ "-Program (name and version)\r\n"
-					+ "-Date (current)\r\n"
-					+ "-Java stack trace (bug)\r\n"
-					+ "\r\n"
-					+ "\r\n",
-					"Critical Error", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
-			if (value == JOptionPane.OK_OPTION) {
-				String result = send(t);
-				JOptionPane.showMessageDialog(null, result, "Bug Report", JOptionPane.PLAIN_MESSAGE);
+			if (t instanceof OutOfMemoryError) {
+				JOptionPane.showMessageDialog(null,
+						"Java have run out of memory\r\n"
+						+ "\r\n"
+						+ "To avoid this error:\r\n"
+						+ "Use jmemory.jar to run.\r\n"
+						+ "\r\n"
+						,
+						"Critical Error", JOptionPane.ERROR_MESSAGE);
+			} else {
+				int value = JOptionPane.showConfirmDialog(null,
+						"Send bug report?\r\n"
+						+ "\r\n"
+						+ "Data send and saved:\r\n"
+						+ "-OS (name and version)\r\n"
+						+ "-Java (vendor and version)\r\n"
+						+ "-Program (name and version)\r\n"
+						+ "-Date (current)\r\n"
+						+ "-Java stack trace (bug)\r\n"
+						+ "\r\n"
+						+ "\r\n",
+						"Critical Error", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+				if (value == JOptionPane.OK_OPTION) {
+					String result = send(t);
+					JOptionPane.showMessageDialog(null, result, "Bug Report", JOptionPane.PLAIN_MESSAGE);
+				}
 			}
 			System.exit(-1);
 		}
@@ -94,7 +105,7 @@ public class NikrUncaughtExceptionHandler implements Thread.UncaughtExceptionHan
 					+ "&java=" + URLEncoder.encode(System.getProperty("java.vendor") + " " + System.getProperty("java.version"), "UTF-8")
 					+ "&version=" + URLEncoder.encode(Program.PROGRAM_NAME + " " + Program.PROGRAM_VERSION, "UTF-8")
 					+ "&log=" + URLEncoder.encode(getStackTrace(t), "UTF-8");
-			URL url = new URL(REQUEST);
+			URL url = new URL(SUBMIT);
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("POST");
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
