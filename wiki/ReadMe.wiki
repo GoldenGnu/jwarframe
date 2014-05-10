@@ -31,8 +31,7 @@ Double click on jwarframe.jar
 
 == Linux ==
 
-in terminal run:<br>
-cd to jWarframe directory and run:
+in terminal cd to the jWarframe directory and run:
 <pre>java -jar jwarframe.jar</pre>
 <br>
 ----
