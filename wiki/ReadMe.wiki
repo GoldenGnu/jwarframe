@@ -88,8 +88,9 @@ Re-install java (old versions of java are bad)
 
 = Bugs =
 
-Please send an email to niklaskr@gmail.com and include the following:<br>
- # The jwarframe.log in the [https://code.google.com/p/jwarframe/wiki/ReadMe#Settings_location settings location] (logs/jwarframe.log)<br>
- # Instructions on how to reproduce the bug<br>
+if jWarframe fails to send the bug report automatically,<br>
+You can email the log to niklaskr@gmail.com<br>
+
+You can find the log file in the [https://code.google.com/p/jwarframe/wiki/ReadMe#Settings_location settings directory] (logs/jwarframe.log)<br>
 <br>
 ----
