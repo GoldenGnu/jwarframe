@@ -401,5 +401,10 @@ public class Invasion implements Comparable<Invasion> {
 		public Faction getDefending() {
 			return defending;
 		}
+
+		@Override
+		public String toString() {
+			return percentage + "%";
+		}
 	}
 }
