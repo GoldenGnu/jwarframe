@@ -3,6 +3,16 @@
 <head>
 	<title>jWarframe Bug Database</title>
 	<link rel="icon" type="image/png" href="favicon.ico" />
+	<script language="javascript"> 
+	function toggle(elementId) {
+		var ele = document.getElementById(elementId);
+		if(ele.style.display == "block") {
+			ele.style.display = "none";
+		} else {
+			ele.style.display = "block";
+		}
+	} 
+	</script>
 </head>
 <body>
 	<h1>jWarframe Bug Database</h1>
@@ -28,13 +38,34 @@ $statement = $dbh->prepare("SELECT * FROM jwarframe ORDER BY $order $desc");
 $statement->execute();
 $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 foreach ($rows as &$row) {
+	echo " <b>Status:</b> ";
+	switch ($row['status']) {
+		case -1:
+			echo "Re-Opened";
+			break;
+		case 0:
+			echo "New";
+			break;
+		case 1:
+			echo "Accepted";
+			break;
+		case 2:
+			echo "Started";
+			break;
+		case 3:
+			echo "Fixed";
+			break;
+		case 4:
+			echo "Released";
+			break;
+	}
 	echo " <b>Date:</b> ".format($row['date']);
 	echo " <b>Count:</b> ".format($row['count']);
 	echo " <b>Id:</b> ".format($row['id'])."<br>";
 	echo "<b>OS:</b> ".format_list($row['os'])."<br>";
 	echo "<b>Java:</b> ".format_list($row['java'])."<br>";
 	echo "<b>Version:</b> ".format_list($row['version'])."<br>";
-	echo "<br>".format($row['log'])."<br>";
+	echo "<button type=\"button\" onclick=\"toggle('log".$row['id']."')\">Show Log</button><br><div id=\"log".$row['id']."\" style=\"display:none\">".format($row['log'])."<div><br>";
 	echo "<hr>";
 }
 

@@ -39,16 +39,22 @@ if (empty($foundRow)) { //New bug report
 			 'X-Mailer: PHP/' . phpversion();
 	
 	mail($to, $subject, $message, $headers);
-} else { //Old bug report, add: count, os, java, version
+} else { //Old bug report - Add: count, os, java, version - Update: status
 	$count = $foundRow['count'];
 	$count++;
 	$id = $foundRow['id'];
-	$stmt = $dbh->prepare("UPDATE jwarframe SET os=:os,java=:java,version=:version,count=:count WHERE id=:id");
+	if ($foundRow['status'] == 4) {
+		$status = -1;
+	} else {
+		$status = $foundRow['status'];
+	}
+	$stmt = $dbh->prepare("UPDATE jwarframe SET os=:os,java=:java,version=:version,count=:count,status=:status WHERE id=:id");
 	$stmt->bindParam(':os', add($foundRow['os'], $os_in));
 	$stmt->bindParam(':java', add($foundRow['java'], $java_in));
 	$stmt->bindParam(':version', add($foundRow['version'], $version_in));
 	$stmt->bindParam(':count', $count);
 	$stmt->bindParam(':id', $id);
+	$stmt->bindParam(':status', $status);
 	$stmt->execute();
 	
 	print $id;
