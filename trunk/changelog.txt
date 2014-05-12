@@ -16,6 +16,16 @@
                   #### #  # #  # #  # #### #### #### #### ####
 
 ________________________________________________________________________________
+_ALPHA_8________________________________________________________________________
+
+Changed:
+-Optimized Rewards Tool (less memory, more CPU)
+-Now handles OutOfMemoryError (and includes jmemory.jar to fix it)
+
+Bug Fix:
+-StackOverflowError in PaddingTableCellRenderer (BugID: 1)
+
+________________________________________________________________________________
 _ALPHA_7________________________________________________________________________
 
 New Features:
