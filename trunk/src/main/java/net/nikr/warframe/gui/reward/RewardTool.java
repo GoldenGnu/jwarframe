@@ -136,8 +136,6 @@ public class RewardTool implements Tool {
 		percents.add(new Percent("25%", 25, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 2)));
 		percents.add(new Percent("0%", 0, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 1)));
 
-		scaleImages();
-		
 		jImageSize = new JComboBox(percents.toArray());
 		jImageSize.setSelectedItem(percent100);
 		jImageSize.addActionListener(new ActionListener() {
@@ -346,36 +344,12 @@ public class RewardTool implements Tool {
 				return Images.PROGRAM_16.getIcon();
 			}
 		} else {
-			Map<String, Map<Boolean, Icon>> mapString = images.get(percent.getPercent());
-			if (mapString != null) {
-				Map<Boolean, Icon> mapBoolean = mapString.get(rewardName);
-				if (mapBoolean != null) {
-					return mapBoolean.get(ignore);
-				}
+			BufferedImage image = scale(ImageGetter.getBufferedImage(rewardName), percent.getPercent());
+			if (ignore) {
+				return included(image, Images.PROGRAM_DISABLED_16);
+			} else {
+				return included(image, Images.PROGRAM_16);
 			}
-			return null;
-		}
-	}
-
-	private void scaleImages() {
-		for (Percent percent : percents) {
-			scaleImages(percent);
-		}
-	}
-
-	private void scaleImages(Percent percent) {
-		if (percent.getPercent() == 0) {
-			return;
-		}
-		HashMap<String, Map<Boolean, Icon>> mapString = new HashMap<String, Map<Boolean, Icon>>();
-		images.put(percent.getPercent(), mapString);
-		for (final RewardID reward : rewards) {
-			String key = reward.getName();
-			Map<Boolean, Icon> mapBoolean = new HashMap<Boolean, Icon>();
-			mapString.put(key, mapBoolean);
-			BufferedImage image = scale(ImageGetter.getBufferedImage(key), percent.getPercent());
-			mapBoolean.put(true, included(image, Images.PROGRAM_DISABLED_16));
-			mapBoolean.put(false, included(image, Images.PROGRAM_16));
 		}
 	}
 
