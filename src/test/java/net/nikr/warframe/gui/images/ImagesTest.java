@@ -26,7 +26,9 @@ package net.nikr.warframe.gui.images;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URISyntaxException;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 
 
