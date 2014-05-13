@@ -11,7 +11,7 @@
 		} else {
 			ele.style.display = "block";
 		}
-	} 
+	}
 	</script>
 </head>
 <body>
@@ -65,7 +65,7 @@ foreach ($rows as &$row) {
 	echo "<b>OS:</b> ".format_list($row['os'])."<br>";
 	echo "<b>Java:</b> ".format_list($row['java'])."<br>";
 	echo "<b>Version:</b> ".format_list($row['version'])."<br>";
-	echo "<button type=\"button\" onclick=\"toggle('log".$row['id']."')\">Show Log</button><br><div id=\"log".$row['id']."\" style=\"display:none\">".format($row['log'])."<div><br>";
+	echo "<button type=\"button\" onclick=\"toggle('log".$row['id']."')\">Show Log</button><br><div id=\"log".$row['id']."\" style=\"display:none\">".format($row['log'])."</div><br>";
 	echo "<hr>";
 }
 
