@@ -37,12 +37,10 @@ public class InvasionProcessor extends StringProcessor {
 
 	public List<Invasion> process(List<String> raw, List<Category> categories, Set<String> done) {
 		List<Invasion> invasions = new ArrayList<Invasion>();
-		boolean first = true;
-		for (String s : raw) {
-			if (first) { //Ignore first line
-				first = false;
-			} else {
-				invasions.add(process(s, categories, done));
+		for (String line : raw) {
+			int count = line.length() - line.replace("|", "").length();
+			if (count >= 18) {
+				invasions.add(process(line, categories, done));
 			}
 		}
 		return invasions;
