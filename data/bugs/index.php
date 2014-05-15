@@ -1,9 +1,23 @@
-<!DOCTYPE html>
+<?php
+include 'conn.php';
+
+$order_in = filter_input(INPUT_POST, 'order');
+$order = makeSafe(strtolower($order_in), array("date", "count", "id"), 'date');
+
+$desc_in = filter_input(INPUT_POST, 'desc');
+$desc = makeSafe(strtoupper($desc_in), array("DESC", "ASC"), 'DESC');
+
+?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-	<title>jWarframe Bug Database</title>
+	<meta http-equiv="cache-control" content="max-age=0" />
+	<meta http-equiv="cache-control" content="no-cache" />
+	<meta http-equiv="expires" content="0" />
+	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="pragma" content="no-cache" />
+	<title><?php echo name() ?></title>
 	<link rel="icon" type="image/png" href="favicon.ico" />
-	<script language="javascript"> 
+	<script> 
 	function toggle(elementId) {
 		var ele = document.getElementById(elementId);
 		if(ele.style.display == "block") {
@@ -15,16 +29,9 @@
 	</script>
 </head>
 <body>
-	<h1>jWarframe Bug Database</h1>
+	<h1><?php echo name() ?></h1>
 	<hr>
 <?php
-include 'conn.php';
-
-$order_in = filter_input(INPUT_POST, 'order');
-$order = makeSafe(strtolower($order_in), array("date", "count", "id"), 'date');
-
-$desc_in = filter_input(INPUT_POST, 'desc');
-$desc = makeSafe(strtoupper($desc_in), array("DESC", "ASC"), 'DESC');
 
 echo '<form method="post" action="">';
 select(array("Date", "Count", "ID"), 'order', $order);
@@ -34,7 +41,7 @@ echo '</form">';
 echo "<hr>";
 
 $dbh = con();
-$statement = $dbh->prepare("SELECT * FROM jwarframe ORDER BY $order $desc");
+$statement = $dbh->prepare("SELECT * FROM ".table()." ORDER BY $order $desc");
 $statement->execute();
 $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 foreach ($rows as &$row) {
@@ -56,7 +63,7 @@ foreach ($rows as &$row) {
 			echo "Fixed";
 			break;
 		case 4:
-			echo "Released";
+			echo "Fix Released";
 			break;
 	}
 	echo " <b>Date:</b> ".format($row['date']);
