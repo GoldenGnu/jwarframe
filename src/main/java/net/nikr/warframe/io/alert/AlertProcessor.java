@@ -36,8 +36,11 @@ public class AlertProcessor extends StringProcessor {
 
 	public List<Alert> process(List<String> raw, List<Category> categories, Set<String> done) {
 		List<Alert> alerts = new ArrayList<Alert>();
-		for (String s : raw) {
-			alerts.add(process(s, categories, done));
+		for (String line : raw) {
+			int count = line.length() - line.replace("|", "").length();
+			if (count >= 10) {
+				alerts.add(process(line, categories, done));
+			}
 		}
 		return alerts;
 	}

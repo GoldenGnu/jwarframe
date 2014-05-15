@@ -29,7 +29,7 @@ import net.nikr.warframe.gui.reward.RewardID;
 
 public class StringProcessor {
 	protected String getString(String[] arr, int index) {
-		if (arr.length > index - 1) {
+		if (arr.length > index) {
 			return arr[index];
 		} else {
 			return null;
