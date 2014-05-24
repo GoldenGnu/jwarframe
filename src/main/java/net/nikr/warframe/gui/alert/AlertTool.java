@@ -271,7 +271,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 	}
 
 	private void updateStatusBar() {
-		program.setAlert(filterList.size(), eventList.size());;
+		program.setAlert(filterList.size(), eventList.size());
 	}
 
 	private void updateIgnored() {
