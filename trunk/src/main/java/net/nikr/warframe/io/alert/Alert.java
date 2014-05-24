@@ -248,7 +248,12 @@ public class Alert implements Comparable<Alert>{
 
 	@Override
 	public int compareTo(Alert alert) {
-		return alert.expiry.compareTo(expiry);
+		int compared = alert.expiry.compareTo(expiry);
+		if (compared != 0) { //Not same expiry date
+			return compared;
+		} else { //Same expiry date (Use ID for uniqueness)
+			return alert.id.compareTo(id);
+		}
 	}
 
 	@Override
