@@ -16,6 +16,23 @@
                   #### #  # #  # #  # #### #### #### #### ####
 
 ________________________________________________________________________________
+_BETA_2_________________________________________________________________________
+
+Changed:
+-Better auto update code (update jupdate.jar and validate downloaded files)
+
+Source:
+-Deploy: Upload release automatic
+
+Bug Fixes:
+-Alerts with same date, only showed one of the alerts
+
+Notes:
+The new auto update code will only be used
+when updating from Beta 2 to any later version.
+Updating to Beta 2 will still use the old code.
+
+________________________________________________________________________________
 _BETA_1_________________________________________________________________________
 
 Bug Fix:
