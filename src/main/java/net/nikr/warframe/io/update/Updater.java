@@ -58,11 +58,6 @@ public class Updater {
 	private void update(String title, String online, String local, String link) {
 		LOG.info(title.toUpperCase() + " Online: " + online + " Local: " + local);
 		if (online != null && !online.equals(local)) {
-			boolean download = downloadUpdater();
-			if (!download) {
-				JOptionPane.showMessageDialog(null, "Auto update failed\r\nRestart jEveAssets to try again...", "Auto Update", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
 			int value = JOptionPane.showConfirmDialog(null, 
 					title + " update available\r\n"
 					+ "\r\n"
@@ -75,8 +70,14 @@ public class Updater {
 					"Auto Update",
 					JOptionPane.OK_CANCEL_OPTION);
 			if (value == JOptionPane.OK_OPTION) {
-				LOG.info("Updating " + title);
-				runUpdate(link);
+				boolean download = downloadUpdater();
+				if (download) {
+					LOG.info("Updating " + title);
+					runUpdate(link);
+				} else {
+					LOG.info("Failed to download jupdate.jar");
+					JOptionPane.showMessageDialog(null, "Auto update failed\r\nRestart jWarframe to try again...", "Auto Update", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		}
 	}
