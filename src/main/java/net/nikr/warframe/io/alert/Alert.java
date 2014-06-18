@@ -45,7 +45,8 @@ public class Alert implements Comparable<Alert>{
 
 	private boolean ignored;
 	private boolean done;
-	private boolean match;
+	private boolean matchLoot;
+	private boolean matchCredits;
 
 	public Alert() { }
 
@@ -177,12 +178,20 @@ public class Alert implements Comparable<Alert>{
 		this.done = done;
 	}
 
-	public boolean isMatch() {
-		return match;
+	public boolean isMatchLoot() {
+		return matchLoot;
 	}
 
-	public void setMatch(boolean match) {
-		this.match = match;
+	public void setMatchLoot(boolean matchLoot) {
+		this.matchLoot = matchLoot;
+	}
+
+	public boolean isMatchCredits() {
+		return matchCredits;
+	}
+
+	public void setMatchCredits(boolean matchCredits) {
+		this.matchCredits = matchCredits;
 	}
 
 	public String getLocation() {
