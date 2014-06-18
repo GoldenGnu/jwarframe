@@ -44,6 +44,7 @@ import java.util.TreeSet;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -81,6 +82,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 	private final JRadioButton jIgnore;
 	private final JSlider jCredits;
 	private final Timer timeLeft;
+	private final JButton jClearExpired;
 
 	private final EventList<Alert> eventList = new BasicEventList<Alert>();
 	private final FilterList<Alert> activeList;
@@ -120,6 +122,21 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		buttonGroup.add(jAll);
 		buttonGroup.add(jNotify);
 		buttonGroup.add(jIgnore);
+
+		jClearExpired = new JButton("Clear Expired");
+		jClearExpired.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Alert> alerts = new ArrayList<Alert>(activeList);
+				try {
+					eventList.getReadWriteLock().writeLock().lock();
+					eventList.clear();
+					eventList.addAll(alerts);
+				} finally {
+					eventList.getReadWriteLock().writeLock().unlock();
+				}
+			}
+		});
 
 		JToggleButton jFilters = new JToggleButton("Filters");
 		jFilters.addActionListener(new ActionListener() {
@@ -246,6 +263,8 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 					.addComponent(jAll)
 					.addComponent(jNotify)
 					.addComponent(jIgnore)
+					.addGap(20)
+					.addComponent(jClearExpired)
 					.addGap(0, 0, Integer.MAX_VALUE)
 					.addComponent(jFilters)	
 					.addGap(10)
@@ -265,6 +284,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 					.addComponent(jAll)
 					.addComponent(jNotify)
 					.addComponent(jIgnore)
+					.addComponent(jClearExpired)
 					.addComponent(jFilters)
 					.addComponent(jHelp)
 				)
