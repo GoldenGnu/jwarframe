@@ -140,12 +140,12 @@ public class SettingsTool implements Tool {
 
 	@Override
 	public String getToolTip() {
-		return "Settings";
+		return null;
 	}
 
 	@Override
 	public String getTitle() {
-		return "";
+		return "Settings";
 	}
 
 	@Override
