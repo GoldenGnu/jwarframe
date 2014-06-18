@@ -49,10 +49,15 @@ public class AlertMatcher implements Matcher<Alert> {
 	}
 
 	public boolean matchesIt(Alert alert) {
-		//Ignore credits
+		//Ignore done alerts
 		if (alert.isDone()) {
 			return false;
 		}
+		//Ignore expired alerts
+		if (alert.isExpired()) {
+			return false;
+		}
+		//Match credits
 		if (credits == 0 && alert.getCredits() > 0) { //3K
 			return true;
 		}
@@ -68,7 +73,7 @@ public class AlertMatcher implements Matcher<Alert> {
 		if (credits == 4 && alert.getCredits() >= 10000) { //10K
 			return true;
 		}
-		//Category
+		//Match loot (Category)
 		if (alert.hasLoot()) {
 			Category category = alert.getCategory();
 			CategoryFilter filter = null;
