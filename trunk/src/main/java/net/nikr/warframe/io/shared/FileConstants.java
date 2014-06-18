@@ -25,9 +25,13 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.MalformedInputException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import net.nikr.warframe.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +42,7 @@ public class FileConstants {
 
 	private static final String AUDIO = "audio" + File.separator;
 	private static final String IMAGES = "images" + File.separator;
+	private static final String FILTERS = "settings" + File.separator + "filters" + File.separator;
 	private static final String DATA_LOCAL = "data" + File.separator + "data_";
 	private static final String SETTINGS_LOCAL = "settings" + File.separator;
 	private static final String DATA_ONLINE = "http://warframe.nikr.net/jwarframe/data_";
@@ -81,6 +86,14 @@ public class FileConstants {
 
 	public static String getFiltersOnline() {
 		return DATA_ONLINE + "filters.dat";
+	}
+
+	public static File getFilterSet(String filename) {
+		return new File(getLocalFile(FILTERS + filename, Main.isPortable()));
+	}
+
+	public static File getFilterSets() {
+		return new File(getLocalFile(FILTERS, Main.isPortable()));
 	}
 
 	public static File getFilters() {
@@ -210,6 +223,31 @@ public class FileConstants {
 					LOG.error("Failed to copy file", ex);
 				}
 			}
+		}
+	}
+
+	public static List<String> getFileList(File dir, String ext) {
+		List<String> list = new ArrayList<String>();
+
+		String[] files = dir.list(new GenericExtFilter(ext));
+		if (files != null) {
+			list.addAll(Arrays.asList(files));
+		}
+		return list;
+	}
+ 
+	// inner class, generic extension filter
+	private static class GenericExtFilter implements FilenameFilter {
+ 
+		private final String ext;
+ 
+		public GenericExtFilter(String ext) {
+			this.ext = ext;
+		}
+ 
+		@Override
+		public boolean accept(File dir, String name) {
+			return (name.endsWith(ext));
 		}
 	}
 }

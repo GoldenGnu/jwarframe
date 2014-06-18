@@ -95,6 +95,7 @@ public class Program {
 	private final Set<RewardID> rewards = new TreeSet<RewardID>();
 	private final Set<String> done = new TreeSet<String>();
 	private final Set<SettingsConstants> settings = EnumSet.noneOf(SettingsConstants.class);
+	private final Set<String> filterSets = new TreeSet<String>();
 	private final Map<String, Map<String, CategoryFilter>> categoryFilter = new HashMap<String, Map<String, CategoryFilter>>();
 
 	private int settingsVersion = 0;
@@ -123,6 +124,8 @@ public class Program {
 		SplashUpdater.setProgress(5);
 		//Images
 		downloadImages();
+		//Filter Sets
+		filterSets.addAll(FileConstants.getFileList(FileConstants.getFilterSets(), ".dat"));
 		
 
 		SplashUpdater.setText("Loading GUI");
@@ -302,6 +305,10 @@ public class Program {
 		}
 	}
 
+	public Set<String> getFilterSets() {
+		return filterSets;
+	}
+
 	public Set<RewardID> getRewards() {
 		return rewards;
 	}
@@ -355,6 +362,14 @@ public class Program {
 
 	public Set<String> getFilters() {
 		return filters;
+	}
+
+	public void loadFilters(File file) {
+		ListReader reader = new ListReader();
+		filters.clear();
+		filters.addAll(new TreeSet<String>(reader.load(file)));
+		filtersTool.updateFilters();
+		saveFilters();
 	}
 
 	private Set<String> loadFilters() {

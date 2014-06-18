@@ -67,6 +67,14 @@ public class SimpleListModel<E extends Comparable<E>> extends AbstractListModel 
 	}
 
 	public void clear() {
-		data.clear();
+		while (!data.isEmpty()) {
+			remove(data.get(0));
+		}
+	}
+
+	public void addAll(Collection<E> list) {
+		for (E e : list) {
+			add(e);
+		}
 	}
 }
