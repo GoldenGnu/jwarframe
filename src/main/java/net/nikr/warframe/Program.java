@@ -223,8 +223,8 @@ public class Program {
 		}
 	}
 
-	public void audioStartTest() {
-		audioTool.startTest();
+	public boolean audioStartTest(String filename) {
+		return audioTool.startTest(filename);
 	}
 
 	public void audioStopTest() {
@@ -242,10 +242,10 @@ public class Program {
 		}
 	}
 
-	public void startNotify(final int count, final NotifySource source) {
+	public void startNotify(final int count, final NotifySource source, final Set<String> categories) {
 		LOG.info("Notification started");
 		for (NotifyListener listener : notifyListeners) {
-			listener.startNotify(count, source);
+			listener.startNotify(count, source, categories);
 		}
 	}
 

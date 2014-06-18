@@ -21,6 +21,8 @@
 
 package net.nikr.warframe.gui.shared.listeners;
 
+import java.util.Set;
+
 
 public interface NotifyListener {
 	public enum NotifySource {
@@ -29,5 +31,5 @@ public interface NotifyListener {
 		LOGIN_REWARD;
 	}
 	public void stopNotify();
-	public void startNotify(int count, NotifySource source);
+	public void startNotify(int count, NotifySource source, Set<String> categories);
 }

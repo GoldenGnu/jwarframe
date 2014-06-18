@@ -27,6 +27,7 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Set;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.shared.listeners.NotifyListener;
@@ -75,7 +76,7 @@ public class TrayTool implements NotifyListener {
 	}
 
 	@Override
-	public final void startNotify(final int count, final NotifySource source) {
+	public void startNotify(final int count, final NotifySource source, final Set<String> categories) {
 		if (SystemTray.isSupported() && !started) {
 			started = true;
 			final SystemTray tray = SystemTray.getSystemTray();
