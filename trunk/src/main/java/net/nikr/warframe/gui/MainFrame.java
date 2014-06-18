@@ -29,6 +29,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
@@ -200,7 +201,7 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 	}
 
 	@Override
-	public void startNotify(final int count, final NotifySource source) {
+	public void startNotify(final int count, final NotifySource source, final Set<String> categories) {
 		if (!alarm) {
 			if (jFrame.isVisible()) {
 				SwingUtilities.invokeLater(new Runnable() {

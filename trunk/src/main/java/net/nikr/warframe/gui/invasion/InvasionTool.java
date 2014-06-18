@@ -33,6 +33,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
@@ -53,6 +54,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
+import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.settings.SettingsConstants;
 import net.nikr.warframe.gui.shared.FilterTool;
 import net.nikr.warframe.gui.shared.Tool;
@@ -287,13 +289,27 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		}
 
 		int count = 0;
+		Set<String> categories = new HashSet<String>();
 		for (Invasion invasion : filterList) {
 			if (!cache.contains(invasion)) {
 				count++;
+				if (invasion.isMatchDefending()) {
+					Category defendingCategory = invasion.getDefendingCategory();
+					if (defendingCategory != null) {
+						categories.add(defendingCategory.getName());
+					}
+				}
+				if (invasion.isMatchInvading()) {
+					Category invadingCategory = invasion.getInvadingCategory();
+					if (invadingCategory != null) {
+						categories.add(invadingCategory.getName());
+					}
+				}
+				
 			}
 		}
 		if (count > 0) {
-			program.startNotify(count, NotifySource.INVASIONS);
+			program.startNotify(count, NotifySource.INVASIONS, categories);
 		}
 		updateStatusBar();
 	}

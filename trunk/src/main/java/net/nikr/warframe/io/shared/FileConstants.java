@@ -47,8 +47,8 @@ public class FileConstants {
 		return new File(getLocalFile(IMAGES + filename, Main.isPortable()));
 	}
 
-	public static File getAudioLocal() {
-		return new File(getLocalFile(AUDIO + "alert.wav", Main.isPortable()));
+	public static File getAudioLocal(String filename) {
+		return new File(getLocalFile(AUDIO + filename, Main.isPortable()));
 	}
 
 	public static String getImageOnline(String filename) {

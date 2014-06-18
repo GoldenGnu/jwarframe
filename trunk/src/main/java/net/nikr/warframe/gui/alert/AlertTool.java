@@ -36,6 +36,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
@@ -58,6 +59,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
+import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.settings.SettingsConstants;
 import net.nikr.warframe.gui.shared.DesktopUtil;
 import net.nikr.warframe.gui.shared.FilterTool;
@@ -81,7 +83,8 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 	private final Timer timeLeft;
 
 	private final EventList<Alert> eventList = new BasicEventList<Alert>();
-	private final FilterList<Alert> filterList;
+	private final FilterList<Alert> activeList;
+	private final FilterList<Alert> matchList;
 	private final FilterList<Alert> showList;
 	private final DefaultEventSelectionModel<Alert> selectionModel;
 	private final DefaultEventTableModel<Alert> eventTableModel;
@@ -174,8 +177,15 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		filterComponents.add(jCredits);
 
 		SortedList<Alert> sortedList = new SortedList<Alert>(eventList);
-		filterList = new FilterList<Alert>(sortedList);
+		matchList = new FilterList<Alert>(sortedList);
 		showList = new FilterList<Alert>(sortedList);
+		activeList = new FilterList<Alert>(sortedList);
+		activeList.setMatcher(new Matcher<Alert>() {
+			@Override
+			public boolean matches(Alert alert) {
+				return !alert.isExpired();
+			}
+		});
 
 		TableFormat<Alert> tableFormat = new EnumTableFormat<Alert, AlertTableFormat>(AlertTableFormat.class);
 		eventTableModel = EventModels.createTableModel(showList, tableFormat);
@@ -271,7 +281,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 	}
 
 	private void updateStatusBar() {
-		program.setAlert(filterList.size(), eventList.size());
+		program.setAlert(matchList.size(), activeList.size());
 	}
 
 	private void updateIgnored() {
@@ -311,7 +321,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 
 	@Override
 	public void addAlerts(List<Alert> alerts) {
-		List<Alert> cache = new ArrayList<Alert>(filterList);
+		List<Alert> cache = new ArrayList<Alert>(matchList);
 
 		Set<Alert> all = new TreeSet<Alert>(eventList);
 		all.addAll(alerts);
@@ -324,14 +334,19 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 			eventList.getReadWriteLock().writeLock().unlock();
 		}
 
+		Set<String> categories = new HashSet<String>();
 		int count = 0;
-		for (Alert alert : filterList) {
+		for (Alert alert : matchList) {
 			if (!cache.contains(alert)) {
 				count++;
+				Category category = alert.getCategory();
+				if (category != null) {
+					categories.add(category.getName());
+				}
 			}
 		}
 		if (count > 0) {
-			program.startNotify(count, NotifySource.ALERTS);
+			program.startNotify(count, NotifySource.ALERTS, categories);
 		}
 		updateStatusBar();
 		updateIgnored();
@@ -340,7 +355,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 	@Override
 	public final void filter() {
 		matcher = new AlertMatcher(jCredits.getValue(), getCategoryFilters(), program.getFilters());
-		filterList.setMatcher(matcher);
+		matchList.setMatcher(matcher);
 		if (jNotify.isSelected()) {
 			showList.setMatcher(matcher);
 		}
