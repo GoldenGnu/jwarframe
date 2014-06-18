@@ -82,7 +82,6 @@ public class RewardTool implements Tool {
 
 	private final Program program;
 
-	private final Set<RewardID> rewards;
 	private final String title;
 	private final String toolTip;
 	private final Icon icon;
@@ -96,7 +95,6 @@ public class RewardTool implements Tool {
 
 	public RewardTool(final Program program, final Set<RewardID> rewards, final String title, final int width, final int height) {
 		this.program = program;
-		this.rewards = rewards;
 		this.width = width;
 		this.height = height;
 		this.icon = ImageGetter.getIcon(title);
@@ -114,6 +112,7 @@ public class RewardTool implements Tool {
 		layout.setAutoCreateContainerGaps(true);
 
 		jCount = new JLabel();
+		jCount.setHorizontalAlignment(JLabel.RIGHT);
 
 		jAll = createRadioButton("All");
 		jNotify = createRadioButton("Notify");
@@ -122,7 +121,9 @@ public class RewardTool implements Tool {
 		JLabel jHelp = new JLabel(Images.HELP.getIcon());
 		FastToolTips.install(jHelp);
 		jHelp.setToolTipText("<html><body><b>Edit:</b> Right click<br>"
-				+ "<b>Zoom:</b> Ctrl + Mouse wheel");
+				+ "<b>Zoom:</b><br>"
+				+ "&nbsp;&nbsp;&nbsp;Images: Ctrl + Mouse wheel<br>"
+				+ "&nbsp;&nbsp;&nbsp;Slider: Mouse wheel");
 
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.add(jAll);
@@ -155,6 +156,21 @@ public class RewardTool implements Tool {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				update();
+			}
+		});
+		jImageSize.addMouseWheelListener(new MouseWheelListener() {
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				jImageSize.requestFocusInWindow();
+				int value = jImageSize.getValue();
+				value = value + (e.getUnitsToScroll() / e.getScrollAmount());
+				if (value > (percents.size() - 1) ) {
+					value = (percents.size() - 1);
+				}
+				if (value < 0) {
+					value = 0;
+				}
+				jImageSize.setValue(value);
 			}
 		});
 
@@ -230,7 +246,7 @@ public class RewardTool implements Tool {
 					.addGap(0, 0, Integer.MAX_VALUE)
 					.addComponent(jImageSize, 200, 200, 200)
 					.addGap(0, 0, Integer.MAX_VALUE)
-					.addComponent(jCount)
+					.addComponent(jCount, 100, 100, 100)
 					.addGap(10)
 					.addComponent(jHelp)
 				)
@@ -239,12 +255,12 @@ public class RewardTool implements Tool {
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-					.addComponent(jAll)
-					.addComponent(jNotify)
-					.addComponent(jIgnore)
+					.addComponent(jAll, 25, 25, 25)
+					.addComponent(jNotify, 25, 25, 25)
+					.addComponent(jIgnore, 25, 25, 25)
 					.addComponent(jImageSize)
-					.addComponent(jCount)
-					.addComponent(jHelp)
+					.addComponent(jCount, 25, 25, 25)
+					.addComponent(jHelp, 25, 25, 25)
 				)
 				.addComponent(jItems.getComponent())
 		);
