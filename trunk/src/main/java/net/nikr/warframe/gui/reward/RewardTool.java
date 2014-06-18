@@ -35,8 +35,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,13 +48,15 @@ import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
+import javax.swing.JSlider;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.settings.SettingsConstants;
@@ -74,7 +78,7 @@ public class RewardTool implements Tool {
 	private final JRadioButton jNotify;
 	private final JRadioButton jIgnore;
 	private final JLabel jCount;
-	private final JComboBox jImageSize;
+	private final JSlider jImageSize;
 
 	private final Program program;
 
@@ -127,20 +131,29 @@ public class RewardTool implements Tool {
 
 		jAll.setSelected(true);
 
-		//percents.add(new Percent("150%", 150, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 7))));
-		//percents.add(new Percent("125%", 125, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 6))));
+		percents.add(new Percent("0%", 0, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 1)));
+		percents.add(new Percent("25%", 25, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 2)));
+		percents.add(new Percent("50%", 50, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 3)));
+		percents.add(new Percent("75%", 75, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 4))));
 		Percent percent100 = new Percent("100%", 100, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 5)));
 		percents.add(percent100);
-		percents.add(new Percent("75%", 75, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 4))));
-		percents.add(new Percent("50%", 50, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 3)));
-		percents.add(new Percent("25%", 25, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 2)));
-		percents.add(new Percent("0%", 0, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 1)));
+		//percents.add(new Percent("125%", 125, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 6))));
+		//percents.add(new Percent("150%", 150, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 7))));
 
-		jImageSize = new JComboBox(percents.toArray());
-		jImageSize.setSelectedItem(percent100);
-		jImageSize.addActionListener(new ActionListener() {
+		jImageSize = new JSlider(0, percents.size() - 1, percents.indexOf(percent100));
+		Dictionary<Integer, JLabel> imageLabels = new Hashtable<Integer, JLabel>();
+		for (int i = 0; i < percents.size(); i++) {
+			imageLabels.put(i, new JLabel(percents.get(i).toString()));
+		}
+		jImageSize.setMinorTickSpacing(0);
+        jImageSize.setMajorTickSpacing(1);
+        jImageSize.setPaintTicks(true);
+		jImageSize.setSnapToTicks(true);
+        jImageSize.setLabelTable(imageLabels);
+		jImageSize.setPaintLabels(true);
+		jImageSize.addChangeListener(new ChangeListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void stateChanged(ChangeEvent e) {
 				update();
 			}
 		});
@@ -153,7 +166,7 @@ public class RewardTool implements Tool {
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				if ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-					int value = jImageSize.getSelectedIndex();
+					int value = jImageSize.getValue();
 					value = value + (e.getUnitsToScroll() / e.getScrollAmount());
 					if (value > (percents.size() - 1) ) {
 						value = (percents.size() - 1);
@@ -161,7 +174,7 @@ public class RewardTool implements Tool {
 					if (value < 0) {
 						value = 0;
 					}
-					jImageSize.setSelectedIndex(value);
+					jImageSize.setValue(value);
 				} else {
 					int value = jItems.getVerticalScrollBar().getValue();
 					value = value + (e.getUnitsToScroll() * jItems.getVerticalScrollBar().getUnitIncrement());
@@ -214,8 +227,8 @@ public class RewardTool implements Tool {
 					.addComponent(jAll)
 					.addComponent(jNotify)
 					.addComponent(jIgnore)
-					.addComponent(jImageSize, 75, 75, 75)
 					.addGap(0, 0, Integer.MAX_VALUE)
+					.addComponent(jImageSize, 200, 200, 200)
 					.addGap(0, 0, Integer.MAX_VALUE)
 					.addComponent(jCount)
 					.addGap(10)
@@ -225,11 +238,11 @@ public class RewardTool implements Tool {
 		);
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 					.addComponent(jAll)
 					.addComponent(jNotify)
 					.addComponent(jIgnore)
-					.addComponent(jImageSize, 25, 25, 25)
+					.addComponent(jImageSize)
 					.addComponent(jCount)
 					.addComponent(jHelp)
 				)
@@ -279,7 +292,8 @@ public class RewardTool implements Tool {
 		jItems.removeAll();
 		int total = 0;
 		int showing = 0;
-		Percent percent = (Percent) jImageSize.getSelectedItem();
+		int value = jImageSize.getValue();
+		Percent percent = percents.get(value);
 		for (final JLabel jLabel : labels) {
 			boolean ignore = program.getFilters().contains(jLabel.getText());
 			total++;
@@ -336,7 +350,8 @@ public class RewardTool implements Tool {
 	
 
 	private Icon getImage(String rewardName, boolean ignore) {
-		Percent percent = (Percent) jImageSize.getSelectedItem();
+		int value = jImageSize.getValue();
+		Percent percent = percents.get(value);
 		if (percent.getPercent() == 0) {
 			if (ignore) {
 				return Images.PROGRAM_DISABLED_16.getIcon();
