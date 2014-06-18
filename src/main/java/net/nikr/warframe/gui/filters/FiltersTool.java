@@ -53,10 +53,7 @@ import net.nikr.warframe.io.shared.ImageGetter;
 public class FiltersTool implements Tool {
 
 	private final JPanel jPanel;
-	private final JButton jAddFilter;
-	private final JFilterAdder jFilterAdder;
-	private final JLabel jImage;
-	
+
 	private final SimpleListModel<String> listModel;
 
 	private final Program program;
@@ -64,7 +61,10 @@ public class FiltersTool implements Tool {
 	public FiltersTool(final Program program) {
 		this.program = program;
 
-		jFilterAdder = new JFilterAdder(program);
+		final JFilterAdder jFilterAdder = new JFilterAdder(program);
+		final JFilterSave jFilterSave = new JFilterSave(program);
+		final JManageDialog jManageDialog = new JManageDialog(program);
+		jManageDialog.setSupportMerge(false);
 
 		jPanel = new JPanel();
 		GroupLayout layout = new GroupLayout(jPanel);
@@ -72,13 +72,36 @@ public class FiltersTool implements Tool {
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 
-		jAddFilter = new JButton("Add Ignore");
+		JButton jAddFilter = new JButton("Add Ignore");
 		jAddFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				jFilterAdder.show();
 			}
 		});
+
+		JButton jSaveFilters = new JButton("Save List");
+		jSaveFilters.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				jFilterSave.show();
+			}
+		});
+
+		JButton jManageFilters = new JButton("Manage Lists");
+		jManageFilters.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				jManageDialog.update();
+				jManageDialog.show();
+			}
+		});
+
+		final JLabel jImage = new JLabel();
+		jImage.setHorizontalTextPosition(JLabel.CENTER);
+		jImage.setHorizontalAlignment(JLabel.CENTER);
+		jImage.setVerticalTextPosition(JLabel.TOP);
+		jImage.setFont(new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 5)));
 
 		JLabel jHelp = new JLabel(Images.HELP.getIcon());
 		FastToolTips.install(jHelp);
@@ -111,18 +134,12 @@ public class FiltersTool implements Tool {
 		});
 		final JScrollPane jFiltersScroll = new JScrollPane(jFilterList);
 
-		jImage = new JLabel();
-		jImage.setHorizontalTextPosition(JLabel.CENTER);
-		jImage.setHorizontalAlignment(JLabel.CENTER);
-		jImage.setVerticalTextPosition(JLabel.TOP);
-		jImage.setFont(new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 5)));
-
-		
-
 		layout.setHorizontalGroup(
 			layout.createParallelGroup()
 				.addGroup(layout.createSequentialGroup()
 					.addComponent(jAddFilter)
+					.addComponent(jSaveFilters)
+					.addComponent(jManageFilters)
 					.addGap(0, 0, Integer.MAX_VALUE)
 					.addComponent(jHelp)
 				)
@@ -135,6 +152,8 @@ public class FiltersTool implements Tool {
 			layout.createSequentialGroup()
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 					.addComponent(jAddFilter)
+					.addComponent(jSaveFilters)
+					.addComponent(jManageFilters)
 					.addComponent(jHelp)
 				)
 				.addGroup(layout.createParallelGroup()
@@ -143,7 +162,6 @@ public class FiltersTool implements Tool {
 				)
 		);
 	}
-
 	
 	@Override
 	public String getToolTip() {
@@ -152,7 +170,7 @@ public class FiltersTool implements Tool {
 
 	@Override
 	public String getTitle() {
-		return "Ignore";
+		return "Filters";
 	}
 
 	@Override
@@ -168,6 +186,11 @@ public class FiltersTool implements Tool {
 	@Override
 	public Icon getIcon() {
 		return null;
+	}
+
+	public void updateFilters() {
+		listModel.clear();
+		listModel.addAll(program.getFilters());
 	}
 
 	public void remove(String loot) {

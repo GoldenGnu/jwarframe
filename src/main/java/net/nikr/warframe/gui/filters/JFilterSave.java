@@ -30,32 +30,33 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import net.nikr.warframe.Program;
-import net.nikr.warframe.gui.reward.RewardID;
+import net.nikr.warframe.io.shared.FileConstants;
+import net.nikr.warframe.io.shared.ListWriter;
 
 
-public class JFilterAdder {
-
+public class JFilterSave {
 	private final JDialog jDialog;
 	private final JComboBox jFilter;
 	private final JButton jOK;
 	private final JButton jCancel;
 
-	private final EventList<RewardID> eventList;
+	private final EventList<String> eventList;
 
 	private final Program program;
 
-	public JFilterAdder(final Program program) {
+	public JFilterSave(final Program program) {
 		this.program = program;
 
-		jDialog = new JDialog(program.getWindow(), "Add Ignore", Dialog.ModalityType.APPLICATION_MODAL);
+		jDialog = new JDialog(program.getWindow(), "Save List", Dialog.ModalityType.APPLICATION_MODAL);
 
 		JPanel jPanel = new JPanel();
 		GroupLayout layout = new GroupLayout(jPanel);
@@ -64,22 +65,31 @@ public class JFilterAdder {
 		layout.setAutoCreateContainerGaps(true);
 
 		jFilter = new JComboBox();
-		eventList = new BasicEventList<RewardID>();
-		SortedList<RewardID> sortedList = new SortedList<RewardID>(eventList);
+		eventList = new BasicEventList<String>();
+		SortedList<String> sortedList = new SortedList<String>(eventList);
 		AutoCompleteSupport.install(jFilter, sortedList, new Filterator());
 
 		jOK = new JButton("OK");
 		jOK.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Object selected = jFilter.getSelectedItem();
-				if (selected instanceof String) {
-					program.getFiltersTool().add((String) selected);
-				} else if (selected instanceof RewardID) {
-					RewardID rewardID = (RewardID) selected;
-					program.getFiltersTool().add(rewardID.getName());
+				String name = (String) jFilter.getSelectedItem();
+				String filename = name + ".dat";
+				boolean ok = Pattern.matches("[\\w ]+", name);
+				if (program.getFilterSets().contains(filename)) {
+					int value = JOptionPane.showConfirmDialog(jDialog, "Overwrite?", "Save Filter Set", JOptionPane.OK_CANCEL_OPTION);
+					if (value != JOptionPane.OK_OPTION) {
+						ok = false;
+					}
 				}
-				jDialog.setVisible(false);
+				if (ok) {
+					ListWriter listWriter = new ListWriter();
+					program.getFilterSets().add(filename);
+					listWriter.save(program.getFilters(), FileConstants.getFilterSet(filename));
+					jDialog.setVisible(false);
+				} else {
+					JOptionPane.showMessageDialog(jDialog, "Only letters, numbers, and space allowed in name", "Invalid Name", JOptionPane.PLAIN_MESSAGE);
+				}
 			}
 		});
 
@@ -93,7 +103,7 @@ public class JFilterAdder {
 
 
 		layout.setHorizontalGroup(
-			layout.createParallelGroup()
+			layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 				.addComponent(jFilter, 200, 200, 200)
 				.addGroup(layout.createSequentialGroup()
 					.addComponent(jOK, 80, 80, 80)
@@ -115,18 +125,20 @@ public class JFilterAdder {
 		//Clear Data
 		jFilter.setSelectedItem("");
 
-		if (eventList.isEmpty()) { //Load data
-			try {
-				eventList.getReadWriteLock().writeLock().lock();
-				eventList.addAll(program.getRewards());
-			} finally {
-				eventList.getReadWriteLock().writeLock().unlock();
+		try {
+			eventList.getReadWriteLock().writeLock().lock();
+			eventList.clear();
+			for (String s : program.getFilterSets()) {
+				eventList.add(s.replace(".dat", ""));
 			}
-			jDialog.pack();
+		} finally {
+			eventList.getReadWriteLock().writeLock().unlock();
+		}
 
-			if (jDialog.isResizable()) {
-				jDialog.setMinimumSize(jDialog.getSize());
-			}
+		jDialog.pack();
+
+		if (jDialog.isResizable()) {
+			jDialog.setMinimumSize(jDialog.getSize());
 		}
 		//Get the parent size
 		Dimension screenSize = program.getWindow().getSize();
@@ -143,11 +155,11 @@ public class JFilterAdder {
 		jFilter.requestFocusInWindow();
 	}
 
-	private static class Filterator implements TextFilterator<RewardID> {
+	private static class Filterator implements TextFilterator<String> {
 		@Override
-		public void getFilterStrings(final List<String> baseList, final RewardID element) {
-			if (element.getName().length() > 0) {
-				baseList.addAll(Arrays.asList(element.getName().split(" ")));
+		public void getFilterStrings(final List<String> baseList, final String element) {
+			if (!element.isEmpty()) {
+				baseList.add(element);
 			}
 		}
 	}
