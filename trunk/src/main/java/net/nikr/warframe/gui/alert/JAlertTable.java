@@ -55,10 +55,19 @@ public class JAlertTable extends JToolTipTable {
 			component.setBackground(this.getSelectionBackground());
 		}
 		component.setForeground(Color.BLACK);
-		if (columnIndex == AlertTableFormat.LOOT.ordinal()||
-			columnIndex == AlertTableFormat.CREDITS.ordinal()
-				) {
-			if (alert.isMatch()) {
+		if (columnIndex == AlertTableFormat.CREDITS.ordinal()) {
+			if (alert.isMatchCredits()) {
+				component.setForeground(Color.BLACK);
+			} else {
+				if (isSelected) {
+					component.setForeground(Color.LIGHT_GRAY);
+				} else {
+					component.setForeground(Color.GRAY);
+				}
+			}
+		}
+		if (columnIndex == AlertTableFormat.LOOT.ordinal()) {
+			if (alert.isMatchLoot()) {
 				component.setForeground(Color.BLACK);
 			} else {
 				if (isSelected) {
@@ -70,10 +79,10 @@ public class JAlertTable extends JToolTipTable {
 		}
 		if (columnIndex == AlertTableFormat.TIME.ordinal()) {
 			if (alert.isExpired()) {
-				if (!isSelected) {
-					component.setForeground(Color.GRAY);
-				} else {
+				if (isSelected) {
 					component.setForeground(Color.LIGHT_GRAY);
+				} else {
+					component.setForeground(Color.GRAY);
 				}
 			} else {
 				component.setForeground(Color.GREEN.darker().darker());

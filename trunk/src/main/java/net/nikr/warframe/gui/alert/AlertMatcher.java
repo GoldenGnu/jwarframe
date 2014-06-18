@@ -43,39 +43,28 @@ public class AlertMatcher implements Matcher<Alert> {
 
 	@Override
 	public boolean matches(Alert alert) {
-		boolean matches = matchesIt(alert);
-		alert.setMatch(matches);
-		return matches;
-	}
+		//Match loot (Category)
+		boolean loot = matchesLoot(alert);
+		alert.setMatchLoot(loot);
 
-	public boolean matchesIt(Alert alert) {
+		//Match credits
+		boolean credits = matchesCredits(alert);
+		alert.setMatchCredits(credits);
+
 		//Ignore done alerts
 		if (alert.isDone()) {
 			return false;
 		}
+
 		//Ignore expired alerts
 		if (alert.isExpired()) {
 			return false;
 		}
-		//Match credits
-		if (credits == 0 && alert.getCredits() > 0) { //3K
-			return true;
-		}
-		if (credits == 1 && alert.getCredits() >= 3000) { //3K
-			return true;
-		}
-		if (credits == 2 && alert.getCredits() >= 5000) { //5K
-			return true;
-		}
-		if (credits == 3 && alert.getCredits() >= 7000) { //7K
-			return true;
-		}
-		if (credits == 4 && alert.getCredits() >= 10000) { //10K
-			return true;
-		}
-		if (credits == 5 && alert.getCredits() >= 20000) { //20K
-			return true;
-		}
+
+		return loot || credits;
+	}
+
+	public boolean matchesLoot(Alert alert) {
 		//Match loot (Category)
 		if (alert.hasLoot()) {
 			Category category = alert.getCategory();
@@ -94,6 +83,29 @@ public class AlertMatcher implements Matcher<Alert> {
 				case NONE:
 					return false;
 			}
+		}
+		return false;
+	}
+
+	public boolean matchesCredits(Alert alert) {
+		//Match credits
+		if (credits == 0 && alert.getCredits() > 0) { //3K
+			return true;
+		}
+		if (credits == 1 && alert.getCredits() >= 3000) { //3K
+			return true;
+		}
+		if (credits == 2 && alert.getCredits() >= 5000) { //5K
+			return true;
+		}
+		if (credits == 3 && alert.getCredits() >= 7000) { //7K
+			return true;
+		}
+		if (credits == 4 && alert.getCredits() >= 10000) { //10K
+			return true;
+		}
+		if (credits == 5 && alert.getCredits() >= 20000) { //20K
+			return true;
 		}
 		return false;
 	}
