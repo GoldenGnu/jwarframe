@@ -72,11 +72,11 @@ public class InvasionMatcher implements Matcher<Invasion> {
 				defendinReward = false;
 			}
 		}
-		if (credits == 3) { //No credits
-			if (invasion.isInvadingCredits()) {
+		if (credits == 3) { //50K+
+			if (invasion.isInvadingCredits() && invasion.getInvadingCredits() < 50000) {
 				invadingReward = false;
 			}
-			if (invasion.isDefendinCredits()) {
+			if (invasion.isDefendinCredits() && invasion.getDefendingCredits() < 50000) {
 				defendinReward = false;
 			}
 		}
