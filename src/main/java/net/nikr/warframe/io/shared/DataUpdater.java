@@ -84,19 +84,17 @@ public class DataUpdater extends Thread {
 				LOG.info(alerts.size() + " alerts updated");
 				program.addAlerts(alerts);
 			//LOGIN REWARD
-				if (program.getSettings(SettingsConstants.LOGIN_REWARD)) { //Notify on login reward enabled
-					loginReward = loginReader.loginRewardAvailible();
-					if (loginReward != null) {
-						if (loginReward && !loginNotify) { //Login avalible and not notified
-							loginNotify = true;
-							program.startNotify(0, NotifySource.LOGIN_REWARD, Collections.singleton("login"));
-						}
-						if (!loginReward && loginNotify) { //Login not avalible and notified
-							loginNotify = false; //Enable notify (for next reward)
-						}
+				loginReward = loginReader.loginRewardAvailible();
+				if (loginReward != null && program.getSettings(SettingsConstants.LOGIN_REWARD)) { //Notify on login reward enabled
+					if (loginReward && !loginNotify) { //Login avalible and not notified
+						loginNotify = true;
+						program.startNotify(0, NotifySource.LOGIN_REWARD, Collections.singleton("login"));
 					}
-					program.addLoginReward(loginReward);
+					if (!loginReward && loginNotify) { //Login not avalible and notified
+						loginNotify = false; //Enable notify (for next reward)
+					}
 				}
+				program.addLoginReward(loginReward);
 			//WAIT
 				synchronized (this) {
 					wait(UPDATE_DELAY_MS);
