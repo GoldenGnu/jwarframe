@@ -147,7 +147,7 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		labelTable.put(0, new JLabel("All"));
 		labelTable.put(1, new JLabel("25k"));
 		labelTable.put(2, new JLabel("35k"));
-		labelTable.put(3, new JLabel("None"));
+		labelTable.put(3, new JLabel("50K"));
 		jCredits.setLabelTable(labelTable);
 		jCredits.setPaintLabels(true);
 		jCredits.setVisible(false);

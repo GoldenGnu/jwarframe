@@ -167,7 +167,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
         labels.put(2, new JLabel("5k"));
         labels.put(3, new JLabel("7k"));
         labels.put(4, new JLabel("10k"));
-        labels.put(5, new JLabel("None"));
+        labels.put(5, new JLabel("20K"));
         jCredits.setLabelTable(labels);
 		jCredits.setPaintLabels(true);
 		jCredits.setVisible(false);

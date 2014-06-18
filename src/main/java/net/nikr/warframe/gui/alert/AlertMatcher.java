@@ -73,6 +73,9 @@ public class AlertMatcher implements Matcher<Alert> {
 		if (credits == 4 && alert.getCredits() >= 10000) { //10K
 			return true;
 		}
+		if (credits == 5 && alert.getCredits() >= 20000) { //20K
+			return true;
+		}
 		//Match loot (Category)
 		if (alert.hasLoot()) {
 			Category category = alert.getCategory();
