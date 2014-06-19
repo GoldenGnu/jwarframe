@@ -112,6 +112,10 @@ public class FileConstants {
 		return new File(getLocalFile(SETTINGS_LOCAL + "done.dat", Main.isPortable()));
 	}
 
+	public static File getZoom() {
+		return new File(getLocalFile(SETTINGS_LOCAL + "zoom.dat", Main.isPortable()));
+	}
+
 	public static File getVersionLocal() {
 		return new File(getLocalFile(DATA_LOCAL + "version.dat", Main.isPortable()));
 	}
