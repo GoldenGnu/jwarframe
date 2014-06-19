@@ -43,6 +43,7 @@ import net.nikr.warframe.gui.invasion.InvasionTool;
 import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.reward.RewardID;
 import net.nikr.warframe.gui.reward.RewardTool;
+import net.nikr.warframe.gui.reward.Zoom;
 import net.nikr.warframe.gui.settings.SettingsConstants;
 import net.nikr.warframe.gui.settings.SettingsTool;
 import net.nikr.warframe.gui.shared.CategoryFilter;
@@ -126,6 +127,8 @@ public class Program {
 		downloadImages();
 		//Filter Sets
 		filterSets.addAll(FileConstants.getFileList(FileConstants.getFilterSets(), ".dat"));
+		//Zoom
+		Map<String, Zoom> zoom = loadZoom();
 		
 
 		SplashUpdater.setText("Loading GUI");
@@ -150,7 +153,7 @@ public class Program {
 		float total = 0;
 		for (Category category : categories) {
 			//GUI
-			RewardTool inventoryTool = new RewardTool(this, category.getRewards(), category.getName(), category.getWidth(), category.getHeight());
+			RewardTool inventoryTool = new RewardTool(this, category.getRewards(), category.getName(), category.getWidth(), category.getHeight(), zoom.get(category.getName()));
 			tools.add(inventoryTool);
 			inventories.add(inventoryTool);
 			mainFrame.add(inventoryTool);
@@ -265,6 +268,7 @@ public class Program {
 	}
 
 	public void saveFilters() {
+		LOG.info("Saving Filters");
 		for (RewardTool inventory : inventories) {
 			inventory.update();
 		}
@@ -275,6 +279,7 @@ public class Program {
 	}
 
 	public void saveSettings() {
+		LOG.info("Saving Settings");
 		Set<String> settingsValues = new HashSet<String>();
 		settingsValues.add(String.valueOf(SettingsConstants.getSettingsVersion()));
 		settingsValues.add(SettingsConstants.SETTINGS_SET.name());
@@ -341,6 +346,7 @@ public class Program {
 	}
 
 	private void loadSettings() {
+		LOG.info("Loading Settings");
 		settings.clear();
 		ListReader reader = new ListReader();
 		for (String s : reader.load(FileConstants.getSettings())) {
@@ -365,6 +371,7 @@ public class Program {
 	}
 
 	public void loadFilters(File file) {
+		LOG.info("Loading Filter List");
 		ListReader reader = new ListReader();
 		filters.clear();
 		filters.addAll(new TreeSet<String>(reader.load(file)));
@@ -373,11 +380,13 @@ public class Program {
 	}
 
 	private Set<String> loadFilters() {
+		LOG.info("Loading Filters");
 		ListReader reader = new ListReader();
 		return new TreeSet<String>(reader.load(FileConstants.getFilters()));
 	}
 
 	private void updateFilters() {
+		LOG.info("Updating Filters");
 		FiltersGetter getter = new FiltersGetter();
 		List<String> filerFix = getter.get();
 		for (String fix : filerFix) {
@@ -396,6 +405,7 @@ public class Program {
 	}
 
 	private Set<RewardID> loadRewards(Category category) {
+		LOG.info("Loading Rewards");
 		File file = FileConstants.getCategoryLocal(category.getFilename());
 		ListReader reader = new ListReader();
 		Set<RewardID> categoryRewards = new TreeSet<RewardID>();
@@ -406,6 +416,7 @@ public class Program {
 	}
 
 	private List<Category> loadCategories() {
+		LOG.info("Loading Categories");
 		List<Category> categoryList = new ArrayList<Category>();
 		ListReader reader = new ListReader();
 		for (String s : reader.load(FileConstants.getCategoriesLocal())) {
@@ -449,14 +460,44 @@ public class Program {
     }
 
 	private void saveDone() {
+		LOG.info("Saving Done");
 		ListWriter writer = new ListWriter();
 		writer.save(done, FileConstants.getDone());
 	}
 
 	private void loadDone() {
+		LOG.info("Loading Done");
 		ListReader reader = new ListReader();
 		List<String> list = reader.load(FileConstants.getDone());
 		done.addAll(list);
+	}
+
+	public void saveZoom() {
+		LOG.info("Saving Zoom");
+		List<String> list = new ArrayList<String>();
+		for (RewardTool rewardTool : inventories) {
+			list.add(rewardTool.getName()+ ";" + rewardTool.getZoom().name());
+		}
+		ListWriter writer = new ListWriter();
+		writer.save(list, FileConstants.getZoom());
+	}
+
+	private Map<String, Zoom> loadZoom() {
+		LOG.info("Loading Zoom");
+		Map<String, Zoom> map = new HashMap<String, Zoom>();
+		ListReader reader = new ListReader();
+		List<String> list = reader.load(FileConstants.getZoom());
+		for (String s : list) {
+			String[] split = s.split(";");
+			if (split.length == 2) {
+				try {
+					map.put(split[0], Zoom.valueOf(split[1]));
+				} catch (IllegalArgumentException ex) {
+					LOG.warn("Failed to convert: " + split[1] + " to Zoom enum");
+				}
+			}
+		}
+		return map;
 	}
 
 	private static class Download extends Thread {

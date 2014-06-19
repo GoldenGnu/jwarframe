@@ -22,7 +22,6 @@
 package net.nikr.warframe.gui.reward;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,12 +34,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -55,6 +53,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.nikr.warframe.Program;
@@ -84,26 +83,38 @@ public class RewardTool implements Tool {
 
 	private final String title;
 	private final String toolTip;
+	private final String name;
 	private final Icon icon;
 
 	private final int width;
 	private final int height;
 
-	private final Map<Integer, Map<String, Map<Boolean, Icon>>> images = new HashMap<Integer, Map<String, Map<Boolean, Icon>>>();
 	private final List<JLabel> labels = new ArrayList<JLabel>();
-	private final List<Percent> percents = new ArrayList<Percent>();
+	private final List<Zoom> zooms = new ArrayList<Zoom>(Arrays.asList(Zoom.values()));
 
-	public RewardTool(final Program program, final Set<RewardID> rewards, final String title, final int width, final int height) {
+	private Timer timer;
+	private Zoom zoom;
+
+	public RewardTool(final Program program, final Set<RewardID> rewards, final String title, final int width, final int height, Zoom zoomStart) {
 		this.program = program;
 		this.width = width;
 		this.height = height;
 		this.icon = ImageGetter.getIcon(title);
+		this.name = title;
 		this.toolTip = title;
 		if (icon != null) {
 			this.title = "";
 		} else {
 			this.title = title;
 		}
+
+		timer = new Timer(500, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				program.saveZoom();
+				timer.stop();
+			}
+		});
 
 		jPanel = new JPanel();
 		GroupLayout layout = new GroupLayout(jPanel);
@@ -132,19 +143,13 @@ public class RewardTool implements Tool {
 
 		jAll.setSelected(true);
 
-		percents.add(new Percent("0%", 0, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 1)));
-		percents.add(new Percent("25%", 25, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 2)));
-		percents.add(new Percent("50%", 50, new Font(jPanel.getFont().getName(), Font.BOLD, jPanel.getFont().getSize() + 3)));
-		percents.add(new Percent("75%", 75, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 4))));
-		Percent percent100 = new Percent("100%", 100, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 5)));
-		percents.add(percent100);
-		//percents.add(new Percent("125%", 125, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 6))));
-		//percents.add(new Percent("150%", 150, new Font(jPanel.getFont().getName(), Font.BOLD, (jPanel.getFont().getSize() + 7))));
-
-		jImageSize = new JSlider(0, percents.size() - 1, percents.indexOf(percent100));
+		if (zoomStart == null) {
+			zoomStart = Zoom.ZOOM_100;
+		}
+		jImageSize = new JSlider(0, Zoom.values().length - 1, zoomStart.ordinal());
 		Dictionary<Integer, JLabel> imageLabels = new Hashtable<Integer, JLabel>();
-		for (int i = 0; i < percents.size(); i++) {
-			imageLabels.put(i, new JLabel(percents.get(i).toString()));
+		for (Zoom z : Zoom.values()) {
+			imageLabels.put(z.ordinal(), new JLabel(z.toString()));
 		}
 		jImageSize.setMinorTickSpacing(0);
         jImageSize.setMajorTickSpacing(1);
@@ -164,8 +169,8 @@ public class RewardTool implements Tool {
 				jImageSize.requestFocusInWindow();
 				int value = jImageSize.getValue();
 				value = value + (e.getUnitsToScroll() / e.getScrollAmount());
-				if (value > (percents.size() - 1) ) {
-					value = (percents.size() - 1);
+				if (value > (Zoom.values().length - 1) ) {
+					value = (Zoom.values().length - 1);
 				}
 				if (value < 0) {
 					value = 0;
@@ -184,8 +189,8 @@ public class RewardTool implements Tool {
 				if ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
 					int value = jImageSize.getValue();
 					value = value + (e.getUnitsToScroll() / e.getScrollAmount());
-					if (value > (percents.size() - 1) ) {
-						value = (percents.size() - 1);
+					if (value > (Zoom.values().length - 1) ) {
+						value = (Zoom.values().length - 1);
 					}
 					if (value < 0) {
 						value = 0;
@@ -266,6 +271,7 @@ public class RewardTool implements Tool {
 		);
 		
 		update();
+		timer.stop();
 	}
 
 	@Override
@@ -305,11 +311,12 @@ public class RewardTool implements Tool {
 	}
 
 	public final void update() {
+		timer.stop();
 		jItems.removeAll();
 		int total = 0;
 		int showing = 0;
 		int value = jImageSize.getValue();
-		Percent percent = percents.get(value);
+		zoom = zooms.get(value);
 		for (final JLabel jLabel : labels) {
 			boolean ignore = program.getFilters().contains(jLabel.getText());
 			total++;
@@ -320,17 +327,26 @@ public class RewardTool implements Tool {
 				continue;
 			}
 			showing++;
-			jLabel.setFont(percent.getFont());
+			jLabel.setFont(zoom.getFont());
 			if (ignore) {
 				jLabel.setForeground(Color.GRAY);
 			} else {
 				jLabel.setForeground(Color.ORANGE);
 			}
-			jLabel.setIcon(getImage(jLabel.getText(), ignore));
+			jLabel.setIcon(getImage(jLabel.getText(), zoom, ignore));
 			jItems.add(jLabel);
 		}
 		jCount.setText("Showing " + showing + " of " + total);
 		jItems.updateUI();
+		timer.start();
+	}
+
+	public Zoom getZoom() {
+		return zoom;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	private void showPopupMenu(JLabel jLabel, MouseEvent e, final RewardID reward) {
@@ -365,17 +381,15 @@ public class RewardTool implements Tool {
 
 	
 
-	private Icon getImage(String rewardName, boolean ignore) {
-		int value = jImageSize.getValue();
-		Percent percent = percents.get(value);
-		if (percent.getPercent() == 0) {
+	private Icon getImage(String rewardName, Zoom zoom, boolean ignore) {
+		if (zoom.getPercent() == 0) {
 			if (ignore) {
 				return Images.PROGRAM_DISABLED_16.getIcon();
 			} else {
 				return Images.PROGRAM_16.getIcon();
 			}
 		} else {
-			BufferedImage image = scale(ImageGetter.getBufferedImage(rewardName), percent.getPercent());
+			BufferedImage image = scale(ImageGetter.getBufferedImage(rewardName), zoom.getPercent());
 			if (ignore) {
 				return included(image, Images.PROGRAM_DISABLED_16);
 			} else {
@@ -425,32 +439,4 @@ public class RewardTool implements Tool {
 
 		return bilinearScaleOp.filter(image, new BufferedImage(fixedWidth, fixedHeight, image.getType()));
 	}
-
-	private static class Percent {
-		private final String text;
-		private final int percent;
-		private final Font font;
-
-		public Percent(String text, int percent, Font font) {
-			this.text = text;
-			this.percent = percent;
-			this.font = font;
-		}
-
-		public int getPercent() {
-			return percent;
-		}
-
-		public Font getFont() {
-			return font;
-		}
-
-		@Override
-		public String toString() {
-			return text;
-		}
-
-		
-	}
-	
 }
