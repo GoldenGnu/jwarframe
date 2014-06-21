@@ -40,7 +40,8 @@ public enum SettingsConstants {
 	INVASION_HELP_CORPUS(2, true),
 	INVASION_HELP_GRINEER(2, true),
 	LOGIN_REWARD(1, true),
-	NOTIFY_AUDIO(1, true);
+	NOTIFY_AUDIO(1, true),
+	NOTIFY_AUDIO_REPEAT(3, true);
 
 	private final int version;
 	private final boolean value ;
@@ -51,7 +52,7 @@ public enum SettingsConstants {
 	}
 
 	public static int getSettingsVersion() {
-		return 2;
+		return 3;
 	}
 
 	public int getVersion() {
