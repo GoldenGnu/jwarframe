@@ -84,11 +84,13 @@ public class AudioTool implements NotifyListener {
 
 	@Override
 	public void startNotify(final int count, final NotifySource source, final Set<String> categories) {
-		if (beeper == null && program.getSettings(SettingsConstants.NOTIFY_AUDIO)) {
-			beeper = new Beeper(categories);
-			beeper.start();
-		} else {
-			beeper.add(categories);
+		if (program.getSettings(SettingsConstants.NOTIFY_AUDIO) || program.getSettings(SettingsConstants.NOTIFY_AUDIO_REPEAT)) {
+			if (beeper == null) {
+				beeper = new Beeper(categories);
+				beeper.start();
+			} else {
+				beeper.add(categories);
+			}
 		}
 	}
 
@@ -217,22 +219,40 @@ public class AudioTool implements NotifyListener {
 		@Override
 		public void run() {
 			try {
-				while (isRun()) {
-					if (!cache.isEmpty()) {
-						categories.addAll(cache);
-						cache.clear();
-					}
-					if (categories.isEmpty()) {
-						playSafe("alert.wav");
-					} else {
-						for (String category : categories) {
-							playSafe(category.toLowerCase() + ".wav");
+				if (program.getSettings(SettingsConstants.NOTIFY_AUDIO_REPEAT)) { //Repeat until stopped
+					while (isRun()) {
+						if (!cache.isEmpty()) {
+							categories.addAll(cache);
+							cache.clear();
+						}
+						if (categories.isEmpty()) {
+							playSafe("alert.wav");
+						} else {
+							for (String category : categories) {
+								playSafe(category.toLowerCase() + ".wav");
+							}
+						}
+						synchronized (this) {
+							wait(1000 * 20);
 						}
 					}
-					synchronized (this) {
-						wait(1000 * 20);
-					}
+				} else { //Play each sound once
+					do {
+						if (!cache.isEmpty()) {
+							categories.addAll(cache);
+							cache.clear();
+						}
+						if (categories.isEmpty()) {
+							playSafe("alert.wav");
+						} else {
+							for (String category : categories) {
+								playSafe(category.toLowerCase() + ".wav");
+							}
+							categories.clear();
+						}
+					} while ((!categories.isEmpty() && !cache.isEmpty()));
 				}
+				
 			} catch (InterruptedException ex) {
 				//Thread interupted - we are done beeping...
 			}

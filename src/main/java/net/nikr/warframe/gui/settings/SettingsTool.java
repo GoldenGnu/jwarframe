@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
+import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
@@ -40,6 +41,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import net.nikr.warframe.Program;
@@ -57,7 +59,9 @@ public class SettingsTool implements Tool {
 	private final JPanel jPanel;
 	private final JCheckBox jLoginReward;
 	private final JCheckBox jAutoRun;
-	private final JCheckBox jAudioNotify;
+	private final JRadioButton jAudioNotifyOnce;
+	private final JRadioButton jAudioNotifyRepeat;
+	private final JRadioButton jAudioNotifyNone;
 	private final JFileChooser jFileChooser;
 	private final List<SoundPanel> soundPanels = new ArrayList<SoundPanel>();
 
@@ -98,14 +102,40 @@ public class SettingsTool implements Tool {
 			}
 		});
 
-		jAudioNotify = new JCheckBox("Notify with audio");
-		jAudioNotify.setSelected(program.getSettings(SettingsConstants.NOTIFY_AUDIO));
-		jAudioNotify.addActionListener(new ActionListener() {
+		JLabel jAudioNotify = new JLabel("Audio Notification:");
+
+		ButtonGroup AudioNotify = new ButtonGroup();
+		jAudioNotifyNone = new JRadioButton("None");
+		jAudioNotifyNone.setSelected(!program.getSettings(SettingsConstants.NOTIFY_AUDIO) && !program.getSettings(SettingsConstants.NOTIFY_AUDIO_REPEAT));
+		jAudioNotifyNone.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				program.saveSettings();
 			}
 		});
+		AudioNotify.add(jAudioNotifyNone);
+
+		jAudioNotifyOnce = new JRadioButton("Once");
+		jAudioNotifyOnce.setSelected(program.getSettings(SettingsConstants.NOTIFY_AUDIO) && !program.getSettings(SettingsConstants.NOTIFY_AUDIO_REPEAT));
+		jAudioNotifyOnce.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				program.saveSettings();
+			}
+		});
+		AudioNotify.add(jAudioNotifyOnce);
+
+		jAudioNotifyRepeat = new JRadioButton("Repeat");
+		jAudioNotifyRepeat.setSelected(program.getSettings(SettingsConstants.NOTIFY_AUDIO_REPEAT));
+		jAudioNotifyRepeat.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				program.saveSettings();
+			}
+		});
+		AudioNotify.add(jAudioNotifyRepeat);
+
+		//jAudioNotify.setSelected(program.getSettings(SettingsConstants.NOTIFY_AUDIO) && ! program.getSettings(SettingsConstants.NOTIFY_AUDIO));
 
 		ParallelGroup horizontalGroup = layout.createParallelGroup();
 		SequentialGroup verticalGroup = layout.createSequentialGroup();
@@ -113,13 +143,24 @@ public class SettingsTool implements Tool {
 		horizontalGroup
 				.addComponent(jAutoRun)
 				.addComponent(jLoginReward)
-				.addComponent(jAudioNotify);
+				.addGroup(layout.createSequentialGroup()
+					.addComponent(jAudioNotify)
+					.addComponent(jAudioNotifyRepeat)
+					.addComponent(jAudioNotifyOnce)
+					.addComponent(jAudioNotifyNone)
+				);
+
 		verticalGroup
 				.addComponent(jAutoRun)
 				.addGap(5)
 				.addComponent(jLoginReward)
 				.addGap(5)
-				.addComponent(jAudioNotify)
+				.addGroup(layout.createParallelGroup()
+					.addComponent(jAudioNotify, 25, 25, 25)
+					.addComponent(jAudioNotifyRepeat, 25, 25, 25)
+					.addComponent(jAudioNotifyOnce, 25, 25, 25)
+					.addComponent(jAudioNotifyNone, 25, 25, 25)
+				)
 				.addGap(5);
 
 		soundPanels.add(new SoundPanel("Default:", "alert.wav"));
@@ -159,7 +200,9 @@ public class SettingsTool implements Tool {
 		if (jLoginReward.isSelected()) {
 			settings.add(SettingsConstants.LOGIN_REWARD);
 		}
-		if (jAudioNotify.isSelected()) {
+		if (jAudioNotifyRepeat.isSelected()) {
+			settings.add(SettingsConstants.NOTIFY_AUDIO_REPEAT);
+		} else if (jAudioNotifyOnce.isSelected()) {
 			settings.add(SettingsConstants.NOTIFY_AUDIO);
 		}
 		return settings;
