@@ -160,7 +160,9 @@ public class RewardTool implements Tool {
 		jImageSize.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
+				timer.stop();
 				update();
+				timer.start();
 			}
 		});
 		jImageSize.addMouseWheelListener(new MouseWheelListener() {
@@ -271,7 +273,6 @@ public class RewardTool implements Tool {
 		);
 		
 		update();
-		timer.stop();
 	}
 
 	@Override
@@ -311,7 +312,6 @@ public class RewardTool implements Tool {
 	}
 
 	public final void update() {
-		timer.stop();
 		jItems.removeAll();
 		int total = 0;
 		int showing = 0;
@@ -338,7 +338,6 @@ public class RewardTool implements Tool {
 		}
 		jCount.setText("Showing " + showing + " of " + total);
 		jItems.updateUI();
-		timer.start();
 	}
 
 	public Zoom getZoom() {
