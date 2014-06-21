@@ -323,13 +323,17 @@ public class Program {
 	}
 
 	public void doneAdd(String id) {
-		done.add(id);
-		saveDone();
+		boolean updated = done.add(id);
+		if (updated) {
+			saveDone();
+		}
 	}
 
 	public void doneRemove(String id) {
-		done.remove(id);
-		saveDone();
+		boolean updated = done.remove(id);
+		if (updated) {
+			saveDone();
+		}
 	}
 
 	public List<Category> getCategories() {
