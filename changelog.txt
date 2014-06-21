@@ -16,6 +16,25 @@
                   #### #  # #  # #  # #### #### #### #### ####
 
 ________________________________________________________________________________
+_BETA_3_________________________________________________________________________
+
+New Features:
+-Easier zoom in the reward tools
+-Customizable sound for each reward category and login reward
+-Clear expired alerts button
+-Alerts now show what matches: credits and/or loot.
+-Save/Load filter lists
+-Remember reward tools zoom level
+-Play notification audio only once
+
+Changed:
+-Alerts and Invasions now always notify on major credits rewards
+
+Bug Fixes:
+-Still show login status on the statusbar, when login notify is disabled
+-Statusbar counted expired alerts
+
+________________________________________________________________________________
 _BETA_2_________________________________________________________________________
 
 Changed:
