@@ -208,7 +208,7 @@ public class AudioTool implements NotifyListener {
 			if (categories.isEmpty()) {
 				this.categories = new HashSet<String>();
 			} else {
-				this.categories = categories;
+				this.categories = new HashSet<String>(categories);
 			}
 		}
 

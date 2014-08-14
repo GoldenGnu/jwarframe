@@ -26,6 +26,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.settings.SettingsConstants;
@@ -88,7 +89,7 @@ public class DataUpdater extends Thread {
 				if (loginReward != null && program.getSettings(SettingsConstants.LOGIN_REWARD)) { //Notify on login reward enabled
 					if (loginReward && !loginNotify) { //Login avalible and not notified
 						loginNotify = true;
-						program.startNotify(0, NotifySource.LOGIN_REWARD, Collections.singleton("login"));
+						program.startNotify(0, NotifySource.LOGIN_REWARD, new HashSet<String>(Collections.singleton("login")));
 					}
 					if (!loginReward && loginNotify) { //Login not avalible and notified
 						loginNotify = false; //Enable notify (for next reward)
