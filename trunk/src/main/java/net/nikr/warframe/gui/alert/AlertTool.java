@@ -156,7 +156,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 				+ "<b>Wikia:</b>\tDouble click a table row with reward<br>"
 				+ "<b>Show:</b>\tHover mouse over reward cell<br>");
 
-		jCredits = new JSlider(JSlider.HORIZONTAL, 0, 5, 0);
+		jCredits = new JSlider(JSlider.HORIZONTAL, 0, 6, 0);
 		jCredits.setMinorTickSpacing(0);
         jCredits.setMajorTickSpacing(1);
         jCredits.setPaintTicks(true);
@@ -167,7 +167,8 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
         labels.put(2, new JLabel("5k"));
         labels.put(3, new JLabel("7k"));
         labels.put(4, new JLabel("10k"));
-        labels.put(5, new JLabel("20K"));
+        labels.put(5, new JLabel("20k"));
+        labels.put(6, new JLabel("30k"));
         jCredits.setLabelTable(labels);
 		jCredits.setPaintLabels(true);
 		jCredits.setVisible(false);
@@ -179,8 +180,10 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 			jCredits.setValue(3);
 		} else if (program.getSettings(SettingsConstants.ALERT_CREDIT_10K)) {
 			jCredits.setValue(4);
-		} else if (program.getSettings(SettingsConstants.ALERT_CREDIT_NONE)) {
+		} else if (program.getSettings(SettingsConstants.ALERT_CREDIT_20K)) {
 			jCredits.setValue(5);
+		} else if (program.getSettings(SettingsConstants.ALERT_CREDIT_NONE)) {
+			jCredits.setValue(6);
 		} else { //No settings or ALERT_CREDIT_ALL
 			jCredits.setValue(0);
 		}

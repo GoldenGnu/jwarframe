@@ -29,6 +29,7 @@ public enum SettingsConstants {
 	ALERT_CREDIT_5K(0, false),
 	ALERT_CREDIT_7K(0, false),
 	ALERT_CREDIT_10K(0, false),
+	ALERT_CREDIT_20K(0, false),
 	ALERT_CREDIT_NONE(0, false),
 	INVASION_CREDITS_ALL(0, true),
 	INVASION_CREDITS_NONE(0, false),

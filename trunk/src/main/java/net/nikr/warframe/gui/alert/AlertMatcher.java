@@ -107,6 +107,9 @@ public class AlertMatcher implements Matcher<Alert> {
 		if (credits == 5 && alert.getCredits() >= 20000) { //20K
 			return true;
 		}
+		if (credits == 6 && alert.getCredits() >= 30000) { //30K
+			return true;
+		}
 		return false;
 	}
 	

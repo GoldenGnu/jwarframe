@@ -42,7 +42,8 @@ public class AlertSettings {
 			case 2: settings.add(SettingsConstants.ALERT_CREDIT_5K); break;
 			case 3: settings.add(SettingsConstants.ALERT_CREDIT_7K); break;
 			case 4: settings.add(SettingsConstants.ALERT_CREDIT_10K); break;
-			case 5: settings.add(SettingsConstants.ALERT_CREDIT_NONE); break;
+			case 5: settings.add(SettingsConstants.ALERT_CREDIT_20K); break;
+			case 6: settings.add(SettingsConstants.ALERT_CREDIT_NONE); break;
 		}
 		return settings;
 	}
