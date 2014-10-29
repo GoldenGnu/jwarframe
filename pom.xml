@@ -4,8 +4,8 @@
 	<groupId>net.nikr</groupId>
 	<artifactId>jwarframe</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0-SNAPSHOT</version>
-	<name>jWarframe</name>
+	<version>1.0.0</version>
+	<name>jwarframe</name>
 	<url>http://maven.apache.org</url>
 	<build>
 		<plugins>
@@ -58,6 +58,9 @@
 									<fileset dir="" includes="*.txt"/>
 									<fileset dir="tools" includes="*.jar"/>
 									<fileset dir="tools/update" includes="*"/>
+								</copy>
+								<copy todir="${project.build.directory}">
+									<fileset dir="${project.build.directory}/classes" includes="update_version.dat"/>
 								</copy>
 							</target>
 						</configuration>
@@ -191,6 +194,22 @@
 				<version>2.6</version>
 			</extension>
 		</extensions>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/update_version.dat</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>**/update_version.dat</exclude>
+				</excludes>
+			</resource>
+		</resources>
 	</build>
 	<repositories>
 		<repository>
