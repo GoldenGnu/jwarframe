@@ -213,16 +213,12 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		eventTableModel.addTableModelListener(new TableModelListener() {
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				if (e.getType() == TableModelEvent.UPDATE && e.getColumn() == -1) {
-					for (int i = e.getFirstRow(); i <= e.getLastRow(); i++) {
-						Invasion invasion  = eventTableModel.getElementAt(i);
-						if (invasion.isDone()) {
-							program.doneAdd(invasion.getId());
-						} else {
-							program.doneRemove(invasion.getId());
-						}
+				for (Invasion invasion : eventList) {
+					if (invasion.isDone()) {
+						program.doneAdd(invasion.getId());
+					} else {
+						program.doneRemove(invasion.getId());
 					}
-					updateStatusBar();
 				}
 			}
 		});
