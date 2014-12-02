@@ -212,18 +212,15 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		eventTableModel.addTableModelListener(new TableModelListener() {
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				if (e.getType() == TableModelEvent.UPDATE && e.getColumn() == -1) {
-					for (int i = e.getFirstRow(); i <= e.getLastRow(); i++) {
-						Alert alert = eventTableModel.getElementAt(i);
-						program.getFiltersTool().update(alert);
-						if (alert.isDone()) {
-							program.doneAdd(alert.getId());
-						} else {
-							program.doneRemove(alert.getId());
-						}
+				for (Alert alert : eventList) {
+					program.getFiltersTool().update(alert);
+					if (alert.isDone()) {
+						program.doneAdd(alert.getId());
+					} else {
+						program.doneRemove(alert.getId());
 					}
-					updateStatusBar();
 				}
+				updateStatusBar();
 			}
 		});
 
