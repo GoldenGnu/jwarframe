@@ -197,8 +197,8 @@ public class FiltersTool implements Tool {
 		if (loot == null) {
 			return;
 		}
-		if (program.getFilters().contains(loot)) {
-			program.getFilters().remove(loot);
+		boolean removed = program.getFilters().remove(loot);
+		if (removed) {
 			listModel.remove(loot);
 			program.saveFilters();
 		}
