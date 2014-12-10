@@ -304,15 +304,6 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		program.setAlert(matchList.size(), activeList.size());
 	}
 
-	private void updateIgnored() {
-		for (Alert alert : eventList) {
-			alert.setIgnored(program.getFilters());
-		}
-		for (int row = 0; row < eventTableModel.getRowCount(); row++) {
-			eventTableModel.fireTableCellUpdated(row, 5);
-		}
-	}
-
 	@Override
 	public String getTitle() {
 		return "Alerts";
@@ -346,6 +337,10 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		Set<Alert> all = new TreeSet<Alert>(eventList);
 		all.addAll(alerts);
 
+		for (Alert alert : all) {
+			alert.setIgnored(program.getFilters());
+		}
+
 		try {
 			eventList.getReadWriteLock().writeLock().lock();
 			eventList.clear();
@@ -369,7 +364,6 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 			program.startNotify(count, NotifySource.ALERTS, categories);
 		}
 		updateStatusBar();
-		updateIgnored();
 	}
 
 	@Override
@@ -382,7 +376,9 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		if (jIgnore.isSelected()) {
 			showList.setMatcher(new InvertMatcher<Alert>(matcher));
 		}
-		updateIgnored();
+		for (int row = 0; row < eventTableModel.getRowCount(); row++) {
+			eventTableModel.fireTableCellUpdated(row, 5);
+		}
 		updateStatusBar();
 	}
 }
