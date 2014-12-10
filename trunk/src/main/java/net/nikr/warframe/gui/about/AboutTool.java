@@ -72,6 +72,7 @@ public class AboutTool implements Tool {
 				+ "&nbsp;<a href=\"http://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU General Public License 2.0</a><br>"
 				+ "<br>"
 				+ "<b>www</b><br>"
+				+ "&nbsp;<a href=\"https://forums.warframe.com/index.php?/topic/221940-jwarframe-102-alert-and-invasion-notifier-for-windowslinuxmac/\">Forum Thread</a> (feedback)<br>"
 				+ "&nbsp;<a href=\"https://code.google.com/p/jwarframe/\">Google Code Project</a> (developers)<br>"
 				+ "<br>"
 				+ "<br>"
