@@ -368,6 +368,9 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 
 	@Override
 	public final void filter() {
+		for (Alert alert : eventList) {
+			alert.setIgnored(program.getFilters());
+		}
 		matcher = new AlertMatcher(jCredits.getValue(), getCategoryFilters(), program.getFilters());
 		matchList.setMatcher(matcher);
 		if (jNotify.isSelected()) {
