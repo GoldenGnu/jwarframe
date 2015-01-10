@@ -4,7 +4,7 @@
 	<groupId>net.nikr</groupId>
 	<artifactId>jwarframe</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.2</version>
+	<version>1.0.4</version>
 	<name>jwarframe</name>
 	<url>http://maven.apache.org</url>
 	<build>
@@ -251,6 +251,11 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.sourceVersion>1.6</project.build.sourceVersion>
+		<targetJdk>1.6</targetJdk>
+	</properties>
 </project>
 
 
