@@ -115,6 +115,7 @@ public class JFilterAdder {
 		//Clear Data
 		jFilter.setSelectedItem("");
 
+		//TODO - is this thread safe?
 		if (eventList.isEmpty()) { //Load data
 			try {
 				eventList.getReadWriteLock().writeLock().lock();

@@ -36,9 +36,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.swing.ButtonGroup;
@@ -212,13 +214,18 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		eventTableModel.addTableModelListener(new TableModelListener() {
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				for (Alert alert : eventList) {
-					program.getFiltersTool().update(alert);
-					if (alert.isDone()) {
-						program.doneAdd(alert.getId());
-					} else {
-						program.doneRemove(alert.getId());
+				try {
+					eventList.getReadWriteLock().readLock().lock();
+					for (Alert alert : eventList) {
+						program.getFiltersTool().update(alert);
+						if (alert.isDone()) {
+							program.doneAdd(alert.getId());
+						} else {
+							program.doneRemove(alert.getId());
+						}
 					}
+				} finally {
+					eventList.getReadWriteLock().readLock().unlock();
 				}
 				updateStatusBar();
 			}
@@ -274,6 +281,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 					.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 					.addGroup(layout.createParallelGroup()
 						.addComponent(jCredits, 170, 170, 170)
+						.addGroup(missionTypeHorizontalGroup)
 						.addGroup(categoryHorizontalGroup)
 					)
 				)
@@ -292,7 +300,9 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 					.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 					.addGroup(layout.createSequentialGroup()
 						.addComponent(jCredits)
-						.addGap(20)
+						.addGap(10)
+						.addGroup(missionTypeVerticalGroup)
+						.addGap(10)
 						.addGroup(categoryVerticalGroup)
 					)
 				)
@@ -326,7 +336,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 
 	@Override
 	public Set<SettingsConstants> getSettings() {
-		AlertSettings alertSettings = new AlertSettings(jCredits.getValue());
+		AlertSettings alertSettings = new AlertSettings(jCredits.getValue(), getFilterMissionTypesSettings());
 		return alertSettings.getSettings();
 	}
 
@@ -334,7 +344,13 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 	public void addAlerts(List<Alert> alerts) {
 		List<Alert> cache = new ArrayList<Alert>(matchList);
 
-		Set<Alert> all = new TreeSet<Alert>(eventList);
+		Set<Alert> all = new TreeSet<Alert>();
+		try {
+			eventList.getReadWriteLock().readLock().lock();
+			all.addAll(eventList);
+		} finally {
+			eventList.getReadWriteLock().readLock().unlock();
+		}
 		all.addAll(alerts);
 
 		for (Alert alert : all) {
@@ -368,10 +384,15 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 
 	@Override
 	public final void filter() {
-		for (Alert alert : eventList) {
-			alert.setIgnored(program.getFilters());
+		try {
+			eventList.getReadWriteLock().readLock().lock();
+			for (Alert alert : eventList) {
+				alert.setIgnored(program.getFilters());
+			}
+		} finally {
+			eventList.getReadWriteLock().readLock().unlock();
 		}
-		matcher = new AlertMatcher(jCredits.getValue(), getCategoryFilters(), program.getFilters());
+		matcher = new AlertMatcher(jCredits.getValue(), getCategoryFilters(), program.getFilters(), getFilterMissionTypesStrings());
 		matchList.setMatcher(matcher);
 		if (jNotify.isSelected()) {
 			showList.setMatcher(matcher);
@@ -384,5 +405,21 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		}
 		updateStatusBar();
 	}
+
+	@Override
+	public Map<String, SettingsConstants> getMissionTypes() {
+		if (missionTypes == null) {
+			missionTypes = new HashMap<String, SettingsConstants>();
+			missionTypes.put("Assassination", SettingsConstants.ALERT_IGNORE_ASSASSINATION);
+			missionTypes.put("Defense", SettingsConstants.ALERT_IGNORE_DEFENSE);
+			missionTypes.put("Extermination", SettingsConstants.ALERT_IGNORE_EXTERMINATION);
+			missionTypes.put("Mobile Defense", SettingsConstants.ALERT_IGNORE_MOBILE_DEFENSE);
+			missionTypes.put("Sabotage", SettingsConstants.ALERT_IGNORE_SABOTAGE);
+			missionTypes.put("Survival", SettingsConstants.ALERT_IGNORE_SURVIVAL);
+		}
+		return missionTypes;
+	}
+
+	
 }
 	

@@ -38,8 +38,9 @@ public class InvasionMatcher implements Matcher<Invasion> {
 	private final boolean helpGrineer;
 	private final Map<String, CategoryFilter> categoryFilters;
 	private final Set<String> filters;
+	private final Set<String> filterMissionTypes;
 
-	public InvasionMatcher(int credits, boolean killCorpus, boolean killGrineer, boolean killInfested, boolean helpCorpus, boolean helpGrineer, Map<String, CategoryFilter> categoryFilters, Set<String> filters) {
+	public InvasionMatcher(int credits, boolean killCorpus, boolean killGrineer, boolean killInfested, boolean helpCorpus, boolean helpGrineer, Map<String, CategoryFilter> categoryFilters, Set<String> filters, Set<String> filterMissionTypes) {
 		this.credits = credits;
 		this.killCorpus = killCorpus;
 		this.killGrineer = killGrineer;
@@ -48,6 +49,7 @@ public class InvasionMatcher implements Matcher<Invasion> {
 		this.helpGrineer = helpGrineer;
 		this.categoryFilters = categoryFilters;
 		this.filters = filters;
+		this.filterMissionTypes = filterMissionTypes;
 	}
 
 	@Override
@@ -183,11 +185,20 @@ public class InvasionMatcher implements Matcher<Invasion> {
 				defendinHelpFaction = true;
 			}
 		}
+	//MISSION TYPE
+		boolean invadingMissionType = true;
+		boolean defendinMissionType = true;
+		if (filterMissionTypes.contains(invasion.getInvadingMissionType())) {
+			invadingMissionType = false;
+		}
+		if (filterMissionTypes.contains(invasion.getDefendingMissionType())) {
+			defendinMissionType = false;
+		}
 	//UPDATE
-		invasion.setMatchDefending(defendinReward && defendinKillFaction && defendinHelpFaction);
-		invasion.setMatchInvading(invadingReward && invadingKillFaction && invadingHelpFaction);
-		return (invadingReward && invadingKillFaction && invadingHelpFaction)
-				|| (defendinReward && defendinKillFaction && defendinHelpFaction);
+		invasion.setMatchInvading(invadingReward && invadingKillFaction && invadingHelpFaction && invadingMissionType);
+		invasion.setMatchDefending(defendinReward && defendinKillFaction && defendinHelpFaction && defendinMissionType);
+		return (invadingReward && invadingKillFaction && invadingHelpFaction && invadingMissionType)
+				|| (defendinReward && defendinKillFaction && defendinHelpFaction && defendinMissionType);
 	}
 	
 }

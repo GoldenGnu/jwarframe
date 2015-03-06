@@ -42,7 +42,20 @@ public enum SettingsConstants {
 	INVASION_HELP_GRINEER(2, true),
 	LOGIN_REWARD(1, true),
 	NOTIFY_AUDIO(1, true),
-	NOTIFY_AUDIO_REPEAT(3, true);
+	NOTIFY_AUDIO_REPEAT(3, true),
+	ALERT_IGNORE_ASSASSINATION(4, false),
+	ALERT_IGNORE_DEFENSE(4, false),
+	ALERT_IGNORE_EXTERMINATION(4, false),
+	ALERT_IGNORE_MOBILE_DEFENSE(4, false),
+	ALERT_IGNORE_SABOTAGE(4, false),
+	ALERT_IGNORE_SURVIVAL(4, false),
+	INVASION_IGNORE_ASSASSINATION(4, false),
+	INVASION_IGNORE_DEFENSE(4, false),
+	INVASION_IGNORE_EXTERMINATION(4, false),
+	INVASION_IGNORE_MOBILE_DEFENSE(4, false),
+	INVASION_IGNORE_SABOTAGE(4, false),
+	INVASION_IGNORE_SURVIVAL(4, false),
+	;
 
 	private final int version;
 	private final boolean value ;
@@ -53,7 +66,7 @@ public enum SettingsConstants {
 	}
 
 	public static int getSettingsVersion() {
-		return 3;
+		return 4;
 	}
 
 	public int getVersion() {
