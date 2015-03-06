@@ -33,9 +33,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -213,12 +215,17 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		eventTableModel.addTableModelListener(new TableModelListener() {
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				for (Invasion invasion : eventList) {
-					if (invasion.isDone()) {
-						program.doneAdd(invasion.getId());
-					} else {
-						program.doneRemove(invasion.getId());
+				try {
+					eventList.getReadWriteLock().readLock().lock();
+					for (Invasion invasion : eventList) {
+						if (invasion.isDone()) {
+							program.doneAdd(invasion.getId());
+						} else {
+							program.doneRemove(invasion.getId());
+						}
 					}
+				} finally {
+					eventList.getReadWriteLock().readLock().unlock();
 				}
 			}
 		});
@@ -240,6 +247,7 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 						.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 						.addGroup(layout.createParallelGroup()
 								.addComponent(jCredits, 170, 170, 170)
+								.addGroup(missionTypeHorizontalGroup)
 								.addGroup(categoryHorizontalGroup)
 						)
 				)
@@ -257,10 +265,11 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 						.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 						.addGroup(layout.createSequentialGroup()
 								.addComponent(jCredits)
-								.addGap(20)
+								.addGap(10)
+								.addGroup(missionTypeVerticalGroup)
+								.addGap(10)
 								.addGroup(createRow(jKillLabel, jKillCorpus, jKillGrineer, jKillInfested))
 								.addGroup(createRow(jHelpLabel, jHelpCorpus, jHelpGrineer, null))
-								.addGap(20)
 								.addGroup(categoryVerticalGroup)
 						)
 				)
@@ -269,7 +278,12 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 	}
 
 	private void updateStatusBar() {
-		program.setInvasions(filterList.size(), eventList.size());
+		try {
+			eventList.getReadWriteLock().readLock().lock();
+			program.setInvasions(filterList.size(), eventList.size());
+		} finally {
+			eventList.getReadWriteLock().readLock().unlock();
+		}
 	}
 
 	@Override
@@ -337,7 +351,8 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 				jKillGrineer.isSelected(),
 				jKillInfested.isSelected(),
 				jHelpCorpus.isSelected(),
-				jHelpGrineer.isSelected());
+				jHelpGrineer.isSelected(),
+				getFilterMissionTypesSettings());
 		return settings.getSettings();
 	}
 
@@ -350,7 +365,8 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 				jHelpCorpus.isSelected(),
 				jHelpGrineer.isSelected(),
 				getCategoryFilters(),
-				program.getFilters());
+				program.getFilters(),
+				getFilterMissionTypesStrings());
 		filterList.setMatcher(matcher);
 		if (jNotify.isSelected()) {
 			showList.setMatcher(matcher);
@@ -360,5 +376,19 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		}
 		jTable.updateUI();
 		updateStatusBar();
+	}
+
+	@Override
+	public Map<String, SettingsConstants> getMissionTypes() {
+		if (missionTypes == null) {
+			missionTypes = new HashMap<String, SettingsConstants>();
+			missionTypes.put("Assassination", SettingsConstants.INVASION_IGNORE_ASSASSINATION);
+			missionTypes.put("Defense", SettingsConstants.INVASION_IGNORE_DEFENSE);
+			missionTypes.put("Extermination", SettingsConstants.INVASION_IGNORE_EXTERMINATION);
+			missionTypes.put("Mobile Defense", SettingsConstants.INVASION_IGNORE_MOBILE_DEFENSE);
+			missionTypes.put("Sabotage", SettingsConstants.INVASION_IGNORE_SABOTAGE);
+			missionTypes.put("Survival", SettingsConstants.INVASION_IGNORE_SURVIVAL);
+		}
+		return missionTypes;
 	}
 }

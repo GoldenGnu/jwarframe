@@ -47,6 +47,7 @@ public class Alert implements Comparable<Alert>{
 	private boolean done;
 	private boolean matchLoot;
 	private boolean matchCredits;
+	private boolean matchMission;
 
 	public Alert() { }
 
@@ -192,6 +193,14 @@ public class Alert implements Comparable<Alert>{
 
 	public void setMatchCredits(boolean matchCredits) {
 		this.matchCredits = matchCredits;
+	}
+
+	public boolean isMatchMission() {
+		return matchMission;
+	}
+
+	public void setMatchMission(boolean matchMission) {
+		this.matchMission = matchMission;
 	}
 
 	public String getLocation() {

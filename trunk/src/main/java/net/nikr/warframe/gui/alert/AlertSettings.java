@@ -28,9 +28,11 @@ import net.nikr.warframe.gui.settings.SettingsConstants;
 
 public class AlertSettings {
 	private final int credits;
+	private final Set<SettingsConstants> missionTypes;
 
-	public AlertSettings(int credits) {
+	public AlertSettings(int credits, Set<SettingsConstants> missionTypes) {
 		this.credits = credits;
+		this.missionTypes = missionTypes;
 	}
 
 	public Set<SettingsConstants> getSettings() {
@@ -45,6 +47,7 @@ public class AlertSettings {
 			case 5: settings.add(SettingsConstants.ALERT_CREDIT_20K); break;
 			case 6: settings.add(SettingsConstants.ALERT_CREDIT_NONE); break;
 		}
+		settings.addAll(missionTypes);
 		return settings;
 	}
 }

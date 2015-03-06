@@ -23,13 +23,19 @@ package net.nikr.warframe.gui.shared;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.Icon;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -37,6 +43,7 @@ import javax.swing.JToggleButton;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.reward.Category;
+import net.nikr.warframe.gui.settings.SettingsConstants;
 import net.nikr.warframe.io.shared.FastToolTips;
 
 
@@ -46,18 +53,23 @@ public abstract class FilterTool implements Tool {
 	protected final GroupLayout layout;
 	protected final GroupLayout.Group categoryHorizontalGroup;
 	protected final GroupLayout.Group categoryVerticalGroup;
+	protected final GroupLayout.Group missionTypeHorizontalGroup;
+	protected final GroupLayout.Group missionTypeVerticalGroup;
+	protected final List<JComponent> filterComponents = new ArrayList<JComponent>();
+	protected Map<String, SettingsConstants> missionTypes;
 	private final GroupLayout.Group column1;
 	private final GroupLayout.Group column2;
 	private final GroupLayout.Group column3;
 	private final GroupLayout.Group column4;
-
-	protected final List<JComponent> filterComponents = new ArrayList<JComponent>();
+	
+	private final Set<SettingsConstants> filterMissionTypesSettings = EnumSet.noneOf(SettingsConstants.class);
+	private final Set<String> filterMissionTypesStrings = new TreeSet<String>();;
 	private final List<CategoryContainer> categories = new ArrayList<CategoryContainer>();
 	private final int BUTTON_SIZE = 24;
 
 	protected final Program program;
 	
-	public FilterTool(Program program) {
+	public FilterTool(final Program program) {
 		this.program = program;
 
 		jPanel = new JPanel();
@@ -68,7 +80,7 @@ public abstract class FilterTool implements Tool {
 		layout.setHonorsVisibility(true);
 		layout.setLayoutStyle(null);
 
-		//Category
+	//CATEGORY
 		categoryVerticalGroup = layout.createSequentialGroup();
 		categoryHorizontalGroup = layout.createSequentialGroup();
 
@@ -97,6 +109,29 @@ public abstract class FilterTool implements Tool {
 			addColumn4(jNone);
 			categoryVerticalGroup.addGroup(createRow(jLabel, jAll, jFilters, jNone));
 			categories.add(new CategoryContainer(category.getName(), jAll, jFilters, jNone));
+		}
+
+	//MISSION TYPES
+		//Category
+		missionTypeVerticalGroup = layout.createSequentialGroup();
+		missionTypeHorizontalGroup = layout.createParallelGroup();
+
+		for (Map.Entry<String, SettingsConstants> entry : getMissionTypes().entrySet()) {
+			final JCheckBox jCheckBox = new JCheckBox(entry.getKey());
+			jCheckBox.setSelected(!program.getSettings(entry.getValue()));
+			update(jCheckBox);
+			jCheckBox.setVisible(false);
+			jCheckBox.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					update(jCheckBox);
+					filter();
+					program.saveSettings();
+				}
+			});
+			filterComponents.add(jCheckBox);
+			missionTypeVerticalGroup.addComponent(jCheckBox);
+			missionTypeHorizontalGroup.addComponent(jCheckBox);
 		}
 	}
 
@@ -149,6 +184,26 @@ public abstract class FilterTool implements Tool {
 		}
 		return group;
 	}
+
+	public Set<SettingsConstants> getFilterMissionTypesSettings() {
+		return filterMissionTypesSettings;
+	}
+
+	public Set<String> getFilterMissionTypesStrings() {
+		return filterMissionTypesStrings;
+	}
+
+	private void update(JCheckBox jCheckBox) {
+		String name = jCheckBox.getText();
+		SettingsConstants settingsConstants = getMissionTypes().get(name);
+		if (jCheckBox.isSelected()) {
+			filterMissionTypesStrings.remove(name);
+			filterMissionTypesSettings.remove(settingsConstants);
+		} else {
+			filterMissionTypesStrings.add(name);
+			filterMissionTypesSettings.add(settingsConstants);
+		}
+	}
 	
 	public Map<String, CategoryFilter> getCategoryFilters() {
 		Map<String, CategoryFilter> categoryFilters = new HashMap<String, CategoryFilter>();
@@ -168,6 +223,7 @@ public abstract class FilterTool implements Tool {
 	}
 
 	public abstract void filter();
+	public abstract Map<String, SettingsConstants> getMissionTypes();
 
 	private static class CategoryContainer {
 		private final String category;

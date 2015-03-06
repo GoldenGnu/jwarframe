@@ -34,11 +34,13 @@ public class AlertMatcher implements Matcher<Alert> {
 	private final int credits;
 	private final Map<String, CategoryFilter> categoryFilters;
 	private final Set<String> filters;
+	private final Set<String> filterMissionTypes;
 
-	public AlertMatcher(int credits, Map<String, CategoryFilter> categoryFilters, Set<String> filters) {
+	public AlertMatcher(int credits, Map<String, CategoryFilter> categoryFilters, Set<String> filters, Set<String> filterMissionTypes) {
 		this.credits = credits;
 		this.categoryFilters = categoryFilters;
 		this.filters = filters;
+		this.filterMissionTypes = filterMissionTypes;
 	}
 
 	@Override
@@ -50,6 +52,12 @@ public class AlertMatcher implements Matcher<Alert> {
 		//Match credits
 		boolean credits = matchesCredits(alert);
 		alert.setMatchCredits(credits);
+
+ 		boolean matchesMission = matchesMissionType(alert);
+		alert.setMatchMission(!matchesMission);
+{		if (matchesMission)
+			return false;
+		}
 
 		//Ignore done alerts
 		if (alert.isDone()) {
@@ -111,6 +119,11 @@ public class AlertMatcher implements Matcher<Alert> {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean matchesMissionType(Alert alert) {
+		//Match mission type
+		return filterMissionTypes.contains(alert.getMission().getMission());
 	}
 	
 }

@@ -55,6 +55,17 @@ public class JAlertTable extends JToolTipTable {
 			component.setBackground(this.getSelectionBackground());
 		}
 		component.setForeground(Color.BLACK);
+		if (columnIndex == AlertTableFormat.MISSION.ordinal()) {
+			if (alert.isMatchMission()) {
+				component.setForeground(Color.BLACK);
+			} else {
+				if (isSelected) {
+					component.setForeground(Color.LIGHT_GRAY);
+				} else {
+					component.setForeground(Color.GRAY);
+				}
+			}
+		}
 		if (columnIndex == AlertTableFormat.CREDITS.ordinal()) {
 			if (alert.isMatchCredits()) {
 				component.setForeground(Color.BLACK);
