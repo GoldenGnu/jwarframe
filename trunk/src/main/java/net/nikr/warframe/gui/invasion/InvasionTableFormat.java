@@ -41,6 +41,12 @@ public enum InvasionTableFormat implements EnumRow<Invasion> {
 			return invasion.getNode();
 		}
 	},
+	ETA(String.class, "ETA") {
+		@Override
+		public Object getColumnValue(Invasion invasion) {
+			return invasion.getEta().replace("ETA:", "").trim();
+		}
+	},
 	INVADER_REWARD(String.class, "Reward") {
 		@Override
 		public Object getColumnValue(Invasion invasion) {
