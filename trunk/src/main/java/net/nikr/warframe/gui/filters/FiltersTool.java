@@ -52,6 +52,7 @@ import net.nikr.warframe.io.shared.ImageGetter;
 
 public class FiltersTool implements Tool {
 
+	private final JManageDialog jManageDialog;
 	private final JPanel jPanel;
 
 	private final SimpleListModel<String> listModel;
@@ -63,7 +64,7 @@ public class FiltersTool implements Tool {
 
 		final JFilterAdder jFilterAdder = new JFilterAdder(program);
 		final JFilterSave jFilterSave = new JFilterSave(program);
-		final JManageDialog jManageDialog = new JManageDialog(program);
+		jManageDialog = new JManageDialog(program);
 		jManageDialog.setSupportMerge(false);
 
 		jPanel = new JPanel();
@@ -186,6 +187,10 @@ public class FiltersTool implements Tool {
 	@Override
 	public Icon getIcon() {
 		return null;
+	}
+
+	public void loadFilterSet(String setName) {
+		jManageDialog.load(setName);
 	}
 
 	public void updateFilters() {

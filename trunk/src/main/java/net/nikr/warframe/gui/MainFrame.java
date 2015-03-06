@@ -22,18 +22,22 @@
 package net.nikr.warframe.gui;
 
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.SystemTray;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -45,6 +49,7 @@ import net.nikr.warframe.SplashUpdater;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.shared.Tool;
+import net.nikr.warframe.gui.shared.components.JDropDownButton;
 import net.nikr.warframe.gui.shared.listeners.LoginRewardListener;
 import net.nikr.warframe.gui.shared.listeners.NotifyListener;
 import net.nikr.warframe.io.shared.FastToolTips;
@@ -60,6 +65,7 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 	private final JLabel jLoginReward;
 	private final JLabel jAlerts;
 	private final JLabel jInvasions;
+	private final JDropDownButton jFilters;
 
 	private final Program program;
 
@@ -105,8 +111,10 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 		FastToolTips.install(jTabs);
 
 		JPanel jStatusBar = new JPanel();
-		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEADING);
-		jStatusBar.setLayout(flowLayout);
+		GroupLayout statusBarLayout = new GroupLayout(jStatusBar);
+		jStatusBar.setLayout(statusBarLayout);
+		statusBarLayout.setAutoCreateGaps(true);
+		statusBarLayout.setAutoCreateContainerGaps(false);
 
 		Border border = BorderFactory.createCompoundBorder(
 				BorderFactory.createLineBorder(Color.BLACK, 1)
@@ -135,6 +143,34 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 		FastToolTips.install(jLoginReward);
 		jStatusBar.add(jLoginReward);
 
+		jFilters = new JDropDownButton("Load Filter Set");
+		jFilters.keepVisible(2);
+		jFilters.setTopFixedCount(2);
+		jFilters.setInterval(125);
+		jStatusBar.add(jFilters);
+
+		statusBarLayout.setHorizontalGroup(
+			statusBarLayout.createSequentialGroup()
+					.addGap(5)
+				.addComponent(jAlerts)
+				.addComponent(jInvasions)
+				.addComponent(jLoginReward)
+				.addGap(0, 0, Integer.MAX_VALUE)
+				.addComponent(jFilters)
+				.addGap(5)
+		);
+		statusBarLayout.setVerticalGroup(
+			statusBarLayout.createSequentialGroup()
+			.addGap(5)
+			.addGroup(statusBarLayout.createParallelGroup()
+				.addComponent(jAlerts)
+				.addComponent(jInvasions)
+				.addComponent(jLoginReward)
+				.addComponent(jFilters)
+			)
+			.addGap(5)
+		);
+
 		layout.setHorizontalGroup(
 			layout.createParallelGroup()
 				.addComponent(jTabs, 600, 600, Integer.MAX_VALUE)
@@ -154,6 +190,7 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 		jFrame.setMinimumSize(jFrame.getSize());
 		jFrame.setSize(850, 600);
 
+		updateFilters();
 		if (Main.isStartup()) {
 			SplashUpdater.hide();
 		} else {
@@ -167,6 +204,31 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 
 	public JFrame getWindow() {
 		return jFrame;
+	}
+	
+	public final void updateFilters() {
+		JMenuItem jMenuItem;
+		jFilters.removeAll();
+		jFilters.setVisible(!program.getFilterSets().isEmpty());
+		jFilters.setEnabled(!program.getFilterSets().isEmpty());
+
+		List<String> list = new ArrayList<String>();
+		for (String s : program.getFilterSets()) {
+			list.add(s.replace(".dat", ""));
+		}
+
+		Collections.sort(list);
+
+		for (final String setName : list) {
+			jMenuItem = new JMenuItem(setName);
+			jMenuItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					program.getFiltersTool().loadFilterSet(setName);
+				}
+			});
+			jFilters.add(jMenuItem);
+		}
 	}
 
 	public final void setAlert(int match, int total) {

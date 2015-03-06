@@ -85,6 +85,7 @@ public class JFilterSave {
 				if (ok) {
 					ListWriter listWriter = new ListWriter();
 					program.getFilterSets().add(filename);
+					program.getMainFrame().updateFilters();
 					listWriter.save(program.getFilters(), FileConstants.getFilterSet(filename));
 					jDialog.setVisible(false);
 				} else {
