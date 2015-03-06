@@ -241,6 +241,10 @@ public class Program {
 		return filtersTool;
 	}
 
+	public MainFrame getMainFrame() {
+		return mainFrame;
+	}
+
 	public void stopNotify() {
 		LOG.info("Notification stopped");
 		for (NotifyListener listener : notifyListeners) {
@@ -380,6 +384,7 @@ public class Program {
 		filters.clear();
 		filters.addAll(new TreeSet<String>(reader.load(file)));
 		filtersTool.updateFilters();
+		mainFrame.updateFilters();
 		saveFilters();
 	}
 

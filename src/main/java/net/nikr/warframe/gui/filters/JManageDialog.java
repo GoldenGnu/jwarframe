@@ -249,6 +249,7 @@ public class JManageDialog {
 			list.add(toName(s));
 		}
 		update(list);
+		program.getMainFrame().updateFilters();
 	}
 
 	private void delete() {
