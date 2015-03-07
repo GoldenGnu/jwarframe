@@ -36,11 +36,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.swing.ButtonGroup;
@@ -95,7 +93,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 	private Matcher<Alert> matcher = null;
 
 	public AlertTool(final Program program) {
-		super(program);
+		super(program, new AlertMissionTypes());
 
 		jAll = new JRadioButton("All");
 		jAll.setSelected(true);
@@ -281,8 +279,8 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 					.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 					.addGroup(layout.createParallelGroup()
 						.addComponent(jCredits, 170, 170, 170)
-						.addGroup(missionTypeHorizontalGroup)
-						.addGroup(categoryHorizontalGroup)
+						//.addComponent(jMissionTypes, 170, 170, 170)
+						.addGroup(horizontalGroup)
 					)
 				)
 		);
@@ -300,10 +298,10 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 					.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 					.addGroup(layout.createSequentialGroup()
 						.addComponent(jCredits)
-						.addGap(10)
-						.addGroup(missionTypeVerticalGroup)
-						.addGap(10)
-						.addGroup(categoryVerticalGroup)
+						.addGap(15)
+						//.addGroup(createRow(jMissionTypesLabel, jMissionTypes, null, null))
+						//.addGap(15)
+						.addGroup(verticalGroup)
 					)
 				)
 		);
@@ -405,22 +403,5 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		}
 		updateStatusBar();
 	}
-
-	@Override
-	public Map<String, SettingsConstants> getMissionTypes() {
-		if (missionTypes == null) {
-			missionTypes = new HashMap<String, SettingsConstants>();
-			missionTypes.put("Assassination", SettingsConstants.ALERT_IGNORE_ASSASSINATION);
-			missionTypes.put("Defense", SettingsConstants.ALERT_IGNORE_DEFENSE);
-			missionTypes.put("Extermination", SettingsConstants.ALERT_IGNORE_EXTERMINATION);
-			missionTypes.put("Mobile Defense", SettingsConstants.ALERT_IGNORE_MOBILE_DEFENSE);
-			missionTypes.put("Sabotage", SettingsConstants.ALERT_IGNORE_SABOTAGE);
-			missionTypes.put("Survival", SettingsConstants.ALERT_IGNORE_SURVIVAL);
-			missionTypes.put("Rescue", SettingsConstants.ALERT_IGNORE_RESCUE);
-		}
-		return missionTypes;
-	}
-
-	
 }
 	
