@@ -388,6 +388,7 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 			missionTypes.put("Mobile Defense", SettingsConstants.INVASION_IGNORE_MOBILE_DEFENSE);
 			missionTypes.put("Sabotage", SettingsConstants.INVASION_IGNORE_SABOTAGE);
 			missionTypes.put("Survival", SettingsConstants.INVASION_IGNORE_SURVIVAL);
+			missionTypes.put("Rescue", SettingsConstants.INVASION_IGNORE_RESCUE);
 		}
 		return missionTypes;
 	}
