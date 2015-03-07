@@ -38,6 +38,7 @@ import net.nikr.warframe.gui.MainFrame;
 import net.nikr.warframe.gui.about.AboutTool;
 import net.nikr.warframe.gui.alert.AlertTool;
 import net.nikr.warframe.gui.audio.AudioTool;
+import net.nikr.warframe.gui.audio.NotificationPopup;
 import net.nikr.warframe.gui.filters.FiltersTool;
 import net.nikr.warframe.gui.invasion.InvasionTool;
 import net.nikr.warframe.gui.reward.Category;
@@ -89,6 +90,7 @@ public class Program {
 	private final TrayTool trayTool;
 	private final FiltersTool filtersTool;
 	private final AudioTool audioTool;
+	private final NotificationPopup notificationPopup;
 
 
 	private final List<Category> categories;
@@ -102,7 +104,7 @@ public class Program {
 	private int settingsVersion = 0;
 
 	public Program() {
-		//Static Data
+	//STATIC DATA
 		SplashUpdater.setText("Loading DATA");
 
 		Updater updater = new Updater();
@@ -132,7 +134,7 @@ public class Program {
 		
 
 		SplashUpdater.setText("Loading GUI");
-		//GUI
+	//GUI
 		mainFrame = new MainFrame(this);
 		SplashUpdater.setProgress(5);
 
@@ -148,6 +150,8 @@ public class Program {
 
 		audioTool = new AudioTool(this);
 		SplashUpdater.setProgress(20);
+
+		notificationPopup = new NotificationPopup(this);
 
 		float add = 60 / categories.size();
 		float total = 0;
@@ -182,6 +186,7 @@ public class Program {
 		addNotifyListener(audioTool);
 		addNotifyListener(trayTool);
 		addNotifyListener(mainFrame);
+		addNotifyListener(notificationPopup);
 		addInvasionListener(invasionTool);
 		addLoginRewardListener(mainFrame);
 	}

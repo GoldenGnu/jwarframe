@@ -48,6 +48,7 @@ import net.nikr.warframe.Program;
 import net.nikr.warframe.SplashUpdater;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.reward.Category;
+import net.nikr.warframe.gui.settings.SettingsConstants;
 import net.nikr.warframe.gui.shared.Tool;
 import net.nikr.warframe.gui.shared.components.JDropDownButton;
 import net.nikr.warframe.gui.shared.listeners.LoginRewardListener;
@@ -70,9 +71,6 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 	private final Program program;
 
 	private boolean alarm = false;
-	private int alerts = 0;
-	private int invasions = 0;
-	private boolean login = false;
 
 	public MainFrame(Program program) {
 		this.program = program;
@@ -255,9 +253,6 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 
 	@Override
 	public void stopNotify() {
-		if (alarm) {
-			showWindow();
-		}
 		alarm = false;
 		updateIcons();
 	}
@@ -265,7 +260,7 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 	@Override
 	public void startNotify(final int count, final NotifySource source, final Set<String> categories) {
 		if (!alarm) {
-			if (jFrame.isVisible()) {
+			if (jFrame.isVisible() && !program.getSettings(SettingsConstants.SHOW_POPUP)) {
 				SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -275,57 +270,8 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 			});
 			}
 		}
-		if (source == NotifySource.ALERTS) {
-			alerts = alerts + count;
-		} else if (source == NotifySource.INVASIONS) {
-			invasions = invasions + count;
-		} else if (source == NotifySource.LOGIN_REWARD) {
-			login = true;
-		}
 		alarm = true;
 		updateIcons();
-	}
-
-	private void showWindow() {
-		//Finish current event chain...
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				StringBuilder builder = new StringBuilder();
-				if (alerts > 0) {
-					builder.append(alerts);
-					builder.append(" new alert");
-					if (alerts > 1) {
-						builder.append("s");
-					}
-				}
-				if (alerts > 0 && invasions > 0) {
-					builder.append(" and ");
-				} else {
-					
-				}
-				if (invasions > 0) {
-					builder.append(invasions);
-					builder.append(" new invasion");
-					if (invasions > 1) {
-						builder.append("s");
-					}
-				}
-				if (alerts > 0 || invasions > 0) {
-					builder.append(" found");
-				}
-				if (login) {
-					if (alerts > 0 || invasions > 0) {
-						builder.append("\r\n");
-					}
-					builder.append("Login Reward Available");
-				}
-				JOptionPane.showMessageDialog(jFrame, builder.toString(), "Beep", JOptionPane.PLAIN_MESSAGE);
-				alerts = 0;
-				invasions = 0;
-				login = false;
-			}
-		});
 	}
 
 	private void updateIcons() {

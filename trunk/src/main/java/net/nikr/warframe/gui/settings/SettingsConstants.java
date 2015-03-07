@@ -57,6 +57,7 @@ public enum SettingsConstants {
 	INVASION_IGNORE_SABOTAGE(4, false),
 	INVASION_IGNORE_SURVIVAL(4, false),
 	INVASION_IGNORE_RESCUE(4, false),
+	SHOW_POPUP(5, true),
 	;
 
 	private final int version;
@@ -68,7 +69,7 @@ public enum SettingsConstants {
 	}
 
 	public static int getSettingsVersion() {
-		return 4;
+		return 5;
 	}
 
 	public int getVersion() {
