@@ -416,6 +416,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 			missionTypes.put("Mobile Defense", SettingsConstants.ALERT_IGNORE_MOBILE_DEFENSE);
 			missionTypes.put("Sabotage", SettingsConstants.ALERT_IGNORE_SABOTAGE);
 			missionTypes.put("Survival", SettingsConstants.ALERT_IGNORE_SURVIVAL);
+			missionTypes.put("Rescue", SettingsConstants.ALERT_IGNORE_RESCUE);
 		}
 		return missionTypes;
 	}
