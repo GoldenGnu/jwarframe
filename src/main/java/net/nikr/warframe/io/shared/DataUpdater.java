@@ -77,13 +77,11 @@ public class DataUpdater extends Thread {
 				List<String> rawInvasions = invasionGetter.get();
 				List<Invasion> invasions = invasionProcessor.process(rawInvasions, program.getCategories(), program.getDone());
 				LOG.info(invasions.size() + " invasions updated");
-				program.addInvasions(invasions);
 			//ALERTS
 				LOG.info("Updating alerts from deathsnacks.com...");
 				List<String> rawAlerts = alertGetter.get();
 				List<Alert> alerts = alertProcessor.process(rawAlerts, program.getCategories(), program.getDone());
 				LOG.info(alerts.size() + " alerts updated");
-				program.addAlerts(alerts);
 			//LOGIN REWARD
 				loginReward = loginReader.loginRewardAvailible();
 				if (loginReward != null && program.getSettings(SettingsConstants.LOGIN_REWARD)) { //Notify on login reward enabled
@@ -95,6 +93,9 @@ public class DataUpdater extends Thread {
 						loginNotify = false; //Enable notify (for next reward)
 					}
 				}
+			//UPDATE DATA
+				program.addInvasions(invasions);
+				program.addAlerts(alerts);
 				program.addLoginReward(loginReward);
 			//WAIT
 				synchronized (this) {

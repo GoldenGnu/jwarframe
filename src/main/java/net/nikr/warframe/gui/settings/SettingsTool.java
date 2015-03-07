@@ -59,6 +59,7 @@ public class SettingsTool implements Tool {
 	private final JPanel jPanel;
 	private final JCheckBox jLoginReward;
 	private final JCheckBox jAutoRun;
+	private final JCheckBox jShowPopup;
 	private final JRadioButton jAudioNotifyOnce;
 	private final JRadioButton jAudioNotifyRepeat;
 	private final JRadioButton jAudioNotifyNone;
@@ -96,6 +97,15 @@ public class SettingsTool implements Tool {
 		jLoginReward = new JCheckBox("Notify on Login Reward");
 		jLoginReward.setSelected(program.getSettings(SettingsConstants.LOGIN_REWARD));
 		jLoginReward.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				program.saveSettings();
+			}
+		});
+
+		jShowPopup = new JCheckBox("Show Popup");
+		jShowPopup.setSelected(program.getSettings(SettingsConstants.SHOW_POPUP));
+		jShowPopup.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				program.saveSettings();
@@ -143,6 +153,7 @@ public class SettingsTool implements Tool {
 		horizontalGroup
 				.addComponent(jAutoRun)
 				.addComponent(jLoginReward)
+				.addComponent(jShowPopup)
 				.addGroup(layout.createSequentialGroup()
 					.addComponent(jAudioNotify)
 					.addComponent(jAudioNotifyRepeat)
@@ -154,6 +165,8 @@ public class SettingsTool implements Tool {
 				.addComponent(jAutoRun)
 				.addGap(5)
 				.addComponent(jLoginReward)
+				.addGap(5)
+				.addComponent(jShowPopup)
 				.addGap(5)
 				.addGroup(layout.createParallelGroup()
 					.addComponent(jAudioNotify, 25, 25, 25)
@@ -199,6 +212,9 @@ public class SettingsTool implements Tool {
 		Set<SettingsConstants> settings = EnumSet.noneOf(SettingsConstants.class);
 		if (jLoginReward.isSelected()) {
 			settings.add(SettingsConstants.LOGIN_REWARD);
+		}
+		if (jShowPopup.isSelected()) {
+			settings.add(SettingsConstants.SHOW_POPUP);
 		}
 		if (jAudioNotifyRepeat.isSelected()) {
 			settings.add(SettingsConstants.NOTIFY_AUDIO_REPEAT);
