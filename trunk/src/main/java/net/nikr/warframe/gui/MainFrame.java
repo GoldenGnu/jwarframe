@@ -72,7 +72,7 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 
 	private boolean alarm = false;
 
-	public MainFrame(Program program) {
+	public MainFrame(final Program program) {
 		this.program = program;
 		
 		this.jFrame = new JFrame(Program.PROGRAM_NAME + " " + Program.PROGRAM_VERSION);
@@ -96,6 +96,9 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 			@Override
 			public void windowGainedFocus(WindowEvent e) {
 				jFrame.setIconImages(active);
+				if (alarm) {
+					program.stopNotify();
+				}
 			}
 		});
 
@@ -193,6 +196,7 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 			SplashUpdater.hide();
 		} else {
 			jFrame.setVisible(true);
+			jFrame.requestFocus();
 		}
 	}
 
@@ -262,12 +266,12 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 		if (!alarm) {
 			if (jFrame.isVisible() && !program.getSettings(SettingsConstants.SHOW_POPUP)) {
 				SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					JOptionPane.showMessageDialog(jFrame, "Stop Beep...", "Beep", JOptionPane.PLAIN_MESSAGE);
-					program.stopNotify();
-				}
-			});
+					@Override
+					public void run() {
+						JOptionPane.showMessageDialog(jFrame, "Stop Beep...", "Beep", JOptionPane.PLAIN_MESSAGE);
+						program.stopNotify();
+					}
+				});
 			}
 		}
 		alarm = true;

@@ -24,7 +24,6 @@ package net.nikr.warframe.gui.audio;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -190,9 +189,7 @@ public class NotificationPopup implements NotifyListener {
 		}
 	}
 
-	@Override
-	public void stopNotify() {
-		counts.clear();
+	private void hide() {
 		if (jDialog.isVisible()) {
 			jDialog.setLocation(xEnd, y);
 			fadeOut = new Timer(10, new ActionListener() {
@@ -215,22 +212,11 @@ public class NotificationPopup implements NotifyListener {
 		}
 	}
 
-	@Override
-	public void startNotify(int count, NotifySource source, Set<String> categories) {
-		if (!program.getSettings(SettingsConstants.SHOW_POPUP)) {
-			return;
-		}
-		Integer now = counts.get(source);
-		if (now != null) {
-			now = now + count;
-		} else {
-			now = count;
-		}
-		counts.put(source, now);
-		update();
+	private void show() {
 		if (!jDialog.isVisible()) {
 			jDialog.setLocation(xStart, y);
 			jDialog.setVisible(true);
+			jDialog.requestFocus();
 			fadeIn = new Timer(10, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -249,6 +235,28 @@ public class NotificationPopup implements NotifyListener {
 			fadeIn.setCoalesce(true);
 			fadeIn.start();
 		}
+	}
+
+	@Override
+	public void stopNotify() {
+		counts.clear();
+		hide();
+	}
+
+	@Override
+	public void startNotify(int count, NotifySource source, Set<String> categories) {
+		if (!program.getSettings(SettingsConstants.SHOW_POPUP)) {
+			return;
+		}
+		Integer now = counts.get(source);
+		if (now != null) {
+			now = now + count;
+		} else {
+			now = count;
+		}
+		counts.put(source, now);
+		update();
+		show();
 	}
 
 	private class BackgroundPanel extends JPanel {
