@@ -93,7 +93,7 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 	private Matcher<Invasion> matcher = null;
 
 	public InvasionTool(final Program program) {
-		super(program);
+		super(program, new InvasionMissionTypes());
 
 		jAll = new JRadioButton("All");
 		jAll.setSelected(true);
@@ -235,42 +235,43 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		layout.setHorizontalGroup(
 				layout.createParallelGroup()
 				.addGroup(layout.createSequentialGroup()
-						.addComponent(jAll)
-						.addComponent(jNotify)
-						.addComponent(jIgnore)
-						.addGap(0, 0, Integer.MAX_VALUE)
-						.addComponent(jFilters)
-						.addGap(10)
-						.addComponent(jHelp)
+					.addComponent(jAll)
+					.addComponent(jNotify)
+					.addComponent(jIgnore)
+					.addGap(0, 0, Integer.MAX_VALUE)
+					.addComponent(jFilters)
+					.addGap(10)
+					.addComponent(jHelp)
 				)
 				.addGroup(layout.createSequentialGroup()
-						.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
-						.addGroup(layout.createParallelGroup()
-								.addComponent(jCredits, 170, 170, 170)
-								.addGroup(missionTypeHorizontalGroup)
-								.addGroup(categoryHorizontalGroup)
-						)
+					.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
+					.addGroup(layout.createParallelGroup()
+						.addComponent(jCredits, 170, 170, 170)
+						//.addComponent(jMissionTypes)
+						.addGroup(horizontalGroup)
+					)
 				)
 		);
 		layout.setVerticalGroup(
 				layout.createSequentialGroup()
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(jAll)
-						.addComponent(jNotify)
-						.addComponent(jIgnore)
-						.addComponent(jFilters)
-						.addComponent(jHelp)
+					.addComponent(jAll)
+					.addComponent(jNotify)
+					.addComponent(jIgnore)
+					.addComponent(jFilters)
+					.addComponent(jHelp)
 				)
 				.addGroup(layout.createParallelGroup()
 						.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 						.addGroup(layout.createSequentialGroup()
-								.addComponent(jCredits)
-								.addGap(10)
-								.addGroup(missionTypeVerticalGroup)
-								.addGap(10)
-								.addGroup(createRow(jKillLabel, jKillCorpus, jKillGrineer, jKillInfested))
-								.addGroup(createRow(jHelpLabel, jHelpCorpus, jHelpGrineer, null))
-								.addGroup(categoryVerticalGroup)
+							.addComponent(jCredits)
+							.addGap(15)
+							.addGroup(createRow(jKillLabel, jKillCorpus, jKillGrineer, jKillInfested))
+							.addGroup(createRow(jHelpLabel, jHelpCorpus, jHelpGrineer, null))
+							.addGap(15)
+							//.addGroup(createRow(jMissionTypesLabel, jMissionTypes, null, null))
+							//.addGap(15)
+							.addGroup(verticalGroup)
 						)
 				)
 		);
@@ -376,20 +377,5 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		}
 		jTable.updateUI();
 		updateStatusBar();
-	}
-
-	@Override
-	public Map<String, SettingsConstants> getMissionTypes() {
-		if (missionTypes == null) {
-			missionTypes = new HashMap<String, SettingsConstants>();
-			missionTypes.put("Assassination", SettingsConstants.INVASION_IGNORE_ASSASSINATION);
-			missionTypes.put("Defense", SettingsConstants.INVASION_IGNORE_DEFENSE);
-			missionTypes.put("Extermination", SettingsConstants.INVASION_IGNORE_EXTERMINATION);
-			missionTypes.put("Mobile Defense", SettingsConstants.INVASION_IGNORE_MOBILE_DEFENSE);
-			missionTypes.put("Sabotage", SettingsConstants.INVASION_IGNORE_SABOTAGE);
-			missionTypes.put("Survival", SettingsConstants.INVASION_IGNORE_SURVIVAL);
-			missionTypes.put("Rescue", SettingsConstants.INVASION_IGNORE_RESCUE);
-		}
-		return missionTypes;
 	}
 }

@@ -35,15 +35,17 @@ import java.util.TreeSet;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.Icon;
-import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.settings.SettingsConstants;
+import net.nikr.warframe.gui.shared.components.JDropDownButton;
 import net.nikr.warframe.io.shared.FastToolTips;
 
 
@@ -51,12 +53,12 @@ public abstract class FilterTool implements Tool {
 
 	protected final JPanel jPanel;
 	protected final GroupLayout layout;
-	protected final GroupLayout.Group categoryHorizontalGroup;
-	protected final GroupLayout.Group categoryVerticalGroup;
-	protected final GroupLayout.Group missionTypeHorizontalGroup;
-	protected final GroupLayout.Group missionTypeVerticalGroup;
+	protected final GroupLayout.Group horizontalGroup;
+	protected final GroupLayout.Group verticalGroup;
+	private final JDropDownButton jMissionTypes;
+	private final JLabel jMissionTypesStatus;
 	protected final List<JComponent> filterComponents = new ArrayList<JComponent>();
-	protected Map<String, SettingsConstants> missionTypes;
+	private final MissionTypes missionTypes;
 	private final GroupLayout.Group column1;
 	private final GroupLayout.Group column2;
 	private final GroupLayout.Group column3;
@@ -69,9 +71,11 @@ public abstract class FilterTool implements Tool {
 
 	protected final Program program;
 	
-	public FilterTool(final Program program) {
+	public FilterTool(final Program program, final MissionTypes missionTypes) {
 		this.program = program;
+		this.missionTypes = missionTypes;
 
+	//LAYOUT
 		jPanel = new JPanel();
 		layout = new GroupLayout(jPanel);
 		jPanel.setLayout(layout);
@@ -80,19 +84,58 @@ public abstract class FilterTool implements Tool {
 		layout.setHonorsVisibility(true);
 		layout.setLayoutStyle(null);
 
-	//CATEGORY
-		categoryVerticalGroup = layout.createSequentialGroup();
-		categoryHorizontalGroup = layout.createSequentialGroup();
+		verticalGroup = layout.createSequentialGroup();
+		horizontalGroup = layout.createSequentialGroup();
 
 		column1 = layout.createParallelGroup();
 		column2 = layout.createParallelGroup();
 		column3 = layout.createParallelGroup();
 		column4 = layout.createParallelGroup();
 
-		categoryHorizontalGroup.addGroup(column1);
-		categoryHorizontalGroup.addGroup(column2);
-		categoryHorizontalGroup.addGroup(column3);
-		categoryHorizontalGroup.addGroup(column4);
+		horizontalGroup.addGroup(column1);
+		horizontalGroup.addGroup(column2);
+		horizontalGroup.addGroup(column3);
+		horizontalGroup.addGroup(column4);
+
+	//MISSION TYPES
+		JLabel jMissionTypesLabel = new JLabel("Missions");
+		jMissionTypesLabel.setVisible(false);
+		filterComponents.add(jMissionTypesLabel);
+		addColumn1(jMissionTypesLabel);
+
+		jMissionTypes = new JDropDownButton(Images.SETTINGS.getIcon());
+		jMissionTypes.setPopupHorizontalAlignment(SwingConstants.CENTER);
+		jMissionTypes.setVisible(false);
+		filterComponents.add(jMissionTypes);
+		addColumn2(jMissionTypes);
+
+		jMissionTypesStatus = new JLabel();
+		jMissionTypesStatus.setVisible(false);
+		jMissionTypesStatus.setHorizontalAlignment(SwingConstants.CENTER);
+		jMissionTypesStatus.setVerticalAlignment(SwingConstants.CENTER);
+		FastToolTips.install(jMissionTypesStatus);
+		filterComponents.add(jMissionTypesStatus);
+		addColumn3(jMissionTypesStatus);
+
+		verticalGroup.addGroup(createRow(jMissionTypesLabel, jMissionTypes, jMissionTypesStatus, null));
+		verticalGroup.addGap(15);
+
+	//CATEGORY
+		for (Map.Entry<String, SettingsConstants> entry : missionTypes.getMissionTypes().entrySet()) {
+			final JCheckBoxMenuItem jCheckBox = new JCheckBoxMenuItem(entry.getKey());
+			jCheckBox.setSelected(!program.getSettings(entry.getValue()));
+			update(jCheckBox);
+			jCheckBox.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					update(jCheckBox);
+					filter();
+					program.saveSettings();
+				}
+			});
+			
+			jMissionTypes.add(jCheckBox, true);
+		}
 
 		for (Category category : program.getCategories()) {
 			JLabel jLabel = new JLabel(category.getName());
@@ -107,31 +150,8 @@ public abstract class FilterTool implements Tool {
 			addColumn2(jAll);
 			addColumn3(jFilters);
 			addColumn4(jNone);
-			categoryVerticalGroup.addGroup(createRow(jLabel, jAll, jFilters, jNone));
+			verticalGroup.addGroup(createRow(jLabel, jAll, jFilters, jNone));
 			categories.add(new CategoryContainer(category.getName(), jAll, jFilters, jNone));
-		}
-
-	//MISSION TYPES
-		//Category
-		missionTypeVerticalGroup = layout.createSequentialGroup();
-		missionTypeHorizontalGroup = layout.createParallelGroup();
-
-		for (Map.Entry<String, SettingsConstants> entry : getMissionTypes().entrySet()) {
-			final JCheckBox jCheckBox = new JCheckBox(entry.getKey());
-			jCheckBox.setSelected(!program.getSettings(entry.getValue()));
-			update(jCheckBox);
-			jCheckBox.setVisible(false);
-			jCheckBox.addItemListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					update(jCheckBox);
-					filter();
-					program.saveSettings();
-				}
-			});
-			filterComponents.add(jCheckBox);
-			missionTypeVerticalGroup.addComponent(jCheckBox);
-			missionTypeHorizontalGroup.addComponent(jCheckBox);
 		}
 	}
 
@@ -193,15 +213,25 @@ public abstract class FilterTool implements Tool {
 		return filterMissionTypesStrings;
 	}
 
-	private void update(JCheckBox jCheckBox) {
+	private void update(JCheckBoxMenuItem jCheckBox) {
 		String name = jCheckBox.getText();
-		SettingsConstants settingsConstants = getMissionTypes().get(name);
+		SettingsConstants settingsConstants = missionTypes.getMissionTypes().get(name);
 		if (jCheckBox.isSelected()) {
 			filterMissionTypesStrings.remove(name);
 			filterMissionTypesSettings.remove(settingsConstants);
 		} else {
 			filterMissionTypesStrings.add(name);
 			filterMissionTypesSettings.add(settingsConstants);
+		}
+		if (filterMissionTypesStrings.isEmpty()) {
+			jMissionTypesStatus.setToolTipText("All");
+			jMissionTypesStatus.setIcon(Images.ALL.getIcon());
+		} else if (filterMissionTypesStrings.size() == missionTypes.getMissionTypes().size()) {
+			jMissionTypesStatus.setToolTipText("None");
+			jMissionTypesStatus.setIcon(Images.NONE.getIcon());
+		} else {
+			jMissionTypesStatus.setToolTipText("Filters");
+			jMissionTypesStatus.setIcon(Images.PROGRAM_16.getIcon());
 		}
 	}
 	
@@ -223,7 +253,6 @@ public abstract class FilterTool implements Tool {
 	}
 
 	public abstract void filter();
-	public abstract Map<String, SettingsConstants> getMissionTypes();
 
 	private static class CategoryContainer {
 		private final String category;
@@ -251,5 +280,9 @@ public abstract class FilterTool implements Tool {
 				return CategoryFilter.NONE;
 			}
 		}
+	}
+
+	public static interface MissionTypes {
+		public Map<String, SettingsConstants> getMissionTypes();
 	}
 }

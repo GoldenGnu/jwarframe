@@ -41,6 +41,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import net.nikr.warframe.Main;
@@ -145,6 +146,7 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 		jStatusBar.add(jLoginReward);
 
 		jFilters = new JDropDownButton("Load Filter Set");
+		jFilters.setPopupVerticalAlignment(SwingConstants.TOP);
 		jFilters.keepVisible(2);
 		jFilters.setTopFixedCount(2);
 		jFilters.setInterval(125);

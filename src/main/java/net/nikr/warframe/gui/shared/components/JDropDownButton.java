@@ -178,11 +178,11 @@ public class JDropDownButton extends JButton {
 			return;
 		}
 		int verticalPosition = this.getHeight();
-		int horizontalPosition = 0;
+		int horizontalPosition = 1;
 		Dimension popupMenuSize = jPopupMenu.getPreferredSize();
 		switch (popupHorizontalAlignment) {
 		case LEFT: //OK
-			horizontalPosition = 0;
+			horizontalPosition = 1;
 			break;
 		case RIGHT: //OK
 			horizontalPosition = this.getWidth() - popupMenuSize.width;
@@ -193,10 +193,10 @@ public class JDropDownButton extends JButton {
 		}
 		switch (popupVerticalAlignment) {
 			case TOP: //OK
-				verticalPosition = -popupMenuSize.height + 2;
+				verticalPosition = -popupMenuSize.height + 1;
 				break;
 			case BOTTOM: //OK
-				verticalPosition = this.getHeight() - 2;
+				verticalPosition = this.getHeight() - 1;
 				break;
 			case CENTER: //OK
 				verticalPosition = -(popupMenuSize.height / 2) + (this.getHeight() / 2);
