@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
-package net.nikr.warframe.gui.audio;
+package net.nikr.warframe.gui.popup;
 
 import java.awt.Color;
 import java.awt.Dimension;

@@ -38,7 +38,7 @@ import net.nikr.warframe.gui.MainFrame;
 import net.nikr.warframe.gui.about.AboutTool;
 import net.nikr.warframe.gui.alert.AlertTool;
 import net.nikr.warframe.gui.audio.AudioTool;
-import net.nikr.warframe.gui.audio.NotificationPopup;
+import net.nikr.warframe.gui.popup.NotificationPopup;
 import net.nikr.warframe.gui.filters.FiltersTool;
 import net.nikr.warframe.gui.invasion.InvasionTool;
 import net.nikr.warframe.gui.reward.Category;
