@@ -180,6 +180,8 @@ public class SettingsTool implements Tool {
 
 		soundPanels.add(new SoundPanel("Login:", "login.wav"));
 
+		soundPanels.add(new SoundPanel("Credits:", "credits.wav"));
+
 		for (Category category : program.getCategories()) {
 			soundPanels.add(new SoundPanel(category.getName() + ":", category.getName().toLowerCase() + ".wav"));
 		}

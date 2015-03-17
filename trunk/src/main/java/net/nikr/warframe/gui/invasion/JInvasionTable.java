@@ -57,7 +57,7 @@ public class JInvasionTable extends JToolTipTable {
 
 		if (columnIndex == InvasionTableFormat.INVADER_REWARD.ordinal()
 				|| columnIndex == InvasionTableFormat.INVADER_MISSION.ordinal()) {
-			if (invasion.isMatchInvading()) {
+			if (invasion.isMatchInvadingLoot() || invasion.isMatchInvadingCredits()) {
 				component.setForeground(Color.BLACK);
 			} else {
 				if (isSelected) {
@@ -69,7 +69,7 @@ public class JInvasionTable extends JToolTipTable {
 		}
 		if (columnIndex == InvasionTableFormat.DEFENDER_REWARD.ordinal()
 				|| columnIndex == InvasionTableFormat.DEFENDER_MISSION.ordinal()) {
-			if (invasion.isMatchDefending()) {
+			if (invasion.isMatchDefendingLoot() || invasion.isMatchDefendingCredits()) {
 				component.setForeground(Color.BLACK);
 			} else {
 				if (isSelected) {
