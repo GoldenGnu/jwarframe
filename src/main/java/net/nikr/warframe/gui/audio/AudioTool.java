@@ -212,8 +212,12 @@ public class AudioTool implements NotifyListener {
 			}
 		}
 
-		public void add(Set<String> categories) {
+		public synchronized void add(Set<String> categories) {
 			cache.addAll(categories);
+		}
+
+		public synchronized Set<String> getCache() {
+			return cache;
 		}
 
 		@Override
@@ -221,9 +225,9 @@ public class AudioTool implements NotifyListener {
 			try {
 				if (program.getSettings(SettingsConstants.NOTIFY_AUDIO_REPEAT)) { //Repeat until stopped
 					while (isRun()) {
-						if (!cache.isEmpty()) {
-							categories.addAll(cache);
-							cache.clear();
+						if (!getCache().isEmpty()) {
+							categories.addAll(getCache());
+							getCache().clear();
 						}
 						if (categories.isEmpty()) {
 							playSafe("alert.wav");
@@ -238,9 +242,9 @@ public class AudioTool implements NotifyListener {
 					}
 				} else { //Play each sound once
 					do {
-						if (!cache.isEmpty()) {
-							categories.addAll(cache);
-							cache.clear();
+						if (!getCache().isEmpty()) {
+							categories.addAll(getCache());
+							getCache().clear();
 						}
 						if (categories.isEmpty()) {
 							playSafe("alert.wav");
@@ -250,7 +254,7 @@ public class AudioTool implements NotifyListener {
 							}
 							categories.clear();
 						}
-					} while ((!categories.isEmpty() && !cache.isEmpty()));
+					} while ((!categories.isEmpty() && !getCache().isEmpty()));
 				}
 				
 			} catch (InterruptedException ex) {

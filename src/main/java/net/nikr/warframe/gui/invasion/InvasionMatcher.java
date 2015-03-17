@@ -54,34 +54,36 @@ public class InvasionMatcher implements Matcher<Invasion> {
 
 	@Override
 	public boolean matches(Invasion invasion) {
-	//REWARDS
-		boolean invadingReward = true;
-		boolean defendinReward = true;
-		//Credits
+		boolean invadingCredits = invasion.isInvadingCredits();
+		boolean defendinCredits = invasion.isDefendinCredits();
+	//CREDITS
 		if (credits == 1) { //25K+
 			if (invasion.isInvadingCredits() && invasion.getInvadingCredits() < 25000) {
-				invadingReward = false;
+				invadingCredits = false;
 			}
 			if (invasion.isDefendinCredits() && invasion.getDefendingCredits() < 25000) {
-				defendinReward = false;
+				defendinCredits = false;
 			}
 		}
 		if (credits == 2) { //35K+
 			if (invasion.isInvadingCredits() && invasion.getInvadingCredits() < 35000) {
-				invadingReward = false;
+				invadingCredits = false;
 			}
 			if (invasion.isDefendinCredits() && invasion.getDefendingCredits() < 35000) {
-				defendinReward = false;
+				defendinCredits = false;
 			}
 		}
 		if (credits == 3) { //50K+
 			if (invasion.isInvadingCredits() && invasion.getInvadingCredits() < 50000) {
-				invadingReward = false;
+				invadingCredits = false;
 			}
 			if (invasion.isDefendinCredits() && invasion.getDefendingCredits() < 50000) {
-				defendinReward = false;
+				defendinCredits = false;
 			}
 		}
+	//REWARD
+		boolean invadingReward = false;
+		boolean defendinReward = false;
 		//Ignore invading category
 		if (invasion.getInvadingRewardID() != null) {
 			Category category = invasion.getInvadingCategory();
@@ -129,11 +131,14 @@ public class InvasionMatcher implements Matcher<Invasion> {
 		//Can not support infested...
 		if (invasion.isInfestedInvading()) {
 			invadingReward = false;
+			invadingCredits = false;
 		}
 		//Done (No match)
 		if (invasion.isDone()) {
 			defendinReward = false;
 			invadingReward = false;
+			invadingCredits = false;
+			defendinCredits = false;
 		}
 	//FACTIONS
 		boolean invadingKillFaction = false;
@@ -195,10 +200,12 @@ public class InvasionMatcher implements Matcher<Invasion> {
 			defendinMissionType = false;
 		}
 	//UPDATE
-		invasion.setMatchInvading(invadingReward && invadingKillFaction && invadingHelpFaction && invadingMissionType);
-		invasion.setMatchDefending(defendinReward && defendinKillFaction && defendinHelpFaction && defendinMissionType);
-		return (invadingReward && invadingKillFaction && invadingHelpFaction && invadingMissionType)
-				|| (defendinReward && defendinKillFaction && defendinHelpFaction && defendinMissionType);
+		invasion.setMatchInvadingLoot(invadingReward && invadingKillFaction && invadingHelpFaction && invadingMissionType);
+		invasion.setMatchDefendingLoot(defendinReward && defendinKillFaction && defendinHelpFaction && defendinMissionType);
+		invasion.setMatchInvadingCredits(invadingCredits && invadingKillFaction && invadingHelpFaction && invadingMissionType);
+		invasion.setMatchDefendingCredits(defendinCredits && defendinKillFaction && defendinHelpFaction && defendinMissionType);
+		return ((invadingReward || invadingCredits) && invadingKillFaction && invadingHelpFaction && invadingMissionType)
+				|| ((defendinReward || defendinCredits) && defendinKillFaction && defendinHelpFaction && defendinMissionType);
 	}
 	
 }

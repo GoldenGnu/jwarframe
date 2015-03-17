@@ -46,18 +46,15 @@ public class AlertMatcher implements Matcher<Alert> {
 	@Override
 	public boolean matches(Alert alert) {
 		//Match loot (Category)
-		boolean loot = matchesLoot(alert);
-		alert.setMatchLoot(loot);
+		boolean matchesLoot = matchesLoot(alert);
+		alert.setMatchLoot(matchesLoot);
 
 		//Match credits
-		boolean credits = matchesCredits(alert);
-		alert.setMatchCredits(credits);
+		boolean matchesCredits = matchesCredits(alert);
+		alert.setMatchCredits(matchesCredits);
 
  		boolean matchesMission = matchesMissionType(alert);
-		alert.setMatchMission(!matchesMission);
-{		if (matchesMission)
-			return false;
-		}
+		alert.setMatchMission(matchesMission);
 
 		//Ignore done alerts
 		if (alert.isDone()) {
@@ -69,7 +66,7 @@ public class AlertMatcher implements Matcher<Alert> {
 			return false;
 		}
 
-		return loot || credits;
+		return (matchesLoot || matchesCredits) && matchesMission;
 	}
 
 	public boolean matchesLoot(Alert alert) {
@@ -123,7 +120,7 @@ public class AlertMatcher implements Matcher<Alert> {
 
 	public boolean matchesMissionType(Alert alert) {
 		//Match mission type
-		return filterMissionTypes.contains(alert.getMission().getMission());
+		return !filterMissionTypes.contains(alert.getMission().getMission());
 	}
 	
 }

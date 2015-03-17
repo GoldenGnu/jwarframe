@@ -368,10 +368,16 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		for (Alert alert : matchList) {
 			if (!cache.contains(alert)) {
 				count++;
-				Category category = alert.getCategory();
-				if (category != null) {
-					categories.add(category.getName());
+				if (alert.isMatchCredits()) {
+					categories.add("credits");
 				}
+				if (alert.isMatchLoot()) {
+					Category category = alert.getCategory();
+					if (category != null) {
+						categories.add(category.getName());
+					}
+				}
+				
 			}
 		}
 		if (count > 0) {

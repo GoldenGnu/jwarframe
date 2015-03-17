@@ -33,11 +33,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -304,19 +302,24 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		for (Invasion invasion : filterList) {
 			if (!cache.contains(invasion)) {
 				count++;
-				if (invasion.isMatchDefending()) {
+				if (invasion.isMatchDefendingLoot()) {
 					Category defendingCategory = invasion.getDefendingCategory();
 					if (defendingCategory != null) {
 						categories.add(defendingCategory.getName());
 					}
 				}
-				if (invasion.isMatchInvading()) {
+				if (invasion.isMatchDefendingCredits()) {
+					categories.add("credits");
+				}
+				if (invasion.isMatchInvadingLoot()) {
 					Category invadingCategory = invasion.getInvadingCategory();
 					if (invadingCategory != null) {
 						categories.add(invadingCategory.getName());
 					}
 				}
-				
+				if (invasion.isMatchInvadingCredits()) {
+					categories.add("credits");
+				}
 			}
 		}
 		if (count > 0) {

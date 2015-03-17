@@ -38,9 +38,9 @@ import net.nikr.warframe.gui.MainFrame;
 import net.nikr.warframe.gui.about.AboutTool;
 import net.nikr.warframe.gui.alert.AlertTool;
 import net.nikr.warframe.gui.audio.AudioTool;
-import net.nikr.warframe.gui.popup.NotificationPopup;
 import net.nikr.warframe.gui.filters.FiltersTool;
 import net.nikr.warframe.gui.invasion.InvasionTool;
+import net.nikr.warframe.gui.popup.NotificationPopup;
 import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.reward.RewardID;
 import net.nikr.warframe.gui.reward.RewardTool;
@@ -75,7 +75,7 @@ public class Program {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Program.class);
 
-	public static final String PROGRAM_VERSION = "1.1.0";
+	public static final String PROGRAM_VERSION = "1.2.0 BETA 1";
 	public static final String PROGRAM_NAME = "jWarframe";
 
 	private final List<InvasionListener> invasionListeners = new ArrayList<InvasionListener>();

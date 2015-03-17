@@ -52,8 +52,10 @@ public class Invasion implements Comparable<Invasion> {
 	private String eta = null;
 	private String description = null;
 
-	private boolean matchInvading;
-	private boolean matchDefending;
+	private boolean matchInvadingLoot;
+	private boolean matchDefendingLoot;
+	private boolean matchInvadingCredits;
+	private boolean matchDefendingCredits;
 	private boolean done = false;
 
 	public Invasion() { }
@@ -248,20 +250,36 @@ public class Invasion implements Comparable<Invasion> {
 		this.description = description;
 	}
 
-	public boolean isMatchInvading() {
-		return matchInvading;
+	public boolean isMatchInvadingLoot() {
+		return matchInvadingLoot;
 	}
 
-	public void setMatchInvading(boolean matchInvading) {
-		this.matchInvading = matchInvading;
+	public void setMatchInvadingLoot(boolean matchInvadingLoot) {
+		this.matchInvadingLoot = matchInvadingLoot;
 	}
 
-	public boolean isMatchDefending() {
-		return matchDefending;
+	public boolean isMatchDefendingLoot() {
+		return matchDefendingLoot;
 	}
 
-	public void setMatchDefending(boolean matchDefending) {
-		this.matchDefending = matchDefending;
+	public void setMatchDefendingLoot(boolean matchDefendingLoot) {
+		this.matchDefendingLoot = matchDefendingLoot;
+	}
+
+	public boolean isMatchInvadingCredits() {
+		return matchInvadingCredits;
+	}
+
+	public void setMatchInvadingCredits(boolean matchInvadingCredits) {
+		this.matchInvadingCredits = matchInvadingCredits;
+	}
+
+	public boolean isMatchDefendingCredits() {
+		return matchDefendingCredits;
+	}
+
+	public void setMatchDefendingCredits(boolean matchDefendingCredits) {
+		this.matchDefendingCredits = matchDefendingCredits;
 	}
 
 	public boolean isDone() {
