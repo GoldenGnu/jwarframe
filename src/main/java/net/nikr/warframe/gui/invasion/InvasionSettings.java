@@ -33,16 +33,14 @@ public class InvasionSettings {
 	private final boolean killInfested;
 	private final boolean helpCorpus;
 	private final boolean helpGrineer;
-	private final Set<SettingsConstants> missionTypes;
 
-	public InvasionSettings(int credits, boolean killCorpus, boolean killGrineer, boolean killInfested, boolean helpCorpus, boolean helpGrineer, Set<SettingsConstants> missionTypes) {
+	public InvasionSettings(int credits, boolean killCorpus, boolean killGrineer, boolean killInfested, boolean helpCorpus, boolean helpGrineer) {
 		this.credits = credits;
 		this.killCorpus = killCorpus;
 		this.killGrineer = killGrineer;
 		this.killInfested = killInfested;
 		this.helpCorpus = helpCorpus;
 		this.helpGrineer = helpGrineer;
-		this.missionTypes = missionTypes;
 	}
 
 	public Set<SettingsConstants> getSettings() {
@@ -72,7 +70,6 @@ public class InvasionSettings {
 		if (helpGrineer) {
 			settings.add(SettingsConstants.INVASION_HELP_GRINEER);
 		}
-		settings.addAll(missionTypes);
 		return settings;
 	}
 }

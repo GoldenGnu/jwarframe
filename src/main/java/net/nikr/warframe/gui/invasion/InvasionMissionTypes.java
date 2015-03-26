@@ -21,26 +21,25 @@
 
 package net.nikr.warframe.gui.invasion;
 
-import java.util.Map;
-import java.util.TreeMap;
-import net.nikr.warframe.gui.settings.SettingsConstants;
+import java.util.Set;
+import java.util.TreeSet;
 import net.nikr.warframe.gui.shared.FilterTool.MissionTypes;
 
 
 public class InvasionMissionTypes implements MissionTypes {
-	private final Map<String, SettingsConstants> missionTypes;
+	private final Set<String> missionTypes;
 
 	public InvasionMissionTypes() {
-		missionTypes = new TreeMap<String, SettingsConstants>();
-		missionTypes.put("Assassination", SettingsConstants.INVASION_IGNORE_ASSASSINATION);
-		missionTypes.put("Defense", SettingsConstants.INVASION_IGNORE_DEFENSE);
-		missionTypes.put("Extermination", SettingsConstants.INVASION_IGNORE_EXTERMINATION);
-		missionTypes.put("Mobile Defense", SettingsConstants.INVASION_IGNORE_MOBILE_DEFENSE);
-		missionTypes.put("Survival", SettingsConstants.INVASION_IGNORE_SURVIVAL);
+		missionTypes = new TreeSet<String>();
+		missionTypes.add("Assassination");
+		missionTypes.add("Defense");
+		missionTypes.add("Extermination");
+		missionTypes.add("Mobile Defense");
+		missionTypes.add("Survival");
 	}
 
 	@Override
-	public Map<String, SettingsConstants> getMissionTypes() {
+	public Set<String> getMissionTypes() {
 		return missionTypes;
 	}
 }

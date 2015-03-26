@@ -35,12 +35,14 @@ public class AlertMatcher implements Matcher<Alert> {
 	private final Map<String, CategoryFilter> categoryFilters;
 	private final Set<String> filters;
 	private final Set<String> filterMissionTypes;
+	private final String toolName;
 
-	public AlertMatcher(int credits, Map<String, CategoryFilter> categoryFilters, Set<String> filters, Set<String> filterMissionTypes) {
+	public AlertMatcher(int credits, Map<String, CategoryFilter> categoryFilters, Set<String> filters, Set<String> filterMissionTypes, String toolName) {
 		this.credits = credits;
 		this.categoryFilters = categoryFilters;
 		this.filters = filters;
 		this.filterMissionTypes = filterMissionTypes;
+		this.toolName = toolName;
 	}
 
 	@Override
@@ -119,8 +121,12 @@ public class AlertMatcher implements Matcher<Alert> {
 	}
 
 	public boolean matchesMissionType(Alert alert) {
-		//Match mission type
-		return !filterMissionTypes.contains(alert.getMission().getMission());
+		if (alert.getCategory() != null) {
+			String key = toolName + alert.getCategory().getName() + alert.getMission().getMission();
+			return !filterMissionTypes.contains(key);
+		} else {
+			return true;
+		}
 	}
 	
 }

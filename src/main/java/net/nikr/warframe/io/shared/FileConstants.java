@@ -116,6 +116,10 @@ public class FileConstants {
 		return new File(getLocalFile(SETTINGS_LOCAL + "zoom.dat", Main.isPortable()));
 	}
 
+	public static File getMissionType() {
+		return new File(getLocalFile(SETTINGS_LOCAL + "missiontypes.dat", Main.isPortable()));
+	}
+
 	public static File getVersionLocal() {
 		return new File(getLocalFile(DATA_LOCAL + "version.dat", Main.isPortable()));
 	}

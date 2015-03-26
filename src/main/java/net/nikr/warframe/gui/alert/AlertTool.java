@@ -334,7 +334,7 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 
 	@Override
 	public Set<SettingsConstants> getSettings() {
-		AlertSettings alertSettings = new AlertSettings(jCredits.getValue(), getFilterMissionTypesSettings());
+		AlertSettings alertSettings = new AlertSettings(jCredits.getValue());
 		return alertSettings.getSettings();
 	}
 
@@ -396,7 +396,11 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 		} finally {
 			eventList.getReadWriteLock().readLock().unlock();
 		}
-		matcher = new AlertMatcher(jCredits.getValue(), getCategoryFilters(), program.getFilters(), getFilterMissionTypesStrings());
+		matcher = new AlertMatcher(jCredits.getValue(),
+				getCategoryFilters(),
+				program.getFilters(),
+				getFilterMissionTypesStrings(),
+				getToolName());
 		matchList.setMatcher(matcher);
 		if (jNotify.isSelected()) {
 			showList.setMatcher(matcher);

@@ -264,8 +264,8 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 						.addGroup(layout.createSequentialGroup()
 							.addComponent(jCredits)
 							.addGap(15)
-							.addGroup(createRow(jKillLabel, jKillCorpus, jKillGrineer, jKillInfested))
-							.addGroup(createRow(jHelpLabel, jHelpCorpus, jHelpGrineer, null))
+							.addGroup(createRow(jKillLabel, jKillCorpus, jKillGrineer, jKillInfested, null))
+							.addGroup(createRow(jHelpLabel, jHelpCorpus, jHelpGrineer, null, null))
 							.addGap(15)
 							//.addGroup(createRow(jMissionTypesLabel, jMissionTypes, null, null))
 							//.addGap(15)
@@ -355,8 +355,7 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 				jKillGrineer.isSelected(),
 				jKillInfested.isSelected(),
 				jHelpCorpus.isSelected(),
-				jHelpGrineer.isSelected(),
-				getFilterMissionTypesSettings());
+				jHelpGrineer.isSelected());
 		return settings.getSettings();
 	}
 
@@ -370,7 +369,8 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 				jHelpGrineer.isSelected(),
 				getCategoryFilters(),
 				program.getFilters(),
-				getFilterMissionTypesStrings());
+				getFilterMissionTypesStrings(),
+				getToolName());
 		filterList.setMatcher(matcher);
 		if (jNotify.isSelected()) {
 			showList.setMatcher(matcher);

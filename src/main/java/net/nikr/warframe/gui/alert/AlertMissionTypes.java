@@ -20,30 +20,29 @@
  */
 package net.nikr.warframe.gui.alert;
 
-import java.util.Map;
-import java.util.TreeMap;
-import net.nikr.warframe.gui.settings.SettingsConstants;
-import net.nikr.warframe.gui.shared.FilterTool;
+import java.util.Set;
+import java.util.TreeSet;
+import net.nikr.warframe.gui.shared.FilterTool.MissionTypes;
 
 
-public class AlertMissionTypes  implements FilterTool.MissionTypes {
+public class AlertMissionTypes  implements MissionTypes {
 
-	private final Map<String, SettingsConstants> missionTypes;
+	private final Set<String> missionTypes;
 
 	public AlertMissionTypes() {
-		missionTypes = new TreeMap<String, SettingsConstants>();
-		missionTypes.put("Assassination", SettingsConstants.ALERT_IGNORE_ASSASSINATION);
-		missionTypes.put("Defense", SettingsConstants.ALERT_IGNORE_DEFENSE);
-		missionTypes.put("Extermination", SettingsConstants.ALERT_IGNORE_EXTERMINATION);
-		missionTypes.put("Mobile Defense", SettingsConstants.ALERT_IGNORE_MOBILE_DEFENSE);
-		missionTypes.put("Sabotage", SettingsConstants.ALERT_IGNORE_SABOTAGE);
-		missionTypes.put("Survival", SettingsConstants.ALERT_IGNORE_SURVIVAL);
-		missionTypes.put("Rescue", SettingsConstants.ALERT_IGNORE_RESCUE);
-		missionTypes.put("Excavation", SettingsConstants.ALERT_IGNORE_EXCAVATION);
+		missionTypes = new TreeSet<String>();
+		missionTypes.add("Assassination");
+		missionTypes.add("Defense");
+		missionTypes.add("Extermination");
+		missionTypes.add("Mobile Defense");
+		missionTypes.add("Sabotage");
+		missionTypes.add("Survival");
+		missionTypes.add("Rescue");
+		missionTypes.add("Excavation");
 	}
 
 	@Override
-	public Map<String, SettingsConstants> getMissionTypes() {
+	public Set<String> getMissionTypes() {
 		return missionTypes;
 	}
 }

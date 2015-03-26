@@ -39,8 +39,9 @@ public class InvasionMatcher implements Matcher<Invasion> {
 	private final Map<String, CategoryFilter> categoryFilters;
 	private final Set<String> filters;
 	private final Set<String> filterMissionTypes;
+	private final String toolName;
 
-	public InvasionMatcher(int credits, boolean killCorpus, boolean killGrineer, boolean killInfested, boolean helpCorpus, boolean helpGrineer, Map<String, CategoryFilter> categoryFilters, Set<String> filters, Set<String> filterMissionTypes) {
+	public InvasionMatcher(int credits, boolean killCorpus, boolean killGrineer, boolean killInfested, boolean helpCorpus, boolean helpGrineer, Map<String, CategoryFilter> categoryFilters, Set<String> filters, Set<String> filterMissionTypes, String toolName) {
 		this.credits = credits;
 		this.killCorpus = killCorpus;
 		this.killGrineer = killGrineer;
@@ -50,6 +51,7 @@ public class InvasionMatcher implements Matcher<Invasion> {
 		this.categoryFilters = categoryFilters;
 		this.filters = filters;
 		this.filterMissionTypes = filterMissionTypes;
+		this.toolName = toolName;
 	}
 
 	@Override
@@ -193,11 +195,18 @@ public class InvasionMatcher implements Matcher<Invasion> {
 	//MISSION TYPE
 		boolean invadingMissionType = true;
 		boolean defendinMissionType = true;
-		if (filterMissionTypes.contains(invasion.getInvadingMissionType())) {
-			invadingMissionType = false;
+		if (invasion.getInvadingCategory() != null) {
+			String key = toolName + invasion.getInvadingCategory().getName() + invasion.getInvadingMissionType();
+			if (filterMissionTypes.contains(key)) {
+				invadingMissionType = false;
+			}
 		}
-		if (filterMissionTypes.contains(invasion.getDefendingMissionType())) {
-			defendinMissionType = false;
+
+		if (invasion.getDefendingCategory() != null) {
+			String key = toolName + invasion.getDefendingCategory().getName() + invasion.getDefendingMissionType();
+			if (filterMissionTypes.contains(key)) {
+				defendinMissionType = false;
+			}
 		}
 	//UPDATE
 		invasion.setMatchInvadingLoot(invadingReward && invadingKillFaction && invadingHelpFaction && invadingMissionType);
