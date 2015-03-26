@@ -57,6 +57,7 @@ public enum SettingsConstants {
 	INVASION_IGNORE_MOBILE_DEFENSE(4, false),
 	INVASION_IGNORE_SURVIVAL(4, false),
 	SHOW_POPUP(5, true),
+	TRAY_ON_CLOSE(5, false),
 	;
 
 	private final int version;

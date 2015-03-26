@@ -77,16 +77,27 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 		this.program = program;
 		
 		this.jFrame = new JFrame(Program.PROGRAM_NAME + " " + Program.PROGRAM_VERSION);
-		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		jFrame.setIconImages(active);
 		jFrame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowIconified(WindowEvent e) {
 				if (SystemTray.isSupported()) {
-					jFrame.setVisible(false);
+					if (!program.getSettings(SettingsConstants.TRAY_ON_CLOSE)) {
+						jFrame.setVisible(false);
+					}
 				}
 			}
-			
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (program.getSettings(SettingsConstants.TRAY_ON_CLOSE)) {
+					program.getWindow().setVisible(false);
+				} else {
+					System.out.println("Kill me");
+					System.exit(0);
+				}
+			}
 		});
 		jFrame.addWindowFocusListener(new WindowAdapter() {
 			@Override

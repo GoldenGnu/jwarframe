@@ -60,6 +60,7 @@ public class SettingsTool implements Tool {
 	private final JCheckBox jLoginReward;
 	private final JCheckBox jAutoRun;
 	private final JCheckBox jShowPopup;
+	private final JCheckBox jTrayOnClose;
 	private final JRadioButton jAudioNotifyOnce;
 	private final JRadioButton jAudioNotifyRepeat;
 	private final JRadioButton jAudioNotifyNone;
@@ -112,6 +113,15 @@ public class SettingsTool implements Tool {
 			}
 		});
 
+		jTrayOnClose = new JCheckBox("Minimize to tray on close");
+		jTrayOnClose.setSelected(program.getSettings(SettingsConstants.TRAY_ON_CLOSE));
+		jTrayOnClose.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				program.saveSettings();
+			}
+		});
+
 		JLabel jAudioNotify = new JLabel("Audio Notification:");
 
 		ButtonGroup AudioNotify = new ButtonGroup();
@@ -145,37 +155,6 @@ public class SettingsTool implements Tool {
 		});
 		AudioNotify.add(jAudioNotifyRepeat);
 
-		//jAudioNotify.setSelected(program.getSettings(SettingsConstants.NOTIFY_AUDIO) && ! program.getSettings(SettingsConstants.NOTIFY_AUDIO));
-
-		ParallelGroup horizontalGroup = layout.createParallelGroup();
-		SequentialGroup verticalGroup = layout.createSequentialGroup();
-
-		horizontalGroup
-				.addComponent(jAutoRun)
-				.addComponent(jLoginReward)
-				.addComponent(jShowPopup)
-				.addGroup(layout.createSequentialGroup()
-					.addComponent(jAudioNotify)
-					.addComponent(jAudioNotifyRepeat)
-					.addComponent(jAudioNotifyOnce)
-					.addComponent(jAudioNotifyNone)
-				);
-
-		verticalGroup
-				.addComponent(jAutoRun)
-				.addGap(5)
-				.addComponent(jLoginReward)
-				.addGap(5)
-				.addComponent(jShowPopup)
-				.addGap(5)
-				.addGroup(layout.createParallelGroup()
-					.addComponent(jAudioNotify, 25, 25, 25)
-					.addComponent(jAudioNotifyRepeat, 25, 25, 25)
-					.addComponent(jAudioNotifyOnce, 25, 25, 25)
-					.addComponent(jAudioNotifyNone, 25, 25, 25)
-				)
-				.addGap(5);
-
 		soundPanels.add(new SoundPanel("Default:", "alert.wav"));
 
 		soundPanels.add(new SoundPanel("Login:", "login.wav"));
@@ -186,12 +165,52 @@ public class SettingsTool implements Tool {
 			soundPanels.add(new SoundPanel(category.getName() + ":", category.getName().toLowerCase() + ".wav"));
 		}
 
+		ParallelGroup horizontalGroup = layout.createParallelGroup();
+		SequentialGroup verticalGroup = layout.createSequentialGroup();
+		horizontalGroup
+				.addGroup(layout.createSequentialGroup()
+					.addComponent(jAudioNotify)
+					.addComponent(jAudioNotifyRepeat)
+					.addComponent(jAudioNotifyOnce)
+					.addComponent(jAudioNotifyNone)
+				);
+
+		verticalGroup.addGroup(layout.createParallelGroup()
+					.addComponent(jAudioNotify, 25, 25, 25)
+					.addComponent(jAudioNotifyRepeat, 25, 25, 25)
+					.addComponent(jAudioNotifyOnce, 25, 25, 25)
+					.addComponent(jAudioNotifyNone, 25, 25, 25)
+				);
 		for (SoundPanel soundPanel : soundPanels) {
 			soundPanel.add(layout, horizontalGroup, verticalGroup);
 		}
 
-		layout.setHorizontalGroup(horizontalGroup);
-		layout.setVerticalGroup(verticalGroup);
+		layout.setHorizontalGroup(
+				layout.createSequentialGroup()
+					.addGroup(horizontalGroup)
+					.addGap(50)
+					.addGroup(layout.createParallelGroup()
+						.addComponent(jAutoRun)
+						.addComponent(jLoginReward)
+						.addComponent(jShowPopup)
+						.addComponent(jTrayOnClose)
+					)
+					
+		);
+		layout.setVerticalGroup(
+				layout.createParallelGroup()
+				.addGroup(verticalGroup)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(jAutoRun, 25, 25, 25)
+						.addGap(5)
+						.addComponent(jLoginReward, 25, 25, 25)
+						.addGap(5)
+						.addComponent(jShowPopup, 25, 25, 25)
+						.addGap(5)
+						.addComponent(jTrayOnClose, 25, 25, 25)
+					)
+				
+		);
 	}
 
 	@Override
@@ -217,6 +236,9 @@ public class SettingsTool implements Tool {
 		}
 		if (jShowPopup.isSelected()) {
 			settings.add(SettingsConstants.SHOW_POPUP);
+		}
+		if (jTrayOnClose.isSelected()) {
+			settings.add(SettingsConstants.TRAY_ON_CLOSE);
 		}
 		if (jAudioNotifyRepeat.isSelected()) {
 			settings.add(SettingsConstants.NOTIFY_AUDIO_REPEAT);
