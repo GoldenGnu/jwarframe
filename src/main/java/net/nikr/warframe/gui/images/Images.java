@@ -48,6 +48,8 @@ public enum Images {
 	NOTIFY_ALERT ("notify_alert.png"),
 	NOTIFY_LOGIN ("notify_login.png"),
 	SETTINGS ("settings.png"),
+	SETTINGS_SET ("settings_set.png"),
+	SETTINGS_ALL ("settings_all.png"),
 	CORPUS ("corpus.png"),
 	GRINEER ("grineer.png"),
 	LOGIN_REWARD ("login_reward.png"),
@@ -57,10 +59,8 @@ public enum Images {
 	PROGRAM_64 ("program_64.png"),
 	PROGRAM_DISABLED_16 ("program_disabled_16.png"),
 	PROGRAM_DISABLED_32 ("program_disabled_32.png"),
-	PROGRAM_DISABLED_64 ("program_disabled_64.png"),
-	MISSION_TYPES_ALL ("mission_types_all.png"),
-	MISSION_TYPES_SOME ("mission_types_some.png"),
-	MISSION_TYPES_NONE ("mission_types_none.png");
+	PROGRAM_DISABLED_64 ("program_disabled_64.png");
+	
 
 	private static final Logger LOG = LoggerFactory.getLogger(Images.class);
 	private final String filename;

@@ -306,30 +306,6 @@ public class Invasion implements Comparable<Invasion> {
 		return invadingFaction.toLowerCase().equals("infestation");
 	}
 
-	public boolean isInvadingDetoniteInjector() {
-		return invadingMatchReward("detonite injector");
-	}
-
-	public boolean isDefendinDetoniteInjector() {
-		return defendinMatchReward("detonite injector");
-	}
-
-	public boolean isInvadingFieldron() {
-		return invadingMatchReward("fieldron");
-	}
-
-	public boolean isDefendinFieldron() {
-		return defendinMatchReward("fieldron");
-	}
-
-	public boolean isInvadingMutagenMass() {
-		return invadingMatchReward("mutagen mass");
-	}
-
-	public boolean isDefendinMutagenMass() {
-		return defendinMatchReward("mutagen mass");
-	}
-
 	public boolean isInvadingCorpus() {
 		return invadingMatchFaction("corpus");
 	}

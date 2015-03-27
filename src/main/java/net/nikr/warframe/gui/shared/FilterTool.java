@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
@@ -62,7 +64,7 @@ public abstract class FilterTool implements Tool {
 	private final GroupLayout.Group column4;
 	private final GroupLayout.Group column5;
 	private final Set<String> filterMissionTypesStrings = new TreeSet<String>();
-	private final Map<String, Set<String>> filterMissionTypesByCategory = new TreeMap<String, Set<String>>();
+	private final Map<String, Set<String>> categoryIcon = new TreeMap<String, Set<String>>();
 	private final List<CategoryContainer> categories = new ArrayList<CategoryContainer>();
 	private final int BUTTON_SIZE = 24;
 
@@ -111,6 +113,7 @@ public abstract class FilterTool implements Tool {
 			final JDropDownButton jMissionTypes = new JDropDownButton(Images.SETTINGS.getIcon());
 			jMissionTypes.setPopupHorizontalAlignment(SwingConstants.RIGHT);
 			jMissionTypes.setVisible(false);
+			jMissionTypes.setToolTipText("More...");
 			filterComponents.add(jMissionTypes);
 			
 			final String categoryName = category.getName();
@@ -130,11 +133,40 @@ public abstract class FilterTool implements Tool {
 						updateMissionTypeSettings(jCheckBox, categoryName, key);
 						updateMissionTypeIcon(jMissionTypes, categoryName);
 						filter();
-						program.saveSettings();
 					}
 				});
 
 				jMissionTypes.add(jCheckBox, true);
+			}
+
+			Collection<JMenuItem> menuItems = getMenuItems(categoryName);
+			if (!menuItems.isEmpty()) {
+				jMissionTypes.addSeparator();
+			}
+			for (JMenuItem jMenuItem : menuItems) {
+				if (jMenuItem == null) {
+					jMissionTypes.addSeparator();
+				} else {
+					jMissionTypes.add(jMenuItem, true);
+					if (jMenuItem instanceof JCheckBoxMenuItem) {
+						final JCheckBoxMenuItem jCheckBox = (JCheckBoxMenuItem) jMenuItem;
+						final String key = getToolName() + categoryName + jCheckBox.getText();
+						if (!jCheckBox.isSelected()) {
+							getMissionType(categoryName).add(key);
+						}
+						jMenuItem.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								if (jCheckBox.isSelected()) {
+									getMissionType(categoryName).remove(key);
+								} else {
+									getMissionType(categoryName).add(key);
+								}
+								updateMissionTypeIcon(jMissionTypes, categoryName);
+							}
+						});
+					}
+				}
 			}
 			updateMissionTypeIcon(jMissionTypes, categoryName);
 
@@ -210,10 +242,10 @@ public abstract class FilterTool implements Tool {
 	}
 
 	private Set<String> getMissionType(String category) {
-		Set<String> set = filterMissionTypesByCategory.get(category);
+		Set<String> set = categoryIcon.get(category);
 		if (set == null) {
 			set = new TreeSet<String>();
-			filterMissionTypesByCategory.put(category, set);
+			categoryIcon.put(category, set);
 		}
 		return set;
 	}
@@ -231,14 +263,9 @@ public abstract class FilterTool implements Tool {
 
 	private void updateMissionTypeIcon(JDropDownButton jMissionTypes, String category) {
 		if (getMissionType(category).isEmpty()) {
-			jMissionTypes.setToolTipText("All");
-			jMissionTypes.setIcon(Images.MISSION_TYPES_ALL.getIcon());
-		} else if (getMissionType(category).size() == missionTypes.getMissionTypes().size()) {
-			jMissionTypes.setToolTipText("None");
-			jMissionTypes.setIcon(Images.MISSION_TYPES_NONE.getIcon());
+			jMissionTypes.setIcon(Images.SETTINGS_ALL.getIcon());
 		} else {
-			jMissionTypes.setToolTipText("Filters");
-			jMissionTypes.setIcon(Images.MISSION_TYPES_SOME.getIcon());
+			jMissionTypes.setIcon(Images.SETTINGS_SET.getIcon());
 		}
 	}
 	
@@ -260,6 +287,8 @@ public abstract class FilterTool implements Tool {
 	}
 
 	public abstract void filter();
+
+	public abstract Collection<JMenuItem> getMenuItems(String categoryName);
 
 	private static class CategoryContainer {
 		private final String category;

@@ -101,6 +101,7 @@ public class Program {
 	private final Set<String> filterSets = new TreeSet<String>();
 	private final Map<String, Map<String, CategoryFilter>> categoryFilter = new HashMap<String, Map<String, CategoryFilter>>();
 	private final Set<String> missionTypes = new HashSet<String>();
+	private final Set<String> killHelp = new HashSet<String>();
 
 	private int settingsVersion = 0;
 
@@ -134,6 +135,7 @@ public class Program {
 		Map<String, Zoom> zoom = loadZoom();
 		//Mission Types
 		loadMissionType();
+		loadKillHelp();
 
 		SplashUpdater.setText("Loading GUI");
 	//GUI
@@ -499,6 +501,7 @@ public class Program {
 	}
 
 	public void saveMissionType() {
+		LOG.info("Saving Mission Type");
 		Set<String> missionTypesSettings = new HashSet<String>();
 		missionTypesSettings.addAll(alertTool.getFilterMissionTypesStrings());
 		missionTypesSettings.addAll(invasionTool.getFilterMissionTypesStrings());
@@ -507,6 +510,7 @@ public class Program {
 	}
 
 	private void loadMissionType() {
+		LOG.info("Loading Mission Type");
 		ListReader reader = new ListReader();
 		List<String> list = reader.load(FileConstants.getMissionType());
 		missionTypes.clear();
@@ -515,6 +519,25 @@ public class Program {
 
 	public Set<String> getMissionTypes() {
 		return missionTypes;
+	}
+
+
+	public void saveKillHelp() {
+		LOG.info("Saving Kill-Help");
+		ListWriter writer = new ListWriter();
+		writer.save(invasionTool.getKillHelpSettings(), FileConstants.getKillHelp());
+	}
+
+	private void loadKillHelp() {
+		LOG.info("Loading Kill-Help");
+		ListReader reader = new ListReader();
+		List<String> list = reader.load(FileConstants.getKillHelp());
+		killHelp.clear();
+		killHelp.addAll(list);
+	}
+
+	public Set<String> getKillHelp() {
+		return killHelp;
 	}
 
 	private Map<String, Zoom> loadZoom() {

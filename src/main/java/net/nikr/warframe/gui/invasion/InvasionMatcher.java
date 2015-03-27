@@ -22,8 +22,10 @@
 package net.nikr.warframe.gui.invasion;
 
 import ca.odell.glazedlists.matchers.Matcher;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import net.nikr.warframe.gui.invasion.InvasionTool.KillHelp;
 import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.shared.CategoryFilter;
 import net.nikr.warframe.io.invasion.Invasion;
@@ -31,27 +33,19 @@ import net.nikr.warframe.io.invasion.Invasion;
 
 public class InvasionMatcher implements Matcher<Invasion> {
 	private final int credits;
-	private final boolean killCorpus;
-	private final boolean killGrineer;
-	private final boolean killInfested;
-	private final boolean helpCorpus;
-	private final boolean helpGrineer;
 	private final Map<String, CategoryFilter> categoryFilters;
 	private final Set<String> filters;
 	private final Set<String> filterMissionTypes;
 	private final String toolName;
+	private final Map<String, Set<KillHelp>> killHelp;
 
-	public InvasionMatcher(int credits, boolean killCorpus, boolean killGrineer, boolean killInfested, boolean helpCorpus, boolean helpGrineer, Map<String, CategoryFilter> categoryFilters, Set<String> filters, Set<String> filterMissionTypes, String toolName) {
+	public InvasionMatcher(int credits, Map<String, CategoryFilter> categoryFilters, Set<String> filters, Set<String> filterMissionTypes, String toolName, Map<String, Set<KillHelp>> killHelp) {
 		this.credits = credits;
-		this.killCorpus = killCorpus;
-		this.killGrineer = killGrineer;
-		this.killInfested = killInfested;
-		this.helpCorpus = helpCorpus;
-		this.helpGrineer = helpGrineer;
 		this.categoryFilters = categoryFilters;
 		this.filters = filters;
 		this.filterMissionTypes = filterMissionTypes;
 		this.toolName = toolName;
+		this.killHelp = killHelp;
 	}
 
 	@Override
@@ -145,6 +139,62 @@ public class InvasionMatcher implements Matcher<Invasion> {
 	//FACTIONS
 		boolean invadingKillFaction = false;
 		boolean defendinKillFaction = false;
+		boolean invadingHelpFaction = false;
+		boolean defendinHelpFaction = false;
+		Set<KillHelp> killHelpValues = new HashSet<KillHelp>();
+		if (invasion.getInvadingCategory() != null) {
+			killHelpValues.addAll(killHelp.get(invasion.getInvadingCategory().getName()));
+		}
+		if (invasion.getDefendingCategory() != null) {
+			killHelpValues.addAll(killHelp.get(invasion.getDefendingCategory().getName()));
+		}
+		for (KillHelp help : killHelpValues) {
+			switch (help) {
+				case HELP_CORPUS:
+					if (invasion.isInvadingCorpus()) {
+						invadingHelpFaction = true;
+					}
+					if (invasion.isDefendinCorpus()) {
+						defendinHelpFaction = true;
+					}
+					break;
+				case HELP_GRINEER:
+					if (invasion.isInvadingGrineer()) {
+						invadingHelpFaction = true;
+					}
+					if (invasion.isDefendinGrineer()) {
+						defendinHelpFaction = true;
+					}
+					break;
+				case KILL_CORPUS:
+					if (invasion.isInvadingCorpus()) {
+						defendinKillFaction = true;
+					}
+					if (invasion.isDefendinCorpus()) {
+						invadingKillFaction = true;
+					}
+					break;
+				case KILL_GRINEER:
+					if (invasion.isInvadingGrineer()) {
+						defendinKillFaction = true;
+					}
+					if (invasion.isDefendinGrineer()) {
+						invadingKillFaction = true;
+					}
+					break;
+				case KILL_INFESTATION:
+					if (invasion.isInvadingInfested()) {
+						defendinKillFaction = true;
+					}
+					if (invasion.isDefendinInfested()) {
+						invadingKillFaction = true;
+					}
+					break;
+			}
+		}
+		/*
+		boolean invadingKillFaction = false;
+		boolean defendinKillFaction = false;
 		//Kill Corpus
 		if (killCorpus) {
 			if (invasion.isInvadingCorpus()) {
@@ -192,6 +242,7 @@ public class InvasionMatcher implements Matcher<Invasion> {
 				defendinHelpFaction = true;
 			}
 		}
+		*/
 	//MISSION TYPE
 		boolean invadingMissionType = true;
 		boolean defendinMissionType = true;

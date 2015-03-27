@@ -35,6 +35,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -47,6 +48,7 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -412,6 +414,11 @@ public class AlertTool extends FilterTool implements AlertListener, Tool {
 			eventTableModel.fireTableCellUpdated(row, 5);
 		}
 		updateStatusBar();
+	}
+
+	@Override
+	public Collection<JMenuItem> getMenuItems(String categoryName) {
+		return new ArrayList<JMenuItem>();
 	}
 }
 	

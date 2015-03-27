@@ -28,19 +28,9 @@ import net.nikr.warframe.gui.settings.SettingsConstants;
 
 public class InvasionSettings {
 	private final int credits;
-	private final boolean killCorpus;
-	private final boolean killGrineer;
-	private final boolean killInfested;
-	private final boolean helpCorpus;
-	private final boolean helpGrineer;
 
-	public InvasionSettings(int credits, boolean killCorpus, boolean killGrineer, boolean killInfested, boolean helpCorpus, boolean helpGrineer) {
+	public InvasionSettings(int credits) {
 		this.credits = credits;
-		this.killCorpus = killCorpus;
-		this.killGrineer = killGrineer;
-		this.killInfested = killInfested;
-		this.helpCorpus = helpCorpus;
-		this.helpGrineer = helpGrineer;
 	}
 
 	public Set<SettingsConstants> getSettings() {
@@ -51,24 +41,6 @@ public class InvasionSettings {
 			case 1: settings.add(SettingsConstants.INVASION_CREDITS_25K); break;
 			case 2: settings.add(SettingsConstants.INVASION_CREDITS_35K); break;
 			case 3: settings.add(SettingsConstants.INVASION_CREDITS_NONE); break;
-		}
-		//Corpus
-		if (killCorpus) {
-			settings.add(SettingsConstants.INVASION_CORPUS);
-		}
-		//Grineer
-		if (killGrineer) {
-			settings.add(SettingsConstants.INVASION_GRINEER);
-		}
-		//Infested
-		if (killInfested) {
-			settings.add(SettingsConstants.INVASION_INFESTED);
-		}
-		if (helpCorpus) {
-			settings.add(SettingsConstants.INVASION_HELP_CORPUS);
-		}
-		if (helpGrineer) {
-			settings.add(SettingsConstants.INVASION_HELP_GRINEER);
 		}
 		return settings;
 	}

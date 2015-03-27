@@ -32,16 +32,22 @@ import ca.odell.glazedlists.swing.DefaultEventTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Dictionary;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.Icon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -75,16 +81,12 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 	private final JRadioButton jNotify;
 	private final JRadioButton jIgnore;
 	private final JSlider jCredits;
-	private final JToggleButton jKillCorpus;
-	private final JToggleButton jKillGrineer;
-	private final JToggleButton jKillInfested;
-	private final JToggleButton jHelpCorpus;
-	private final JToggleButton jHelpGrineer;
 	private final JTable jTable;
 
 	private final DefaultEventSelectionModel<Invasion> selectionModel;
 	private final DefaultEventTableModel<Invasion> eventTableModel;
 
+	private List<KillHelpContainer> killHelpContainers;
 	private final EventList<Invasion> eventList = new BasicEventList<Invasion>();
 	private final FilterList<Invasion> filterList;
 	private final FilterList<Invasion> showList;
@@ -169,30 +171,6 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		});
 		filterComponents.add(jCredits);
 
-		JLabel jKillLabel = new JLabel("Kill");
-		jKillLabel.setVisible(false);
-		filterComponents.add(jKillLabel);
-		//Faction
-		jKillCorpus = createToggleButton(Images.CORPUS.getIcon(), "Corpus", null, program.getSettings(SettingsConstants.INVASION_CORPUS));
-		jKillGrineer = createToggleButton(Images.GRINEER.getIcon(), "Grineer", null, program.getSettings(SettingsConstants.INVASION_GRINEER));
-		jKillInfested = createToggleButton(Images.INFESTATION.getIcon(), "Infestation", null, program.getSettings(SettingsConstants.INVASION_INFESTED));
-
-		JLabel jHelpLabel = new JLabel("Help");
-		jHelpLabel.setVisible(false);
-		filterComponents.add(jHelpLabel);
-
-		//Faction
-		jHelpCorpus = createToggleButton(Images.CORPUS.getIcon(), "Corpus", null, program.getSettings(SettingsConstants.INVASION_HELP_CORPUS));
-		jHelpGrineer = createToggleButton(Images.GRINEER.getIcon(), "Grineer", null, program.getSettings(SettingsConstants.INVASION_HELP_GRINEER));
-
-		addColumn1(jKillLabel);
-		addColumn2(jKillCorpus);
-		addColumn3(jKillGrineer);
-		addColumn4(jKillInfested);
-		addColumn1(jHelpLabel);
-		addColumn2(jHelpCorpus);
-		addColumn3(jHelpGrineer);
-
 		filterList = new FilterList<Invasion>(eventList);
 		showList = new FilterList<Invasion>(eventList);
 		//Table Format
@@ -263,9 +241,6 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 						.addComponent(jTableScroll, 0, 0, Short.MAX_VALUE)
 						.addGroup(layout.createSequentialGroup()
 							.addComponent(jCredits)
-							.addGap(15)
-							.addGroup(createRow(jKillLabel, jKillCorpus, jKillGrineer, jKillInfested, null))
-							.addGroup(createRow(jHelpLabel, jHelpCorpus, jHelpGrineer, null, null))
 							.addGap(15)
 							//.addGroup(createRow(jMissionTypesLabel, jMissionTypes, null, null))
 							//.addGap(15)
@@ -350,27 +325,18 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 
 	@Override
 	public Set<SettingsConstants> getSettings() {
-		InvasionSettings settings = new InvasionSettings(jCredits.getValue(),
-				jKillCorpus.isSelected(),
-				jKillGrineer.isSelected(),
-				jKillInfested.isSelected(),
-				jHelpCorpus.isSelected(),
-				jHelpGrineer.isSelected());
+		InvasionSettings settings = new InvasionSettings(jCredits.getValue());
 		return settings.getSettings();
 	}
 
 	@Override
 	public final void filter() {
 		matcher = new InvasionMatcher(jCredits.getValue(),
-				jKillCorpus.isSelected(),
-				jKillGrineer.isSelected(),
-				jKillInfested.isSelected(),
-				jHelpCorpus.isSelected(),
-				jHelpGrineer.isSelected(),
 				getCategoryFilters(),
 				program.getFilters(),
 				getFilterMissionTypesStrings(),
-				getToolName());
+				getToolName(),
+				getKillHelpEnum());
 		filterList.setMatcher(matcher);
 		if (jNotify.isSelected()) {
 			showList.setMatcher(matcher);
@@ -380,5 +346,117 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		}
 		jTable.updateUI();
 		updateStatusBar();
+	}
+
+	@Override
+	public Collection<JMenuItem> getMenuItems(String categoryName) {
+		KillHelpContainer container = new KillHelpContainer(categoryName);
+		if (killHelpContainers == null) {
+			killHelpContainers = new ArrayList<KillHelpContainer>();
+		}
+		killHelpContainers.add(container);
+		return container.getItems();
+	}
+
+	public Set<String> getKillHelpSettings() {
+		Set<String> settings = new HashSet<String>();
+		for (KillHelpContainer container : killHelpContainers) {
+			settings.addAll(container.getSettings());
+		}
+		return settings;
+	}
+
+	public Map<String, Set<KillHelp>> getKillHelpEnum() {
+		Map<String, Set<KillHelp>> settings = new HashMap<String, Set<KillHelp>>();
+		for (KillHelpContainer container : killHelpContainers) {
+			settings.put(container.getCategory(), container.getEnumValues());
+		}
+		return settings;
+	}
+
+	private class KillHelpContainer {
+		JCheckBoxMenuItem jKillCorpus;
+		JCheckBoxMenuItem jKillGrineer;
+		JCheckBoxMenuItem jKillInfested;
+		JCheckBoxMenuItem jHelpCorpus;
+		JCheckBoxMenuItem jHelpGrineer;
+		private final String category;
+		private final List<JCheckBoxMenuItem> items = new ArrayList<JCheckBoxMenuItem>();
+
+		public KillHelpContainer(String category) {
+			this.category = category;
+
+			jKillCorpus = createCheckBoxMenuItem(Images.CORPUS.getIcon(), "Kill Corpus");
+			items.add(jKillCorpus);
+			jKillGrineer = createCheckBoxMenuItem(Images.GRINEER.getIcon(), "Kill Grineer");
+			items.add(jKillGrineer);
+			jKillInfested = createCheckBoxMenuItem(Images.INFESTATION.getIcon(), "Kill Infestation");
+			items.add(jKillInfested);
+			items.add(null); //Separator
+			jHelpCorpus = createCheckBoxMenuItem(Images.CORPUS.getIcon(), "Help Corpus");
+			items.add(jHelpCorpus);
+			jHelpGrineer = createCheckBoxMenuItem(Images.GRINEER.getIcon(), "Help Grineer");
+			items.add(jHelpGrineer);
+		}
+
+		public List<JMenuItem> getItems() {
+			return new ArrayList<JMenuItem>(items);
+		}
+
+		public Set<String> getSettings() {
+			Set<String> settings = new HashSet<String>();
+			for (JCheckBoxMenuItem item : items) {
+				if (item != null && !item.isSelected()) {
+					settings.add(category + item.getText());
+				}
+			}
+			return settings;
+		}
+
+		public Set<KillHelp> getEnumValues() {
+			Set<KillHelp> settings = EnumSet.noneOf(KillHelp.class);
+			if (jKillCorpus.isSelected()) {
+				settings.add(KillHelp.KILL_CORPUS);
+			}
+			if (jKillGrineer.isSelected()) {
+				settings.add(KillHelp.KILL_GRINEER);
+			}
+			if (jKillInfested.isSelected()) {
+				settings.add(KillHelp.KILL_INFESTATION);
+			}
+			if (jHelpCorpus.isSelected()) {
+				settings.add(KillHelp.HELP_CORPUS);
+			}
+			if (jHelpGrineer.isSelected()) {
+				settings.add(KillHelp.HELP_GRINEER);
+			}
+			return settings;
+		}
+
+		public String getCategory() {
+			return category;
+		}
+
+		private JCheckBoxMenuItem createCheckBoxMenuItem(Icon icon, String text) {
+			final JCheckBoxMenuItem jButton = new JCheckBoxMenuItem(text, icon);
+			jButton.setToolTipText(text);
+			jButton.setSelected(!program.getKillHelp().contains(category + text));
+			jButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					filter();
+					program.saveKillHelp();
+				}
+			});
+			return jButton;
+		}
+	}
+
+	public static enum KillHelp {
+		KILL_CORPUS(),
+		KILL_GRINEER(),
+		KILL_INFESTATION(),
+		HELP_CORPUS(),
+		HELP_GRINEER();
 	}
 }

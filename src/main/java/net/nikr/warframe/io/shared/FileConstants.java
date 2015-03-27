@@ -120,6 +120,10 @@ public class FileConstants {
 		return new File(getLocalFile(SETTINGS_LOCAL + "missiontypes.dat", Main.isPortable()));
 	}
 
+	public static File getKillHelp() {
+		return new File(getLocalFile(SETTINGS_LOCAL + "killhelp.dat", Main.isPortable()));
+	}
+
 	public static File getVersionLocal() {
 		return new File(getLocalFile(DATA_LOCAL + "version.dat", Main.isPortable()));
 	}
