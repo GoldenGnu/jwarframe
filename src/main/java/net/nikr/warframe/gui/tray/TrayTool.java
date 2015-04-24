@@ -153,7 +153,9 @@ public class TrayTool implements NotifyListener {
 			started = false;
 			final SystemTray tray = SystemTray.getSystemTray();
 			try {
-				tray.remove(active);
+				for (TrayIcon trayIcon : tray.getTrayIcons()) {
+					tray.remove(trayIcon);
+				}
 				tray.add(passive);
 			} catch (AWTException e) {
 				
@@ -167,7 +169,9 @@ public class TrayTool implements NotifyListener {
 			started = true;
 			final SystemTray tray = SystemTray.getSystemTray();
 			try {
-				tray.remove(passive);
+				for (TrayIcon trayIcon : tray.getTrayIcons()) {
+					tray.remove(trayIcon);
+				}
 				tray.add(active);
 			} catch (AWTException e) {
 				

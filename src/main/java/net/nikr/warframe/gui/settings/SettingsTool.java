@@ -61,10 +61,16 @@ public class SettingsTool implements Tool {
 	private final JCheckBox jAutoRun;
 	private final JCheckBox jShowPopup;
 	private final JCheckBox jTrayOnClose;
+	private final JCheckBox jLite;
 	private final JRadioButton jAudioNotifyOnce;
 	private final JRadioButton jAudioNotifyRepeat;
 	private final JRadioButton jAudioNotifyNone;
 	private final JFileChooser jFileChooser;
+	private final boolean loginReward;
+	private final boolean showPopup;
+	private final boolean trayOnClose;
+	private final boolean audioNotifyOnce;
+	private final boolean audioNotifyRepeat;
 	private final List<SoundPanel> soundPanels = new ArrayList<SoundPanel>();
 
 	private Thread testAudio = null;
@@ -74,17 +80,58 @@ public class SettingsTool implements Tool {
 	public SettingsTool(final Program program) {
 		this.program = program;
 
-		jFileChooser = new JFileChooser();
-		jFileChooser.setAcceptAllFileFilterUsed(false);
-		jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		jFileChooser.setMultiSelectionEnabled(false);
-		jFileChooser.setFileFilter(new AudioFileFilter());
-
 		jPanel = new JPanel();
 		GroupLayout layout = new GroupLayout(jPanel);
 		jPanel.setLayout(layout);
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
+
+		jLite = new JCheckBox("Lite (Require restart of jWarframe)");
+		jLite.setSelected(Program.isLite());
+		jLite.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				program.saveSettings();
+			}
+		});
+
+		if (Program.isLite()) {
+			jLoginReward = null;
+			jAutoRun = null;
+			jShowPopup = null;
+			jTrayOnClose = null;
+			jAudioNotifyOnce = null;
+			jAudioNotifyRepeat = null;
+			jAudioNotifyNone = null;
+			jFileChooser = null;
+			layout.setHorizontalGroup(
+					layout.createSequentialGroup()
+						.addComponent(jLite)
+
+			);
+			layout.setVerticalGroup(
+					layout.createParallelGroup()
+						.addComponent(jLite, 25, 25, 25)
+			);
+			loginReward = program.getSettings(SettingsConstants.LOGIN_REWARD);
+			showPopup = program.getSettings(SettingsConstants.SHOW_POPUP);
+			trayOnClose = program.getSettings(SettingsConstants.TRAY_ON_CLOSE);
+			audioNotifyOnce = program.getSettings(SettingsConstants.NOTIFY_AUDIO);
+			audioNotifyRepeat = program.getSettings(SettingsConstants.NOTIFY_AUDIO_REPEAT);
+			return;
+		} else {
+			loginReward = false;
+			showPopup = false;
+			trayOnClose = false;
+			audioNotifyOnce = false;
+			audioNotifyRepeat = false;
+		}
+		
+		jFileChooser = new JFileChooser();
+		jFileChooser.setAcceptAllFileFilterUsed(false);
+		jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		jFileChooser.setMultiSelectionEnabled(false);
+		jFileChooser.setFileFilter(new AudioFileFilter());
 
 		jAutoRun = new JCheckBox("Run on startup (Windows only)");
 		jAutoRun.setSelected(AutoRun.isInstalled());
@@ -194,6 +241,7 @@ public class SettingsTool implements Tool {
 						.addComponent(jLoginReward)
 						.addComponent(jShowPopup)
 						.addComponent(jTrayOnClose)
+						.addComponent(jLite)
 					)
 					
 		);
@@ -208,6 +256,8 @@ public class SettingsTool implements Tool {
 						.addComponent(jShowPopup, 25, 25, 25)
 						.addGap(5)
 						.addComponent(jTrayOnClose, 25, 25, 25)
+						.addGap(5)
+						.addComponent(jLite, 25, 25, 25)
 					)
 				
 		);
@@ -231,19 +281,40 @@ public class SettingsTool implements Tool {
 	@Override
 	public Set<SettingsConstants> getSettings() {
 		Set<SettingsConstants> settings = EnumSet.noneOf(SettingsConstants.class);
-		if (jLoginReward.isSelected()) {
-			settings.add(SettingsConstants.LOGIN_REWARD);
+		if (jLite.isSelected()) {
+			settings.add(SettingsConstants.LITE);
 		}
-		if (jShowPopup.isSelected()) {
-			settings.add(SettingsConstants.SHOW_POPUP);
-		}
-		if (jTrayOnClose.isSelected()) {
-			settings.add(SettingsConstants.TRAY_ON_CLOSE);
-		}
-		if (jAudioNotifyRepeat.isSelected()) {
-			settings.add(SettingsConstants.NOTIFY_AUDIO_REPEAT);
-		} else if (jAudioNotifyOnce.isSelected()) {
-			settings.add(SettingsConstants.NOTIFY_AUDIO);
+		if (Program.isLite()) {
+			if (loginReward) {
+				settings.add(SettingsConstants.LOGIN_REWARD);
+			}
+			if (showPopup) {
+				settings.add(SettingsConstants.SHOW_POPUP);
+			}
+			if (trayOnClose) {
+				settings.add(SettingsConstants.TRAY_ON_CLOSE);
+			}
+			if (audioNotifyRepeat) {
+				settings.add(SettingsConstants.NOTIFY_AUDIO_REPEAT);
+			}
+			if (audioNotifyOnce) {
+				settings.add(SettingsConstants.NOTIFY_AUDIO);
+			}
+		} else {
+			if (jLoginReward.isSelected()) {
+				settings.add(SettingsConstants.LOGIN_REWARD);
+			}
+			if (jShowPopup.isSelected()) {
+				settings.add(SettingsConstants.SHOW_POPUP);
+			}
+			if (jTrayOnClose.isSelected()) {
+				settings.add(SettingsConstants.TRAY_ON_CLOSE);
+			}
+			if (jAudioNotifyRepeat.isSelected()) {
+				settings.add(SettingsConstants.NOTIFY_AUDIO_REPEAT);
+			} else if (jAudioNotifyOnce.isSelected()) {
+				settings.add(SettingsConstants.NOTIFY_AUDIO);
+			}
 		}
 		return settings;
 	}

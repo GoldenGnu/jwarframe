@@ -59,6 +59,8 @@ import net.nikr.warframe.io.shared.FastToolTips;
 
 public class MainFrame implements NotifyListener, LoginRewardListener {
 
+	private final List<Image> ninja_active = Arrays.asList(Images.NINJA.getImage(), Images.PROGRAM_32.getImage(), Images.PROGRAM_64.getImage());
+	private final List<Image> ninja_passive = Arrays.asList(Images.NINJA.getImage(), Images.PROGRAM_DISABLED_32.getImage(), Images.PROGRAM_DISABLED_64.getImage());
 	private final List<Image> active = Arrays.asList(Images.PROGRAM_16.getImage(), Images.PROGRAM_32.getImage(), Images.PROGRAM_64.getImage());
 	private final List<Image> passive = Arrays.asList(Images.PROGRAM_DISABLED_16.getImage(), Images.PROGRAM_DISABLED_32.getImage(), Images.PROGRAM_DISABLED_64.getImage());
 	
@@ -76,9 +78,13 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 	public MainFrame(final Program program) {
 		this.program = program;
 		
-		this.jFrame = new JFrame(Program.PROGRAM_NAME + " " + Program.PROGRAM_VERSION);
+		this.jFrame = new JFrame(Program.PROGRAM_NAME + " " + Program.PROGRAM_VERSION + (Program.isLite() ? " Ninja Edition (Lite)" : ""));
 		jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		jFrame.setIconImages(active);
+		if (Program.isLite()) {
+			jFrame.setIconImages(ninja_active);
+		} else {
+			jFrame.setIconImages(active);
+		}
 		jFrame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowIconified(WindowEvent e) {
@@ -107,7 +113,11 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 
 			@Override
 			public void windowGainedFocus(WindowEvent e) {
-				jFrame.setIconImages(active);
+				if (Program.isLite()) {
+					jFrame.setIconImages(ninja_active);
+				} else {
+					jFrame.setIconImages(active);
+				}
 				if (alarm) {
 					program.stopNotify();
 				}
@@ -281,7 +291,9 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						JOptionPane.showMessageDialog(jFrame, "Stop Beep...", "Beep", JOptionPane.PLAIN_MESSAGE);
+						if (program.getSettings(SettingsConstants.NOTIFY_AUDIO) || program.getSettings(SettingsConstants.NOTIFY_AUDIO_REPEAT)) {
+							JOptionPane.showMessageDialog(jFrame, "Stop Beep...", "Beep", JOptionPane.PLAIN_MESSAGE);
+						}
 						program.stopNotify();
 					}
 				});
@@ -293,9 +305,17 @@ public class MainFrame implements NotifyListener, LoginRewardListener {
 
 	private void updateIcons() {
 		if (alarm) {
-			jFrame.setIconImages(active);
+			if (Program.isLite()) {
+			jFrame.setIconImages(ninja_active);
+			} else {
+				jFrame.setIconImages(active);
+			}
 		} else {
-			jFrame.setIconImages(passive);
+			if (Program.isLite()) {
+				jFrame.setIconImages(ninja_passive);
+			} else {
+				jFrame.setIconImages(passive);
+			}
 		}
 	}
 

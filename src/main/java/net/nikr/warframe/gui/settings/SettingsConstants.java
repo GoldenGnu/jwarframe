@@ -40,6 +40,7 @@ public enum SettingsConstants {
 	NOTIFY_AUDIO_REPEAT(3, true),
 	SHOW_POPUP(5, true),
 	TRAY_ON_CLOSE(5, false),
+	LITE(6, false),
 	;
 
 	private final int version;
@@ -51,7 +52,7 @@ public enum SettingsConstants {
 	}
 
 	public static int getSettingsVersion() {
-		return 5;
+		return 6;
 	}
 
 	public int getVersion() {

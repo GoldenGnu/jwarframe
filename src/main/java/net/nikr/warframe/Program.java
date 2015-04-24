@@ -75,8 +75,9 @@ public class Program {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Program.class);
 
-	public static final String PROGRAM_VERSION = "1.2.0 BETA 1";
+	public static final String PROGRAM_VERSION = "1.2.0 BETA 3";
 	public static final String PROGRAM_NAME = "jWarframe";
+	public static boolean lite = false;
 
 	private final List<InvasionListener> invasionListeners = new ArrayList<InvasionListener>();
 	private final List<AlertListener> alertListeners = new ArrayList<AlertListener>();
@@ -137,6 +138,7 @@ public class Program {
 		loadMissionType();
 		loadKillHelp();
 
+		lite = getSettings(SettingsConstants.LITE);
 		SplashUpdater.setText("Loading GUI");
 	//GUI
 		mainFrame = new MainFrame(this);
@@ -159,29 +161,34 @@ public class Program {
 
 		float add = 60 / categories.size();
 		float total = 0;
-		for (Category category : categories) {
-			//GUI
-			RewardTool inventoryTool = new RewardTool(this, category.getRewards(), category.getName(), category.getWidth(), category.getHeight(), zoom.get(category.getName()));
-			tools.add(inventoryTool);
-			inventories.add(inventoryTool);
-			mainFrame.add(inventoryTool);
-			int lastTotal = (int)Math.ceil(total);
-			total = total + add;
-			int addNow = (int)Math.ceil(total - lastTotal);
-			SplashUpdater.addProgress(addNow);
+		if (!isLite()) { //No Reward Tools
+			for (Category category : categories) {
+				//GUI
+				RewardTool inventoryTool = new RewardTool(this, category.getRewards(), category.getName(), category.getWidth(), category.getHeight(), zoom.get(category.getName()));
+				tools.add(inventoryTool);
+				inventories.add(inventoryTool);
+				mainFrame.add(inventoryTool);
+				int lastTotal = (int)Math.ceil(total);
+				total = total + add;
+				int addNow = (int)Math.ceil(total - lastTotal);
+				SplashUpdater.addProgress(addNow);
+			}
 		}
 
 		filtersTool = new FiltersTool(this);
 		tools.add(filtersTool);
-		mainFrame.add(filtersTool);
-
+		if (!isLite()) { //No Filter GUI
+			mainFrame.add(filtersTool);
+		}
 		SettingsTool settingsTool = new SettingsTool(this);
 		tools.add(settingsTool);
 		mainFrame.add(settingsTool);
 		SplashUpdater.setProgress(85);
 
-		mainFrame.add(new AboutTool(this));
-		SplashUpdater.setProgress(90);
+		if (!isLite()) { //No About Tool
+			mainFrame.add(new AboutTool(this));
+			SplashUpdater.setProgress(90);
+		}
 
 		trayTool = new TrayTool(this);
 		SplashUpdater.setProgress(95);
@@ -202,6 +209,10 @@ public class Program {
 		//Show GUI
 		SplashUpdater.setProgress(100);
 		mainFrame.show();
+	}
+
+	public static boolean isLite() {
+		return lite;
 	}
 
 	private void addAlertListener(AlertListener listener) {
@@ -314,7 +325,7 @@ public class Program {
 		categoryWriter.save(categoryFilter);
 	}
 
-	public boolean getSettings(SettingsConstants constants) {
+	public final boolean getSettings(SettingsConstants constants) {
 		if (settings.contains(SettingsConstants.SETTINGS_SET) //Settings is set
 				&& constants.getVersion() <= settingsVersion) { //Not new setting
 			return settings.contains(constants);
@@ -394,6 +405,7 @@ public class Program {
 		filters.addAll(new TreeSet<String>(reader.load(file)));
 		filtersTool.updateFilters();
 		mainFrame.updateFilters();
+		updateFilters();
 		saveFilters();
 	}
 

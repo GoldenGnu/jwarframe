@@ -39,6 +39,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import net.nikr.warframe.Main;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.reward.RewardID;
@@ -47,6 +48,7 @@ import net.nikr.warframe.gui.shared.SimpleListModel;
 import net.nikr.warframe.gui.shared.Tool;
 import net.nikr.warframe.io.alert.Alert;
 import net.nikr.warframe.io.shared.FastToolTips;
+import net.nikr.warframe.io.shared.FileConstants;
 import net.nikr.warframe.io.shared.ImageGetter;
 
 
@@ -62,6 +64,12 @@ public class FiltersTool implements Tool {
 	public FiltersTool(final Program program) {
 		this.program = program;
 
+		if (Program.isLite()) {
+			jManageDialog = null;
+			jPanel = null;
+			listModel = new SimpleListModel<String>(program.getFilters());
+			return;
+		}
 		final JFilterAdder jFilterAdder = new JFilterAdder(program);
 		final JFilterSave jFilterSave = new JFilterSave(program);
 		jManageDialog = new JManageDialog(program);
@@ -190,7 +198,8 @@ public class FiltersTool implements Tool {
 	}
 
 	public void loadFilterSet(String setName) {
-		jManageDialog.load(setName);
+		//jManageDialog.load(setName);
+		program.loadFilters(FileConstants.getFilterSet(setName + ".dat"));
 	}
 
 	public void updateFilters() {

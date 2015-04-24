@@ -22,7 +22,7 @@
 package net.nikr.warframe.gui.invasion;
 
 import ca.odell.glazedlists.matchers.Matcher;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import net.nikr.warframe.gui.invasion.InvasionTool.KillHelp;
@@ -141,108 +141,73 @@ public class InvasionMatcher implements Matcher<Invasion> {
 		boolean defendinKillFaction = false;
 		boolean invadingHelpFaction = false;
 		boolean defendinHelpFaction = false;
-		Set<KillHelp> killHelpValues = new HashSet<KillHelp>();
 		if (invasion.getInvadingCategory() != null) {
+			Set<KillHelp> killHelpValues = EnumSet.noneOf(KillHelp.class);
 			killHelpValues.addAll(killHelp.get(invasion.getInvadingCategory().getName()));
+			for (KillHelp help : killHelpValues) {
+				switch (help) {
+					case HELP_CORPUS:
+						if (invasion.isInvadingCorpus()) {
+							invadingHelpFaction = true;
+						}
+						break;
+					case HELP_GRINEER:
+						if (invasion.isInvadingGrineer()) {
+							invadingHelpFaction = true;
+						}
+						break;
+					case KILL_CORPUS:
+						if (invasion.isDefendinCorpus()) {
+							invadingKillFaction = true;
+						}
+						break;
+					case KILL_GRINEER:
+						if (invasion.isDefendinGrineer()) {
+							invadingKillFaction = true;
+						}
+						break;
+					case KILL_INFESTATION:
+						if (invasion.isDefendinInfested()) {
+							invadingKillFaction = true;
+						}
+						break;
+				}
+			}
+			
 		}
 		if (invasion.getDefendingCategory() != null) {
+			Set<KillHelp> killHelpValues = EnumSet.noneOf(KillHelp.class);
 			killHelpValues.addAll(killHelp.get(invasion.getDefendingCategory().getName()));
-		}
-		for (KillHelp help : killHelpValues) {
-			switch (help) {
-				case HELP_CORPUS:
-					if (invasion.isInvadingCorpus()) {
-						invadingHelpFaction = true;
-					}
-					if (invasion.isDefendinCorpus()) {
-						defendinHelpFaction = true;
-					}
-					break;
-				case HELP_GRINEER:
-					if (invasion.isInvadingGrineer()) {
-						invadingHelpFaction = true;
-					}
-					if (invasion.isDefendinGrineer()) {
-						defendinHelpFaction = true;
-					}
-					break;
-				case KILL_CORPUS:
-					if (invasion.isInvadingCorpus()) {
-						defendinKillFaction = true;
-					}
-					if (invasion.isDefendinCorpus()) {
-						invadingKillFaction = true;
-					}
-					break;
-				case KILL_GRINEER:
-					if (invasion.isInvadingGrineer()) {
-						defendinKillFaction = true;
-					}
-					if (invasion.isDefendinGrineer()) {
-						invadingKillFaction = true;
-					}
-					break;
-				case KILL_INFESTATION:
-					if (invasion.isInvadingInfested()) {
-						defendinKillFaction = true;
-					}
-					if (invasion.isDefendinInfested()) {
-						invadingKillFaction = true;
-					}
-					break;
+			for (KillHelp help : killHelpValues) {
+				switch (help) {
+					case HELP_CORPUS:
+						if (invasion.isDefendinCorpus()) {
+							defendinHelpFaction = true;
+						}
+						break;
+					case HELP_GRINEER:
+						if (invasion.isDefendinGrineer()) {
+							defendinHelpFaction = true;
+						}
+						break;
+					case KILL_CORPUS:
+						if (invasion.isInvadingCorpus()) {
+							defendinKillFaction = true;
+						}
+						break;
+					case KILL_GRINEER:
+						if (invasion.isInvadingGrineer()) {
+							defendinKillFaction = true;
+						}
+						break;
+					case KILL_INFESTATION:
+						if (invasion.isInvadingInfested()) {
+							defendinKillFaction = true;
+						}
+						break;
+				}
 			}
 		}
-		/*
-		boolean invadingKillFaction = false;
-		boolean defendinKillFaction = false;
-		//Kill Corpus
-		if (killCorpus) {
-			if (invasion.isInvadingCorpus()) {
-				defendinKillFaction = true;
-			}
-			if (invasion.isDefendinCorpus()) {
-				invadingKillFaction = true;
-			}
-		}
-		//Kill Grineer
-		if (killGrineer) {
-			if (invasion.isInvadingGrineer()) {
-				defendinKillFaction = true;
-			}
-			if (invasion.isDefendinGrineer()) {
-				invadingKillFaction = true;
-			}
-		}
-		//Kill Infested
-		if (killInfested) {
-			if (invasion.isInvadingInfested()) {
-				defendinKillFaction = true;
-			}
-			if (invasion.isDefendinInfested()) {
-				invadingKillFaction = true;
-			}
-		}
-		boolean invadingHelpFaction = false;
-		boolean defendinHelpFaction = false;
-		//Help Corpus
-		if (helpCorpus) {
-			if (invasion.isInvadingCorpus()) {
-				invadingHelpFaction = true;
-			}
-			if (invasion.isDefendinCorpus()) {
-				defendinHelpFaction = true;
-			}
-		}
-		//Help Grineer
-		if (helpGrineer) {
-			if (invasion.isInvadingGrineer()) {
-				invadingHelpFaction = true;
-			}
-			if (invasion.isDefendinGrineer()) {
-				defendinHelpFaction = true;
-			}
-		}
-		*/
 	//MISSION TYPE
 		boolean invadingMissionType = true;
 		boolean defendinMissionType = true;
@@ -262,10 +227,10 @@ public class InvasionMatcher implements Matcher<Invasion> {
 	//UPDATE
 		invasion.setMatchInvadingLoot(invadingReward && invadingKillFaction && invadingHelpFaction && invadingMissionType);
 		invasion.setMatchDefendingLoot(defendinReward && defendinKillFaction && defendinHelpFaction && defendinMissionType);
-		invasion.setMatchInvadingCredits(invadingCredits && invadingKillFaction && invadingHelpFaction && invadingMissionType);
-		invasion.setMatchDefendingCredits(defendinCredits && defendinKillFaction && defendinHelpFaction && defendinMissionType);
-		return ((invadingReward || invadingCredits) && invadingKillFaction && invadingHelpFaction && invadingMissionType)
-				|| ((defendinReward || defendinCredits) && defendinKillFaction && defendinHelpFaction && defendinMissionType);
+		invasion.setMatchInvadingCredits(invadingCredits);
+		invasion.setMatchDefendingCredits(defendinCredits);
+		return ((invadingReward && invadingKillFaction && invadingHelpFaction && invadingMissionType) || invadingCredits)
+				|| ((defendinReward && defendinKillFaction && defendinHelpFaction && defendinMissionType) || defendinCredits);
 	}
 	
 }
