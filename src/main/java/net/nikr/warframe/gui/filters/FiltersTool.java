@@ -39,7 +39,6 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import net.nikr.warframe.Main;
 import net.nikr.warframe.Program;
 import net.nikr.warframe.gui.images.Images;
 import net.nikr.warframe.gui.reward.RewardID;
@@ -47,6 +46,7 @@ import net.nikr.warframe.gui.settings.SettingsConstants;
 import net.nikr.warframe.gui.shared.SimpleListModel;
 import net.nikr.warframe.gui.shared.Tool;
 import net.nikr.warframe.io.alert.Alert;
+import net.nikr.warframe.io.invasion.Invasion;
 import net.nikr.warframe.io.shared.FastToolTips;
 import net.nikr.warframe.io.shared.FileConstants;
 import net.nikr.warframe.io.shared.ImageGetter;
@@ -246,6 +246,25 @@ public class FiltersTool implements Tool {
 			add(rewardID.getName());
 		} else {
 			remove(rewardID.getName());
+		}
+	}
+
+	public void update(Invasion invasion) {
+		if (invasion.getDefendingRewardID() != null) {
+			RewardID rewardID = invasion.getDefendingRewardID();
+			if (invasion.isDefendingIgnored()) {
+				add(rewardID.getName());
+			} else {
+				remove(rewardID.getName());
+			}
+		}
+		if (invasion.getInvadingRewardID() != null) {
+			RewardID rewardID = invasion.getInvadingRewardID();
+			if (invasion.isInvadingIgnored()) {
+				add(rewardID.getName());
+			} else {
+				remove(rewardID.getName());
+			}
 		}
 	}
 }

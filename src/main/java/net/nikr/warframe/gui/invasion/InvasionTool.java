@@ -194,6 +194,7 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 				try {
 					eventList.getReadWriteLock().readLock().lock();
 					for (Invasion invasion : eventList) {
+						program.getFiltersTool().update(invasion);
 						if (invasion.isDone()) {
 							program.doneAdd(invasion.getId());
 						} else {
@@ -264,6 +265,10 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 	public void addInvasions(List<Invasion> invasions) {
 		List<Invasion> cache = new ArrayList<Invasion>(filterList);
 
+		for (Invasion invasion : invasions) {
+			invasion.setIgnored(program.getFilters());
+		}
+
 		try {
 			eventList.getReadWriteLock().writeLock().lock();
 			eventList.clear();
@@ -331,6 +336,14 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 
 	@Override
 	public final void filter() {
+		try {
+			eventList.getReadWriteLock().readLock().lock();
+			for (Invasion invasion : eventList) {
+				invasion.setIgnored(program.getFilters());
+			}
+		} finally {
+			eventList.getReadWriteLock().readLock().unlock();
+		}
 		matcher = new InvasionMatcher(jCredits.getValue(),
 				getCategoryFilters(),
 				program.getFilters(),
@@ -344,7 +357,9 @@ public class InvasionTool extends FilterTool implements Tool, InvasionListener {
 		if (jIgnore.isSelected()) {
 			showList.setMatcher(new InvertMatcher<Invasion>(matcher));
 		}
-		jTable.updateUI();
+		for (int row = 0; row < eventTableModel.getRowCount(); row++) {
+			eventTableModel.fireTableCellUpdated(row, 0);
+		}
 		updateStatusBar();
 	}
 

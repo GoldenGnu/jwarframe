@@ -29,6 +29,7 @@ import java.awt.Component;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.table.TableCellRenderer;
+import net.nikr.warframe.gui.reward.Category.CategoryColor;
 import net.nikr.warframe.gui.shared.table.JToolTipTable;
 import net.nikr.warframe.io.invasion.Invasion;
 
@@ -77,6 +78,28 @@ public class JInvasionTable extends JToolTipTable {
 				} else {
 					component.setForeground(Color.GRAY);
 				}
+			}
+		}
+		if (columnIndex == InvasionTableFormat.INVADER_IGNORE.ordinal()) {
+			if (invasion.getInvadingRewardID() != null) {
+				if (invasion.isInvadingIgnored()) {
+					component.setBackground(CategoryColor.RED.getColor(isSelected));
+				} else {
+					component.setBackground(CategoryColor.GREEN.getColor(isSelected));
+				}
+			} else {
+				component.setBackground(CategoryColor.GRAY.getColor(isSelected));
+			}
+		}
+		if (columnIndex == InvasionTableFormat.DEFENDER_IGNORE.ordinal()) {
+			if (invasion.getDefendingRewardID() != null) {
+				if (invasion.isDefendingIgnored()) {
+					component.setBackground(CategoryColor.RED.getColor(isSelected));
+				} else {
+					component.setBackground(CategoryColor.GREEN.getColor(isSelected));
+				}
+			} else {
+				component.setBackground(CategoryColor.GRAY.getColor(isSelected));
 			}
 		}
 		if (component instanceof JLabel) {

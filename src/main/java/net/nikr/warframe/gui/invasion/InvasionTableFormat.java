@@ -47,6 +47,23 @@ public enum InvasionTableFormat implements EnumRow<Invasion> {
 			return invasion.getEta().replace("ETA:", "").trim();
 		}
 	},
+	INVADER_IGNORE(Boolean.class, "Ignore") {
+		@Override
+		public Object getColumnValue(Invasion invasion) {
+			return invasion.isInvadingIgnored();
+		}
+		@Override
+		public boolean isEditable(Invasion invasion) {
+			return invasion.getInvadingRewardID() != null;
+		}
+		@Override
+		public Invasion setColumnValue(Invasion invasion, Object o) {
+			if (o instanceof Boolean) {
+				invasion.setInvadingIgnored((Boolean) o);
+			}
+			return invasion;
+		}
+	},
 	INVADER_REWARD(String.class, "Reward") {
 		@Override
 		public Object getColumnValue(Invasion invasion) {
@@ -83,6 +100,23 @@ public enum InvasionTableFormat implements EnumRow<Invasion> {
 		@Override
 		public Object getColumnValue(Invasion invasion) {
 			return invasion.getDefendingReward();
+		}
+	},
+	DEFENDER_IGNORE(Boolean.class, "Ignore") {
+		@Override
+		public Object getColumnValue(Invasion invasion) {
+			return invasion.isDefendingIgnored();
+		}
+		@Override
+		public boolean isEditable(Invasion invasion) {
+			return invasion.getDefendingRewardID() != null;
+		}
+		@Override
+		public Invasion setColumnValue(Invasion invasion, Object o) {
+			if (o instanceof Boolean) {
+				invasion.setDefendingIgnored((Boolean) o);
+			}
+			return invasion;
 		}
 	},
 	DONE(Boolean.class, "Done") {

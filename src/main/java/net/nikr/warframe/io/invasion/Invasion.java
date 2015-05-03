@@ -22,6 +22,7 @@
 package net.nikr.warframe.io.invasion;
 
 import java.util.Date;
+import java.util.Set;
 import net.nikr.warframe.gui.reward.Category;
 import net.nikr.warframe.gui.reward.RewardID;
 import net.nikr.warframe.io.shared.Faction;
@@ -57,6 +58,8 @@ public class Invasion implements Comparable<Invasion> {
 	private boolean matchInvadingCredits;
 	private boolean matchDefendingCredits;
 	private boolean done = false;
+	private boolean ignoredInvading;
+	private boolean ignoredDefending;
 
 	public Invasion() { }
 
@@ -82,6 +85,35 @@ public class Invasion implements Comparable<Invasion> {
 
 	public void setRegion(String region) {
 		this.region = region;
+	}
+
+	public void setIgnored(Set<String> filters) {
+		if (invadingRewardID == null) {
+			ignoredInvading = false;
+		} else {
+			ignoredInvading = filters.contains(invadingRewardID.getName());
+		}
+		if (defendingRewardID == null) {
+			ignoredDefending = false;
+		} else {
+			ignoredDefending = filters.contains(defendingRewardID.getName());
+		}
+	}
+
+	public boolean isInvadingIgnored() {
+		return ignoredInvading;
+	}
+
+	public void setInvadingIgnored(boolean ignoredInvading) {
+		this.ignoredInvading = ignoredInvading;
+	}
+
+	public boolean isDefendingIgnored() {
+		return ignoredDefending;
+	}
+
+	public void setDefendingIgnored(boolean ignoredDefending) {
+		this.ignoredDefending = ignoredDefending;
 	}
 
 	public String getInvadingFaction() {
