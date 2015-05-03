@@ -16,6 +16,19 @@
                   #### #  # #  # #  # #### #### #### #### ####
 
 ________________________________________________________________________________
+_1.2.0__________________________________________________________________________
+
+New Features:
+-Add/Remove ignore in the invasion tool
+-Lite (low memory use)
+-Per category filters (Mission Type and Help/Kill faction)
+-Close to tray
+-Credits sound now changeable
+-Notification Popup
+-Filter management (Easy loading of filter sets)
+-Invasion ETA column
+
+________________________________________________________________________________
 _1.1.0__________________________________________________________________________
 
 New Features:

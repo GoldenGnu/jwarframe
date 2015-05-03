@@ -75,7 +75,7 @@ public class Program {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Program.class);
 
-	public static final String PROGRAM_VERSION = "1.2.0 BETA 3";
+	public static final String PROGRAM_VERSION = "1.2.0";
 	public static final String PROGRAM_NAME = "jWarframe";
 	public static boolean lite = false;
 

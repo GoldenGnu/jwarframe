@@ -114,7 +114,7 @@ License:
 ________________________________________________________________________________
 _COPYRIGHT______________________________________________________________________
 
-Copyright 2014 Niklas Kyster Rasmussen
+Copyright 2014-2015 Niklas Kyster Rasmussen
 
 jWarframe is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
