@@ -173,7 +173,9 @@ public class InvasionMatcher implements Matcher<Invasion> {
 						break;
 				}
 			}
-			
+		} else {
+			invadingKillFaction = true;
+			invadingHelpFaction = true;
 		}
 		if (invasion.getDefendingCategory() != null) {
 			Set<KillHelp> killHelpValues = EnumSet.noneOf(KillHelp.class);
@@ -207,6 +209,9 @@ public class InvasionMatcher implements Matcher<Invasion> {
 						break;
 				}
 			}
+		} else {
+			defendinKillFaction = true;
+			defendinHelpFaction = true;
 		}
 	//MISSION TYPE
 		boolean invadingMissionType = true;
