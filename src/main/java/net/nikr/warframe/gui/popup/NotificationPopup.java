@@ -199,7 +199,10 @@ public class NotificationPopup implements NotifyListener {
 					x = x + 10;
 					if (x > xStart) {
 						x = xStart;
-						fadeOut.stop();
+						if (fadeOut != null) {
+							fadeOut.stop();
+						}
+						fadeOut = null;
 						jDialog.setVisible(false);
 					}
 					jDialog.setLocation(x, y);
@@ -224,7 +227,9 @@ public class NotificationPopup implements NotifyListener {
 					x = x - 10;
 					if (x < xEnd) {
 						x = xEnd;
-						fadeIn.stop();
+						if (fadeIn != null) {
+							fadeIn.stop();
+						}
 						fadeIn = null;
 					}
 					jDialog.setLocation(x, y);
