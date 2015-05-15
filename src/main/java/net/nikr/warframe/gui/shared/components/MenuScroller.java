@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Niklas Kyster Rasmussen
+ * Copyright 2014-2015 Niklas Kyster Rasmussen
  *
  * Original code by Darryl (http://tips4java.wordpress.com/2009/02/01/menu-scroller/)
  *

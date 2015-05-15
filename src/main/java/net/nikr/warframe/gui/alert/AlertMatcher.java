@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Niklas Kyster Rasmussen
+ * Copyright 2014-2015 Niklas Kyster Rasmussen
  *
  * This file is part of jWarframe.
  *

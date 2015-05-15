@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Niklas Kyster Rasmussen
+ * Copyright 2014-2015 Niklas Kyster Rasmussen
  *
  * This file is part of jWarframe.
  *
@@ -57,7 +57,7 @@ public class AboutTool implements Tool {
 
 		JEditorPane jProgram = createEditorPane(false,
 				"<div style=\"font-size: 30pt;\"><b>" + Program.PROGRAM_NAME + "</b></div>"
-				+ "Copyright &copy; 2014 Niklas Kyster Rasmussen<br>"
+				+ "Copyright &copy; 2014-2015 Niklas Kyster Rasmussen<br>"
 				);
 
 		JEditorPane jInfo = createEditorPane(
