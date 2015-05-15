@@ -32,10 +32,18 @@ public class AlertMissionTypes  implements MissionTypes {
 	public AlertMissionTypes() {
 		missionTypes = new TreeSet<String>();
 		missionTypes.add("Assassination");
+		missionTypes.add("Capture");
+		missionTypes.add("Deception");
 		missionTypes.add("Defense");
+		missionTypes.add("Excavation");
 		missionTypes.add("Extermination");
+		missionTypes.add("Hive Sabotage");
+		missionTypes.add("Interception");
 		missionTypes.add("Mobile Defense");
+		missionTypes.add("Rescue");
+		missionTypes.add("Retrieval");
 		missionTypes.add("Sabotage");
+		missionTypes.add("Spy");
 		missionTypes.add("Survival");
 		missionTypes.add("Rescue");
 		missionTypes.add("Excavation");
