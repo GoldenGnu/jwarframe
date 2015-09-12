@@ -200,8 +200,7 @@
 							<includes>*.txt,*.jar,*.md5,lib/*,*.dat,*.php,*.properties</includes>
 							<serverId>eve-nikr-net</serverId>
 							<url>ftp://ftp.nikr.net</url>
-							<!-- FIXME !revert url to live  -->
-							<toDir>warframe.nikr.net/test/update/</toDir>
+							<toDir>warframe.nikr.net/jwarframe/download/update/</toDir>
 						</configuration>
 					</execution>
 					<execution>
@@ -215,8 +214,7 @@
 							<includes>*.zip</includes>
 							<serverId>eve-nikr-net</serverId>
 							<url>ftp://ftp.nikr.net</url>
-							<!-- //FIXME !revert url to live  -->
-							<toDir>warframe.nikr.net/test</toDir>
+							<toDir>warframe.nikr.net/jwarframe/download</toDir>
 						</configuration>
 					</execution>
 				</executions>
