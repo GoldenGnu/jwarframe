@@ -57,9 +57,9 @@
 				<include name="*.txt" />
 				<include name="*.properties" />
 			</fileset>
-			<!--
-			<executable targetfile="$INSTALL_PATH/jmemory.jar" type="jar" stage="postinstall" failure ="warn" keep="true" condition="isRunOnExit" />
-			-->
+			<updatecheck>
+				<include name="lib/*.jar" />
+			</updatecheck>
 		</pack>
 	</packs>
 </izpack:installation>
